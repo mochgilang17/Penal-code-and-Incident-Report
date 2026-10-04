@@ -21,7 +21,7 @@ Buka langsung: **[https://mochgilang17.github.io/Penal-code-and-Incident-Report/
 - **Pencarian real-time** berdasarkan kode, nama pasal, kata kunci, atau isi sub-ayat.
 - **Filter kategori**: Penal / Vehicle / Felony / Misdemeanor / Infraction.
 - **Sorting**: kode, hukuman tertinggi, denda tertinggi, nama A–Z.
-- **† Catatan kaki pasal** — penjelasan tambahan & catatan praktik penegakan pada pasal tertentu (muncul di detail pasal).
+- **📋 Card Deskripsi Pasal** — panel di kanan yang menampilkan deskripsi lengkap pasal terpilih, termasuk catatan tambahan & varian ayat.
 - **🌐 Terjemahan English** — toggle ID/EN mengubah judul & deskripsi pasal ke bahasa Inggris.
 
 ### 🧮 Sentence Calculator

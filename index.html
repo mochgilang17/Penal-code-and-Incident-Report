@@ -131,13 +131,6 @@
   .chip:hover{color:var(--text);border-color:var(--green-dim)}
   .chip.on{background:rgba(57,255,136,.12);border-color:var(--green-dim);color:var(--green)}
 
-  .foot-mark{color:var(--cyan);margin-right:5px;font-size:12px;font-weight:bold}
-  .footnote{
-    margin-top:14px;padding:10px 12px;border:1px solid var(--line);border-left:3px solid var(--cyan);
-    background:#060b0f;border-radius:4px;font-size:11.5px;line-height:1.55;color:#bcd; 
-  }
-  .footnote .fn-mark{color:var(--cyan);font-weight:bold;font-size:14px}
-  .footnote b{color:var(--cyan);letter-spacing:1px;font-size:10.5px}
   .en-note{margin-top:10px;font-size:11px;color:var(--cyan);letter-spacing:.5px}
 
   /* keyboard shortcuts panel */
@@ -148,6 +141,32 @@
     background:#0a1015;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;
     padding:2px 6px;font-family:inherit;font-size:11px;color:var(--green);
   }
+
+  /* card deskripsi pasal */
+  .detail-body{padding:12px 13px}
+  .detail-body .d-code{color:var(--cyan);font-weight:bold;font-size:13px}
+  .detail-body .d-title{color:#eafff3;font-size:13.5px;margin:3px 0 8px;line-height:1.35}
+  .detail-body .d-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .detail-body .d-desc{
+    font-size:12px;line-height:1.6;color:#cfeedd;
+    border-top:1px solid var(--line);padding-top:10px;
+  }
+  .detail-body .d-note{
+    margin-top:12px;padding:9px 11px;border:1px solid var(--line);border-left:3px solid var(--cyan);
+    background:#060b0f;border-radius:4px;font-size:11.5px;line-height:1.55;color:#bcd;
+  }
+  .detail-body .d-note b{color:var(--cyan);letter-spacing:1px;font-size:10.5px;display:block;margin-bottom:4px}
+  .detail-body .d-vars{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+  .detail-body .d-vars .vt{font-size:10px;letter-spacing:1.5px;color:var(--green);text-transform:uppercase;margin-bottom:7px}
+  .detail-body .d-vrow{
+    display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px dotted #16242e;cursor:pointer;
+  }
+  .detail-body .d-vrow:last-child{border-bottom:0}
+  .detail-body .d-vrow:hover{background:#0c161d}
+  .detail-body .d-vrow.sel{background:rgba(57,255,136,.07)}
+  .detail-body .d-vrow .vl{color:var(--green);font-weight:bold;font-size:11px;min-width:26px}
+  .detail-body .d-vrow .vd{flex:1;font-size:11px;color:#a9cfbd;line-height:1.4}
+  .detail-body .d-vrow .vp{font-size:10.5px;color:var(--amber);white-space:nowrap;text-align:right}
 
   /* list */
   .list{overflow-y:auto;overflow-x:hidden}
@@ -380,6 +399,13 @@
 
   <!-- RIGHT -->
   <aside class="rail">
+    <div class="panel detail-card">
+      <div class="panel-hd"><span class="bar"></span> Deskripsi Pasal</div>
+      <div class="detail-body" id="detailBody">
+        <div class="empty">Belum ada pasal dipilih.<br>Klik salah satu pasal untuk melihat deskripsi di sini.</div>
+      </div>
+    </div>
+
     <div class="panel">
       <div class="panel-hd"><span class="bar"></span> Sentence Calculator</div>
       <div class="stat-grid">
@@ -1332,7 +1358,6 @@ function renderList(){
     const open = expanded[l.code] ? " open" : "";
     // tanda pada pasal yang punya varian terpilih
     const hasSel = selected.some(s=>s.code===l.code) ? " sel" : "";
-    const foot = FOOTNOTES[l.code] ? '<span class="foot-mark" title="Ada catatan kaki">†</span>' : '';
     let variantsHtml = "";
     if(expanded[l.code]){
       variantsHtml = '<div class="variants">' + l.variants.map((v,vi)=>{
@@ -1352,7 +1377,7 @@ function renderList(){
     return `<div class="pgroup${open}${hasSel}">
       <div class="row" data-code="${l.code}">
         <div class="code">${l.code}</div>
-        <div class="name">${foot}${locTitle(l)}<span class="tag t-${st.cls}">${st.cls}</span></div>
+        <div class="name">${locTitle(l)}<span class="tag t-${st.cls}">${st.cls}</span></div>
         <div class="fine">${fmtFine(st.fine)}</div>
         <div class="jail">${st.jail?fmtJail(st.jail):"—"}</div>
         <button class="add quick" title="Tambah varian utama">${selected.some(s=>s.code===l.code)?"✓":"+"}</button>
@@ -1378,11 +1403,59 @@ $("list").addEventListener("click", e=>{
   if(e.target.classList.contains("quick")){
     if(l.variants.length===1){ toggleSelect(code,0); }
     else { expanded[code]=true; renderList(); }
+    renderDetail(code);
     return;
   }
   // klik body baris -> expand/collapse varian
   expanded[code] = !expanded[code];
+  renderDetail(code);
   renderList();
+});
+
+/* ===================== CARD DESKRIPSI PASAL ===================== */
+let detailCode = null;
+function renderDetail(code){
+  detailCode = code;
+  const box = $("detailBody");
+  const l = byCode[code];
+  if(!l){
+    box.innerHTML = '<div class="empty">Belum ada pasal dipilih.<br>Klik salah satu pasal untuk melihat deskripsi di sini.</div>';
+    return;
+  }
+  const st = stat(l);
+  const fn = FOOTNOTES[code];
+  const enActive = (lang==="en" && EN[code]);
+  const varsHtml = l.variants.length>1 ? `
+    <div class="d-vars">
+      <div class="vt">Varian Ayat</div>
+      ${l.variants.map((v,vi)=>{
+        const sel = isSel(code,vi) ? " sel" : "";
+        return `<div class="d-vrow${sel}" data-code="${code}" data-vi="${vi}">
+          <span class="vl">${v.label}</span>
+          <span class="vd">${locDesc(l,vi,v)}</span>
+          <span class="vp">${v.jail?fmtJail(v.jail):"—"}<br>${fmtFine(v.fine)}</span>
+        </div>`;
+      }).join("")}
+    </div>` : "";
+
+  box.innerHTML = `
+    <div class="d-code">${l.code}</div>
+    <div class="d-title">${locTitle(l)}</div>
+    <div class="d-meta">
+      <span class="tag t-${st.cls}">${clsName(st.cls)} (${st.cls})</span>
+      <span class="tag t-I">${l.cat==="PEN"?"PENAL CODE":"VEHICLE CODE"}</span>
+      ${enActive?'<span class="tag t-M">EN</span>':''}
+    </div>
+    <div class="d-desc">${l.txt}</div>
+    ${fn ? `<div class="d-note"><b>CATATAN — ${fn.ref}</b>${fn.note}</div>` : ""}
+    ${varsHtml}
+  `;
+}
+$("detailBody").addEventListener("click", e=>{
+  const v = e.target.closest(".d-vrow");
+  if(!v) return;
+  toggleSelect(v.dataset.code, +v.dataset.vi);
+  renderDetail(v.dataset.code);
 });
 
 /* ===================== SELECTION / CALC ===================== */
@@ -1489,12 +1562,7 @@ function openDetail(code){
     }
     extra += '</table><div style="font-size:10.5px;color:var(--muted);margin-top:6px">Biaya naik bertingkat tiap 5 level.</div></div>';
   }
-  // catatan kaki
-  const fn = FOOTNOTES[l.code];
-  let footHtml = "";
-  if(fn){
-    footHtml = `<div class="footnote"><span class="fn-mark">†</span> <b>CATATAN KAKI — ${fn.ref}</b><br>${fn.note}</div>`;
-  }
+  // catatan tidak lagi ditampilkan di modal (dipindah ke card kanan)
   let enHtml = "";
   if(EN[l.code] && lang==="en"){
     enHtml = `<div class="en-note">English translation active for this article.</div>`;
@@ -1523,7 +1591,6 @@ function openDetail(code){
     ${enHtml}
     <div style="margin-top:14px;font-size:11px;letter-spacing:1.5px;color:var(--green);text-transform:uppercase">Pilih Ayat / Varian Hukuman</div>
     <div class="variants modal-variants">${vRows}</div>
-    ${footHtml}
     ${extra}
   `;
   $("modal").classList.add("on");
@@ -1657,6 +1724,7 @@ function setLang(l){
   const b = $("langBtn");
   b.textContent = lang==="en" ? "🌐 EN" : "🌐 ID";
   renderList(); renderCalc();
+  if(typeof renderDetail==="function") renderDetail(detailCode);
   if($("modal").classList.contains("on") && currentDetail) openDetail(currentDetail);
 }
 $("langBtn").addEventListener("click", ()=> setLang(lang==="id" ? "en" : "id"));
