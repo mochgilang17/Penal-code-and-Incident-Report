@@ -130,13 +130,7 @@
   }
   .chip:hover{color:var(--text);border-color:var(--green-dim)}
   .chip.on{background:rgba(57,255,136,.12);border-color:var(--green-dim);color:var(--green)}
-  .chip[data-cat="POP"]{color:var(--amber);border-color:rgba(255,176,32,.35)}
-  .chip[data-cat="POP"].on{background:rgba(255,176,32,.14);color:var(--amber)}
 
-  /* highlight pasal sering dipakai */
-  .pgroup.pop>.row{box-shadow:inset 3px 0 0 var(--amber)}
-  .pgroup.pop.sel>.row{box-shadow:inset 3px 0 0 var(--amber), inset 6px 0 0 var(--green)}
-  .star{color:var(--amber);margin-right:5px;font-size:12px;text-shadow:0 0 6px rgba(255,176,32,.6)}
   .foot-mark{color:var(--cyan);margin-right:5px;font-size:12px;font-weight:bold}
   .footnote{
     margin-top:14px;padding:10px 12px;border:1px solid var(--line);border-left:3px solid var(--cyan);
@@ -374,7 +368,6 @@
 
     <div class="chips" id="chips">
       <span class="chip on" data-cat="all">SEMUA</span>
-      <span class="chip" data-cat="POP">★ SERING DIPAKAI</span>
       <span class="chip" data-cat="PEN">PENAL CODE</span>
       <span class="chip" data-cat="VEH">VEHICLE CODE</span>
       <span class="chip" data-cat="F">FELONY (F)</span>
@@ -419,7 +412,6 @@
       <div class="shortcuts">
         <div class="sc"><kbd>/</kbd><span>Fokus ke pencarian</span></div>
         <div class="sc"><kbd>L</kbd><span>Ganti bahasa ID / EN</span></div>
-        <div class="sc"><kbd>P</kbd><span>Filter ★ Sering Dipakai</span></div>
         <div class="sc"><kbd>C</kbd><span>Kosongkan pilihan</span></div>
         <div class="sc"><kbd>R</kbd><span>Buat Incident Report</span></div>
         <div class="sc"><kbd>Esc</kbd><span>Tutup modal / keluar search</span></div>
@@ -1114,41 +1106,6 @@ const VEHICLE_FEES = {
   "SPORT VEHICLES":{start:813,step:812}
 };
 
-/* ===================== HIGHLIGHT: PASAL SERING DIPAKAI =====================
-   Daftar kode pasal yang paling sering dipakai di roleplay / penegakan harian.
-   Ditandai bintang ★ pada daftar dan bisa difilter "SERING DIPAKAI". */
-const POPULAR = [
-  "187",  // Murder
-  "211",  // Robbery
-  "215",  // Carjacking
-  "459",  // Burglary
-  "508",  // Grand Theft
-  "507",  // Petty Theft
-  "105",  // Assault w/ Deadly Weapon
-  "107",  // Battery
-  "108",  // Battery on Peace Officer
-  "404",  // Brandishing a Firearm
-  "415",  // Disturbing the Peace
-  "512",  // Trespass
-  "611",  // Resisting a Peace Officer
-  "610",  // Obstruction of Justice
-  "313",  // Under the Influence
-  "305",  // Possession w/ Intent to Sell
-  "618",  // Violation of Parole
-  "703",  // DUI
-  "704",  // Evading
-  "705",  // Reckless Evading
-  "804",  // Possession of Unlicensed Firearm
-  "806",  // Firearm Theft
-  "V-201",// Driving without Valid License
-  "V-301",// Driving without Insurance
-  "V-401",// Speeding
-  "V-404",// Traffic Control Device
-  "V-504" // Unauthorized Red/Blue Lights
-];
-const POPULAR_SET = new Set(POPULAR);
-const isPopular = code => POPULAR_SET.has(code);
-
 /* ===================== CATATAN KAKI (FOOTNOTES) =====================
    Penjelasan tambahan / catatan praktik penegakan untuk pasal tertentu. */
 const FOOTNOTES = {
@@ -1340,8 +1297,7 @@ const fmtMoney = n => "$"+n.toLocaleString("en-US");
 /* ===================== FILTER ===================== */
 function filtered(){
   let arr = LAWS.slice();
-  if(filterCat==="POP") arr = arr.filter(l=>isPopular(l.code));
-  else if(filterCat==="PEN"||filterCat==="VEH") arr = arr.filter(l=>l.cat===filterCat);
+  if(filterCat==="PEN"||filterCat==="VEH") arr = arr.filter(l=>l.cat===filterCat);
   else if(["F","M","I"].includes(filterCat)) arr = arr.filter(l=> l.variants.some(v=>v.cls===filterCat));
 
   if(query){
@@ -1374,10 +1330,8 @@ function renderList(){
   list.innerHTML = arr.map(l=>{
     const st = stat(l);
     const open = expanded[l.code] ? " open" : "";
-    const pop = isPopular(l.code) ? " pop" : "";
     // tanda pada pasal yang punya varian terpilih
     const hasSel = selected.some(s=>s.code===l.code) ? " sel" : "";
-    const star = isPopular(l.code) ? '<span class="star" title="Sering dipakai">★</span>' : '';
     const foot = FOOTNOTES[l.code] ? '<span class="foot-mark" title="Ada catatan kaki">†</span>' : '';
     let variantsHtml = "";
     if(expanded[l.code]){
@@ -1395,10 +1349,10 @@ function renderList(){
         </div>`;
       }).join("") + '</div>';
     }
-    return `<div class="pgroup${open}${hasSel}${pop}">
+    return `<div class="pgroup${open}${hasSel}">
       <div class="row" data-code="${l.code}">
         <div class="code">${l.code}</div>
-        <div class="name">${star}${foot}${locTitle(l)}<span class="tag t-${st.cls}">${st.cls}</span></div>
+        <div class="name">${foot}${locTitle(l)}<span class="tag t-${st.cls}">${st.cls}</span></div>
         <div class="fine">${fmtFine(st.fine)}</div>
         <div class="jail">${st.jail?fmtJail(st.jail):"—"}</div>
         <button class="add quick" title="Tambah varian utama">${selected.some(s=>s.code===l.code)?"✓":"+"}</button>
@@ -1564,7 +1518,6 @@ function openDetail(code){
       <div><span>KODE PASAL</span><br><b class="g">${l.code}</b></div>
       <div><span>KODE KATEGORI</span><br><b class="a">${l.cat==="PEN"?"PENAL CODE":"VEHICLE CODE"}</b></div>
       <div><span>JUMLAH AYAT</span><br><b>${l.variants.length}</b></div>
-      ${isPopular(l.code)?'<div><span>STATUS</span><br><b style="color:var(--amber)">★ SERING DIPAKAI</b></div>':''}
     </div>
     <div style="border-top:1px solid var(--line);padding-top:12px">${l.txt}</div>
     ${enHtml}
@@ -1737,13 +1690,6 @@ document.addEventListener("keydown", e=>{
   // "L" — toggle bahasa (kecuali sedang mengetik)
   if((e.key==="l"||e.key==="L") && !typing){
     setLang(lang==="id" ? "en" : "id");
-    return;
-  }
-
-  // "P" — filter sering dipakai (kecuali sedang mengetik)
-  if((e.key==="p"||e.key==="P") && !typing){
-    const chip = document.querySelector('.chip[data-cat="POP"]');
-    if(chip) chip.click();
     return;
   }
 
