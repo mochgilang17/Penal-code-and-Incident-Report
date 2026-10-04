@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>San Andreas Law Information // Mobile Data Computer</title>
+<link rel="icon" type="image/webp" href="SA_Seal.webp">
+<link rel="apple-touch-icon" href="SA_Seal.webp">
+<style>
+  :root{
+    --bg:#05070a;
+    --panel:#0a0f14;
+    --panel2:#0d141b;
+    --line:#1b2a36;
+    --green:#39ff88;
+    --green-dim:#1f8a4d;
+    --amber:#ffb020;
+    --cyan:#38d2ff;
+    --red:#ff4d4d;
+    --text:#bfe9d0;
+    --muted:#5b7f6d;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:
+      radial-gradient(1200px 600px at 20% -10%, #0c1a14 0%, transparent 60%),
+      linear-gradient(180deg,#04060a 0%, #05070a 100%);
+    color:var(--text);
+    font-family:"Consolas","Courier New",ui-monospace,monospace;
+    font-size:14px;
+    padding:14px;
+    min-height:100vh;
+  }
+  /* subtle scanlines */
+  body::after{
+    content:"";
+    position:fixed;inset:0;pointer-events:none;z-index:9999;
+    background:repeating-linear-gradient(180deg,rgba(0,0,0,0) 0 2px,rgba(0,0,0,.22) 2px 3px);
+    opacity:.35;
+  }
+
+  .wrap{max-width:1420px;margin:0 auto;display:grid;grid-template-columns:1fr 380px;gap:14px}
+  @media(max-width:1050px){.wrap{grid-template-columns:1fr}}
+
+  /* watermark seal */
+  .watermark{
+    position:fixed;right:-90px;bottom:-110px;width:520px;height:520px;
+    opacity:.045;pointer-events:none;z-index:0;
+    -webkit-user-drag:none;user-select:none;
+  }
+  .wrap{position:relative;z-index:1}
+
+  /* ===== header ===== */
+  header{
+    grid-column:1/-1;
+    border:1px solid var(--line);
+    background:linear-gradient(180deg,#0b1218,#080d11);
+    border-radius:6px;
+    padding:12px 16px;
+    display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+    box-shadow:0 0 0 1px #000 inset,0 8px 30px rgba(57,255,136,.05);
+  }
+  .badge{
+    width:52px;height:52px;flex:0 0 52px;border-radius:50%;
+    background:linear-gradient(145deg,#123223,#0a1a12);
+    border:1px solid var(--green-dim);
+    display:grid;place-items:center;overflow:hidden;
+    box-shadow:0 0 14px rgba(57,255,136,.25);
+  }
+  .badge img{width:100%;height:100%;object-fit:contain;display:block}
+  .titles h1{font-size:16px;letter-spacing:2px;color:#eafff3;font-weight:600}
+  .titles p{font-size:11px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-top:2px}
+  .status{margin-left:auto;display:flex;gap:18px;align-items:center;font-size:11px;letter-spacing:1px}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:blink 1.6s infinite}
+  @keyframes blink{50%{opacity:.25}}
+  .clock{color:var(--cyan);font-variant-numeric:tabular-nums}
+
+  /* ===== left panel ===== */
+  .panel{
+    border:1px solid var(--line);
+    background:var(--panel);
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .panel-hd{
+    display:flex;align-items:center;gap:10px;
+    padding:9px 13px;
+    background:linear-gradient(180deg,#0e1922,#0a1218);
+    border-bottom:1px solid var(--line);
+    font-size:11px;letter-spacing:2px;color:var(--green);text-transform:uppercase;
+  }
+  .panel-hd .bar{width:3px;height:14px;background:var(--green);box-shadow:0 0 8px var(--green)}
+
+  /* toolbar */
+  .toolbar{padding:11px;border-bottom:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
+  .search{
+    flex:1;min-width:180px;position:relative;
+  }
+  .search input,.toolbar select{
+    width:100%;
+    background:#060b0f;border:1px solid var(--line);border-radius:4px;
+    color:var(--green);font-family:inherit;font-size:13px;
+    padding:9px 11px;outline:none;
+  }
+  .search input:focus,.toolbar select:focus{border-color:var(--green-dim);box-shadow:0 0 0 2px rgba(57,255,136,.08)}
+  .search input::placeholder{color:#3a5a4a}
+
+  /* chips */
+  .chips{display:flex;gap:6px;padding:9px 11px;flex-wrap:wrap;border-bottom:1px solid var(--line);background:var(--panel2)}
+  .chip{
+    border:1px solid var(--line);background:#060b0f;color:var(--muted);
+    padding:4px 10px;border-radius:20px;font-size:11px;cursor:pointer;letter-spacing:.5px;
+    transition:.15s;user-select:none;
+  }
+  .chip:hover{color:var(--text);border-color:var(--green-dim)}
+  .chip.on{background:rgba(57,255,136,.12);border-color:var(--green-dim);color:var(--green)}
+
+  /* list */
+  .list{max-height:calc(100vh - 300px);overflow:auto}
+  .list::-webkit-scrollbar{width:9px}
+  .list::-webkit-scrollbar-track{background:#060b0f}
+  .list::-webkit-scrollbar-thumb{background:#1b2a36;border-radius:4px}
+  .list::-webkit-scrollbar-thumb:hover{background:var(--green-dim)}
+
+  .row{
+    display:grid;grid-template-columns:64px 1fr 96px 66px 40px;
+    gap:8px;align-items:center;
+    padding:9px 12px;border-bottom:1px solid #0f1a22;cursor:pointer;
+    transition:background .12s;
+  }
+  .row:hover{background:#0c161d}
+  .row.sel{background:rgba(57,255,136,.07);box-shadow:inset 3px 0 0 var(--green)}
+  .code{color:var(--cyan);font-weight:bold;font-size:12px}
+  .name{color:#d6f5e4;font-size:12.5px;line-height:1.3}
+  .fine{text-align:right;color:var(--amber);font-size:12px;font-variant-numeric:tabular-nums}
+  .jail{text-align:right;color:var(--text);font-size:12px;font-variant-numeric:tabular-nums}
+  .add{
+    width:26px;height:26px;line-height:24px;text-align:center;border-radius:4px;
+    border:1px solid var(--green-dim);color:var(--green);background:transparent;
+    font-size:15px;font-family:inherit;cursor:pointer;justify-self:end;
+  }
+  .add:hover{background:var(--green);color:#03110a}
+  .row.sel .add{background:var(--green);color:#03110a;border-color:var(--green)}
+
+  .tag{display:inline-block;font-size:9px;padding:1px 6px;border-radius:3px;margin-left:6px;letter-spacing:1px;vertical-align:middle}
+  .t-I{background:rgba(56,210,255,.15);color:var(--cyan);border:1px solid rgba(56,210,255,.35)}
+  .t-M{background:rgba(255,176,32,.15);color:var(--amber);border:1px solid rgba(255,176,32,.35)}
+  .t-F{background:rgba(255,77,77,.15);color:var(--red);border:1px solid rgba(255,77,77,.35)}
+
+  /* ==== expandable sub-ayat ==== */
+  .pgroup{border-bottom:1px solid #0f1a22}
+  .pgroup .row{border-bottom:0}
+  .pgroup.open>.row{background:#0b141b}
+  .pgroup.open>.row .code::before{content:"▾ ";color:var(--green)}
+  .pgroup.sel>.row{box-shadow:inset 3px 0 0 var(--green)}
+  .variants{background:#060b0f;border-top:1px dashed #16242e;padding:2px 0}
+  .vrow{
+    display:grid;grid-template-columns:42px 1fr auto 34px;gap:9px;align-items:center;
+    padding:8px 12px 8px 22px;border-bottom:1px solid #0c161d;cursor:pointer;
+    transition:background .12s;
+  }
+  .vrow:last-child{border-bottom:0}
+  .vrow:hover{background:#0d191f}
+  .vrow.sel{background:rgba(57,255,136,.08);box-shadow:inset 3px 0 0 var(--green)}
+  .vlabel{color:var(--green);font-weight:bold;font-size:11px;letter-spacing:.5px}
+  .vdesc{color:#a9cfbd;font-size:11.5px;line-height:1.35}
+  .vtags{display:flex;align-items:center;gap:8px;white-space:nowrap}
+  .vtags .tag{margin-left:0}
+  .vjail{color:var(--text);font-size:11.5px;font-variant-numeric:tabular-nums;min-width:52px;text-align:right}
+  .vfine{color:var(--amber);font-size:11.5px;font-variant-numeric:tabular-nums;min-width:62px;text-align:right}
+  .vadd{width:24px;height:24px;line-height:22px;font-size:14px}
+  .vrow.sel .vadd{background:var(--green);color:#03110a;border-color:var(--green)}
+  .pgroup.sel>.row .quick{background:var(--green);color:#03110a;border-color:var(--green)}
+  .modal-variants{border:1px solid var(--line);border-radius:4px;background:#060b0f;margin-top:8px}
+  .modal-vrow{padding:10px 12px}
+
+  .empty{padding:30px;text-align:center;color:var(--muted);font-size:12px}
+
+  /* ===== right rail ===== */
+  .rail{display:flex;flex-direction:column;gap:14px}
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line)}
+  .stat{background:var(--panel);padding:12px}
+  .stat .lbl{font-size:10px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase}
+  .stat .val{font-size:20px;color:var(--green);margin-top:4px;font-variant-numeric:tabular-nums;text-shadow:0 0 10px rgba(57,255,136,.4)}
+  .stat .val.amber{color:var(--amber);text-shadow:0 0 10px rgba(255,176,32,.35)}
+
+  .basket{max-height:230px;overflow:auto}
+  .basket::-webkit-scrollbar{width:8px}
+  .basket::-webkit-scrollbar-thumb{background:#1b2a36;border-radius:4px}
+  .bitem{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid #0f1a22;font-size:12px}
+  .bitem .c{color:var(--cyan);font-weight:bold;min-width:44px}
+  .bitem .n{flex:1;color:#cfeedd;font-size:11.5px;line-height:1.25}
+  .bitem .x{cursor:pointer;color:var(--red);padding:0 4px;font-size:14px}
+  .bitem .x:hover{text-shadow:0 0 8px var(--red)}
+
+  .chart{padding:12px}
+  .cbar{margin-bottom:9px}
+  .cbar .cl{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;color:var(--muted)}
+  .cbar .cl b{color:var(--text);font-weight:normal;font-variant-numeric:tabular-nums}
+  .track{height:9px;background:#060b0f;border:1px solid var(--line);border-radius:3px;overflow:hidden}
+  .fill{height:100%;border-radius:2px;transition:width .35s ease}
+  .f-F{background:linear-gradient(90deg,#7a1d1d,#ff4d4d);box-shadow:0 0 10px rgba(255,77,77,.4)}
+  .f-M{background:linear-gradient(90deg,#7a5410,#ffb020);box-shadow:0 0 10px rgba(255,176,32,.35)}
+  .f-I{background:linear-gradient(90deg,#0d5e78,#38d2ff);box-shadow:0 0 10px rgba(56,210,255,.35)}
+
+  .btns{display:flex;gap:8px;padding:11px;border-top:1px solid var(--line)}
+  .btn{
+    flex:1;padding:10px;border-radius:4px;cursor:pointer;font-family:inherit;font-size:12px;
+    letter-spacing:1px;text-transform:uppercase;border:1px solid var(--line);background:#060b0f;color:var(--text);
+  }
+  .btn:hover{border-color:var(--green-dim);color:var(--green)}
+  .btn.primary{background:rgba(57,255,136,.1);border-color:var(--green-dim);color:var(--green)}
+  .btn.primary:hover{background:var(--green);color:#03110a}
+  .btn.danger:hover{border-color:var(--red);color:var(--red)}
+
+  footer{grid-column:1/-1;text-align:center;color:var(--muted);font-size:10.5px;letter-spacing:1.5px;padding:6px 0}
+
+  /* detail modal */
+  .modal{position:fixed;inset:0;background:rgba(2,5,8,.86);display:none;place-items:center;z-index:1000;padding:20px}
+  .modal.on{display:grid}
+  .modal .card{
+    width:100%;max-width:620px;max-height:80vh;overflow:auto;
+    background:var(--panel);border:1px solid var(--green-dim);border-radius:6px;
+    box-shadow:0 0 40px rgba(57,255,136,.15);
+  }
+  .modal .hd{padding:13px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;background:#0b1218}
+  .modal .hd h3{font-size:14px;color:var(--green);letter-spacing:1px}
+  .modal .hd .close{margin-left:auto;cursor:pointer;color:var(--red);font-size:18px}
+  .modal .bd{padding:16px;line-height:1.65;color:#cfeedd;font-size:12.5px}
+  .modal .bd strong{color:var(--amber)}
+  .kv{display:flex;gap:20px;margin-bottom:12px;flex-wrap:wrap}
+  .kv span{font-size:11px;color:var(--muted);letter-spacing:1px}
+  .kv b{color:var(--text);font-size:13px}
+  .kv b.g{color:var(--green)}
+  .kv b.a{color:var(--amber)}
+
+  /* ===== incident report sheet ===== */
+  .rpt-modal .card{background:#e9edf1;border-color:#3a4a58}
+  .rpt-modal .hd{background:#0b1218}
+  .rpt-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .rpt-tools select{
+    flex:1;min-width:220px;background:#060b0f;border:1px solid var(--line);border-radius:4px;
+    color:var(--green);font-family:inherit;font-size:12.5px;padding:9px 11px;outline:none;
+  }
+  .report-sheet{
+    background:#fff;color:#111;padding:15px;border:2px solid #000;
+    font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.4;
+    max-width:850px;margin:0 auto;
+  }
+  .report-sheet .rh{position:relative;text-align:center;border-bottom:2px solid #000;padding-bottom:9px;margin-bottom:10px}
+  .report-sheet .rh-mid h2{font-size:19px;margin:0;text-transform:uppercase;color:#12381f;letter-spacing:1px}
+  .report-sheet .rh-mid h1{font-size:21px;margin:1px 0;text-transform:uppercase;color:#12381f;font-weight:800}
+  .report-sheet .rh-mid p{margin:1px 0;font-size:12px;color:#333}
+  .report-sheet .rh-mid h3{margin:6px 0 0;font-size:13px;text-decoration:underline;letter-spacing:2px}
+  .report-sheet .rh-right{position:absolute;right:0;top:0;width:96px;font-size:9px;font-weight:bold;text-align:right;color:#a00}
+  .report-sheet .topbar{display:grid;grid-template-columns:repeat(3,1fr);border:2px solid #000;margin-bottom:10px}
+  .report-sheet .ig{display:flex;align-items:center;gap:6px;padding:5px 6px;border-bottom:.5px solid #ccc}
+  .report-sheet .topbar .ig{border-bottom:0;border-right:1px solid #000}
+  .report-sheet .topbar .ig:last-child{border-right:0}
+  .report-sheet .ig label{font-weight:bold;white-space:nowrap;font-size:10.5px}
+  .report-sheet input[type=text],.report-sheet input[type=date],.report-sheet input[type=time],.report-sheet select{
+    border:0;border-bottom:1px solid #ddd;width:100%;outline:none;background:transparent;
+    font-family:"Courier New",monospace;font-size:12px;color:#111;padding:1px 0;
+  }
+  .report-sheet select{cursor:pointer}
+  .report-sheet .g4{display:grid;grid-template-columns:repeat(4,1fr)}
+  .report-sheet .g3{display:grid;grid-template-columns:repeat(3,1fr)}
+  .report-sheet .g2{display:grid;grid-template-columns:1fr 1fr}
+  .report-sheet .g2col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .report-sheet .fs{border:1px solid #000;margin-bottom:10px}
+  .report-sheet .st{background:#e0e0e0;padding:3px 9px;font-weight:bold;border-bottom:1px solid #000;font-size:10.5px;letter-spacing:.5px}
+  .report-sheet textarea{width:100%;padding:9px;box-sizing:border-box;border:0;resize:vertical;font-family:"Courier New",monospace;font-size:12px;color:#111;line-height:1.5}
+  .report-sheet .charges-box{padding:6px 9px;min-height:34px;white-space:pre-wrap;font-family:"Courier New",monospace;font-size:11.5px}
+  .report-sheet .charges-box .empty-ch{color:#888;font-style:italic}
+  .report-sheet .ch-line{padding:2px 0;border-bottom:.5px dotted #ccc}
+  .report-sheet .ch-line .ch-tag{font-weight:bold;font-size:9px;padding:0 4px;border-radius:2px;background:#eee;margin-left:6px}
+  .report-sheet .charge-total{padding:5px 9px;border-top:1px solid #000;font-weight:bold;font-size:11.5px;background:#f4f4f4}
+  .report-sheet .chkgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:9px}
+  .report-sheet .chkgrid label{display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:bold}
+  .report-sheet .rf{display:flex;justify-content:space-around;margin-top:8px;border-top:2px solid #000;padding-top:18px}
+  .report-sheet .sig{text-align:center;width:44%;max-width:230px}
+  .report-sheet .sig-input{font-family:"Brush Script MT","Segoe Script",cursive;font-size:18px;text-align:center;border:0;border-bottom:1px solid #000;width:100%}
+  .report-sheet .sig p{margin:3px 0;font-size:10px;font-weight:bold;letter-spacing:.5px}
+  .report-sheet .rf-note{text-align:center;font-size:9px;color:#555;margin-top:12px}
+
+  @media print{ .no-print{display:none!important} body *{visibility:hidden} #report-content,#report-content *{visibility:visible} #report-content{position:absolute;left:0;top:0;width:100%} }
+  @media(max-width:640px){
+    .report-sheet .topbar{grid-template-columns:1fr}
+    .report-sheet .topbar .ig{border-right:0;border-bottom:1px solid #000}
+    .report-sheet .g4,.report-sheet .g3,.report-sheet .g2,.report-sheet .g2col{grid-template-columns:1fr}
+    .report-sheet .rf{flex-direction:column;align-items:center;gap:18px}
+    .report-sheet .rh-right{position:static;width:100%;text-align:center;margin-top:5px;border:1px dashed #a00;padding:2px 0}
+  }
+</style>
+</head>
+<body>
+<img class="watermark" src="SA_Seal.webp" alt="">
+<div class="wrap">
+
+  <header>
+    <div class="badge"><img src="SA_Seal.webp" alt="Seal of the State of San Andreas"></div>
+    <div class="titles">
+      <h1>SAN ANDREAS LAW INFORMATION INSTITUTE</h1>
+      <p>Mobile Data Computer &mdash; Penal &amp; Vehicle Code Terminal</p>
+    </div>
+    <div class="status">
+      <span><span class="dot"></span> SYSTEM ONLINE</span>
+      <span>TERMINAL <b style="color:var(--amber)">SA-LAW-01</b></span>
+      <span class="clock" id="clock">--:--:--</span>
+    </div>
+  </header>
+
+  <!-- LEFT -->
+  <section class="panel">
+    <div class="panel-hd"><span class="bar"></span> Statutory Index &nbsp;•&nbsp; <span id="countLbl">0</span> records</div>
+
+    <div class="toolbar">
+      <div class="search">
+        <input type="text" id="search" placeholder="Cari kode / pasal / kata kunci... (contoh: 187, murder, denda)">
+      </div>
+      <select id="sortSel">
+        <option value="code">Urut: Kode</option>
+        <option value="jailDesc">Urut: Hukuman tertinggi</option>
+        <option value="fineDesc">Urut: Denda tertinggi</option>
+        <option value="name">Urut: Nama A-Z</option>
+      </select>
+    </div>
+
+    <div class="chips" id="chips">
+      <span class="chip on" data-cat="all">SEMUA</span>
+      <span class="chip" data-cat="PEN">PENAL CODE</span>
+      <span class="chip" data-cat="VEH">VEHICLE CODE</span>
+      <span class="chip" data-cat="F">FELONY (F)</span>
+      <span class="chip" data-cat="M">MISDEMEANOR (M)</span>
+      <span class="chip" data-cat="I">INFRACTION (I)</span>
+    </div>
+
+    <div class="list" id="list"></div>
+  </section>
+
+  <!-- RIGHT -->
+  <aside class="rail">
+    <div class="panel">
+      <div class="panel-hd"><span class="bar"></span> Sentence Calculator</div>
+      <div class="stat-grid">
+        <div class="stat"><div class="lbl">Total Denda</div><div class="val amber" id="totFine">$0</div></div>
+        <div class="stat"><div class="lbl">Total Penjara</div><div class="val" id="totJail">0 min</div></div>
+        <div class="stat"><div class="lbl">Pasal Terpilih</div><div class="val" id="totCount">0</div></div>
+        <div class="stat"><div class="lbl">Estimasi Waktu</div><div class="val" id="totTime">0m 0s</div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-hd"><span class="bar"></span> Daftar Pasal Terpilih</div>
+      <div class="basket" id="basket"><div class="empty">Belum ada pasal dipilih.<br>Klik tombol + pada daftar.</div></div>
+      <div class="btns">
+        <button class="btn danger" id="clearBtn">Kosongkan</button>
+        <button class="btn primary" id="copyBtn">Salin Laporan</button>
+      </div>
+      <div class="btns" style="border-top:0;padding-top:0">
+        <button class="btn primary" id="reportBtn" style="font-weight:bold">📄 Buat Incident Report</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-hd"><span class="bar"></span> Grafik Distribusi Hukuman</div>
+      <div class="chart" id="chart"></div>
+    </div>
+  </aside>
+
+  <footer>SAN ANDREAS LAW INFORMATION INSTITUTE &copy; &mdash; UNOFFICIAL ROLEPLAY LEGAL DATABASE &nbsp;|&nbsp; DATA: PENAL CODE &amp; VEHICLE CODE<br><span style="font-size:10px;letter-spacing:1px">WATERMARK / CREDIT: <a href="https://github.com/mochgilang17" target="_blank" style="color:var(--green);text-decoration:none">MOCH GILANG (@mochgilang17)</a></span></footer>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal" id="modal">
+  <div class="card">
+    <div class="hd"><h3 id="mTitle">—</h3><span class="close" id="mClose">✕</span></div>
+    <div class="bd" id="mBody"></div>
+  </div>
+</div>
+
+<!-- INCIDENT REPORT MODAL -->
+<div class="modal rpt-modal" id="rptModal">
+  <div class="card" style="max-width:900px">
+    <div class="hd">
+      <h3>INCIDENT REPORT GENERATOR</h3>
+      <span class="close" id="rptClose">✕</span>
+    </div>
+    <div class="bd" style="padding:14px">
+      <div class="rpt-tools no-print">
+        <label style="font-size:11px;color:var(--muted);letter-spacing:1px">DEPARTMENT HEADER:</label>
+        <select id="rptDept">
+          <option value="LSSD">Los Santos County Sheriff's Department (LSSD)</option>
+          <option value="LSPD">Los Santos Police Department (LSPD)</option>
+          <option value="SAHP">San Andreas Highway Patrol (SAHP)</option>
+        </select>
+        <button class="btn primary" id="rptExport" style="flex:0 0 auto;padding:9px 16px">💾 EXPORT JPG</button>
+        <button class="btn no-print" id="rptPrint" style="flex:0 0 auto;padding:9px 16px">🖨 PRINT</button>
+      </div>
+
+      <div id="report-content" class="report-sheet">
+        <header class="rh">
+          <div class="rh-left"></div>
+          <div class="rh-mid">
+            <h2 id="rhCounty">COUNTY OF LOS SANTOS</h2>
+            <h1 id="rhDept">SHERIFF'S DEPARTMENT</h1>
+            <p id="rhState">State of San Andreas</p>
+            <h3 id="rhTitle">INCIDENT REPORT</h3>
+          </div>
+          <div class="rh-right">FOR OFFICIAL USE ONLY</div>
+        </header>
+
+        <div class="topbar">
+          <div class="ig"><label>URN:</label><input type="text" id="rUrn" placeholder="26-XXXX-CCCC"></div>
+          <div class="ig"><label>DR#:</label><input type="text" id="rDr" placeholder="26-CCCC-CCCC"></div>
+          <div class="ig"><label>STATION:</label><input type="text" id="rStation" placeholder="Ketik nama station..."></div>
+        </div>
+
+        <section class="fs">
+          <div class="st">INCIDENT INFORMATION</div>
+          <div class="g4">
+            <div class="ig"><label>DATE:</label><input type="date" id="rDate"></div>
+            <div class="ig"><label>TIME:</label><input type="time" id="rTime"></div>
+            <div class="ig"><label>BEAT:</label><input type="text" id="rBeat"></div>
+            <div class="ig"><label>UNIT:</label><input type="text" id="rUnit"></div>
+          </div>
+          <div class="ig"><label>LOCATION:</label><input type="text" id="rLoc" placeholder="street address, District, Los Santos"></div>
+          <div class="g2">
+            <div class="ig"><label>INCIDENT TYPE:</label><input type="text" id="rType" placeholder="mis. Robbery / Traffic Stop"></div>
+            <div class="ig"><label>CLASSIFICATION:</label>
+              <select id="rClass">
+                <option value="">-</option>
+                <option>FELONY</option>
+                <option>MISDEMEANOR</option>
+                <option>INFRACTION</option>
+                <option>CIVIL</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <div class="g2col">
+          <section class="fs">
+            <div class="st">VICTIM / REPORTING PARTY</div>
+            <div class="ig"><label>NAME:</label><input type="text" id="rvName"></div>
+            <div class="g3">
+              <div class="ig"><label>AGE:</label><input type="text" id="rvAge"></div>
+              <div class="ig"><label>SEX:</label><select id="rvSex"><option value="">-</option><option>Male</option><option>Female</option></select></div>
+              <div class="ig"><label>RACE:</label><select id="rvRace"><option value="">-</option><option>White</option><option>Black</option><option>Hispanic</option><option>Asian</option><option>Other</option></select></div>
+            </div>
+            <div class="ig"><label>PHONE:</label><input type="text" id="rvPhone"></div>
+          </section>
+
+          <section class="fs">
+            <div class="st">SUSPECT INFORMATION</div>
+            <div class="ig"><label>NAME:</label><input type="text" id="rsName"></div>
+            <div class="g3">
+              <div class="ig"><label>AGE:</label><input type="text" id="rsAge"></div>
+              <div class="ig"><label>SEX:</label><select id="rsSex"><option value="">-</option><option>Male</option><option>Female</option></select></div>
+              <div class="ig"><label>RACE:</label><select id="rsRace"><option value="">-</option><option>White</option><option>Black</option><option>Hispanic</option><option>Asian</option><option>Other</option></select></div>
+            </div>
+            <div class="ig"><label>DESCRIPTION:</label><input type="text" id="rsDesc"></div>
+          </section>
+        </div>
+
+        <section class="fs">
+          <div class="st">CHARGES / VIOLATIONS <span style="font-weight:normal;font-style:italic">(otomatis dari kalkulator — dapat diedit)</span></div>
+          <div id="rCharges" class="charges-box"></div>
+          <div class="charge-total" id="rChargeTotal"></div>
+        </section>
+
+        <section class="fs">
+          <div class="st">NARRATIVE SUMMARY</div>
+          <textarea id="rNarr" rows="6" placeholder="Brief description of incident: What happened, when, where. Actions taken by officers. Statements from parties involved. Any follow-up required."></textarea>
+        </section>
+
+        <div class="g2col">
+          <section class="fs">
+            <div class="st">REPORTING OFFICER</div>
+            <div class="ig"><label>NAME:</label><input type="text" id="roName" class="ro-name" placeholder="Lastname, Firstname"></div>
+            <div class="g2">
+              <div class="ig"><label>BADGE#:</label><input type="text" id="roBadge"></div>
+              <div class="ig"><label>UNIT:</label><input type="text" id="roUnit"></div>
+            </div>
+            <div class="ig"><label>SUPERVISOR:</label><input type="text" id="roSup" class="sup-name" placeholder="Lastname, Firstname"></div>
+          </section>
+
+          <section class="fs">
+            <div class="st">DISPOSITION</div>
+            <div class="chkgrid">
+              <label><input type="checkbox"> REPORT COMPLETED</label>
+              <label><input type="checkbox"> ARREST MADE</label>
+              <label><input type="checkbox"> CITATION ISSUED</label>
+              <label><input type="checkbox"> TO DETECTIVE</label>
+              <label><input type="checkbox"> UNFOUNDED</label>
+              <label><input type="checkbox"> CIVIL MATTER</label>
+            </div>
+          </section>
+        </div>
+
+        <footer class="rf">
+          <div class="sig">
+            <input type="text" id="roSig" class="sig-input" placeholder="Lastname, Firstname" readonly>
+            <p>REPORTING OFFICER</p>
+            <input type="date" id="roSigDate">
+          </div>
+          <div class="sig">
+            <input type="text" id="supSig" class="sig-input" placeholder="Lastname, Firstname" readonly>
+            <p>SUPERVISOR</p>
+            <input type="date" id="supSigDate">
+          </div>
+        </footer>
+        <div class="rf-note" id="rfNote">SA-LAW IR FORM (Rev 2026) — FOR OFFICIAL USE ONLY</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+/* =========================================================
+   DATA — diambil dari "San Andreas Law Information Institute"
+   Klasifikasi: I = Infraction, M = Misdemeanor, F = Felony
+   ========================================================= */
+/* =========================================================
+   DATA — diambil dari "San Andreas Law Information Institute"
+   Struktur tiap pasal:
+     variants: [ {label, desc, cls, jail, fine}, ... ]
+     - label : "(a)", "(b)", atau "§" bila hanya satu ketentuan
+     - cls   : I = Infraction, M = Misdemeanor, F = Felony
+   jail = menit ; 999 = hukuman seumur hidup (LIFE)
+   ========================================================= */
+const LAWS = [
+/* ---------- PENAL CODE ---------- */
+{code:"101", title:"Criminal Threats", cat:"PEN", txt:"Mengancam melukai/membunuh orang lain sehingga menimbulkan rasa takut yang wajar.", variants:[
+  {label:"(a)", desc:"Mengancam melukai atau membunuh orang tersebut secara langsung, tertulis, atau melalui media.", cls:"M", jail:30, fine:500},
+  {label:"(b)", desc:"Mengancam melukai atau membunuh teman dekat/kerabat orang lain.", cls:"M", jail:30, fine:500}
+]},
+{code:"102", title:"Assault", cat:"PEN", txt:"Secara ilegal mencoba dan mampu melakukan cedera kekerasan pada orang lain.", variants:[
+  {label:"§", desc:"Upaya melakukan cedera kekerasan pada orang lain.", cls:"M", jail:25, fine:600}
+]},
+{code:"103", title:"Assault on a Peace Officer", cat:"PEN", txt:"Assault terhadap petugas keamanan yang menjalankan tugas.", variants:[
+  {label:"§", desc:"Upaya melakukan cedera kekerasan pada petugas keamanan yang bertugas.", cls:"M", jail:30, fine:650}
+]},
+{code:"104", title:"Assault on a State Employee", cat:"PEN", txt:"Assault terhadap pegawai negeri yang menjalankan tugas.", variants:[
+  {label:"§", desc:"Upaya melakukan cedera kekerasan pada pegawai negeri yang bertugas.", cls:"M", jail:40, fine:700}
+]},
+{code:"105", title:"Assault with a Deadly Weapon", cat:"PEN", txt:"Mengancam bahaya segera dengan senjata / alat / barang berbahaya.", variants:[
+  {label:"§", desc:"Mengancam bahaya segera menggunakan senjata atau barang berbahaya.", cls:"F", jail:40, fine:1150}
+]},
+{code:"106", title:"Assault with a Deadly Weapon on a Peace Officer", cat:"PEN", txt:"Assault dengan senjata terhadap petugas keamanan yang bertugas.", variants:[
+  {label:"§", desc:"Mengancam bahaya segera dengan senjata kepada petugas keamanan.", cls:"F", jail:50, fine:1200}
+]},
+{code:"107", title:"Battery", cat:"PEN", txt:"Menggunakan kekuatan/kekerasan sengaja untuk melukai orang lain.", variants:[
+  {label:"§", desc:"Kekerasan sengaja dan tidak sah yang menyebabkan kerugian fisik.", cls:"M", jail:24, fine:450}
+]},
+{code:"108", title:"Battery on a Peace Officer", cat:"PEN", txt:"Battery terhadap petugas keamanan yang bertugas.", variants:[
+  {label:"§", desc:"Kekerasan terhadap petugas keamanan yang bertugas.", cls:"M", jail:30, fine:500}
+]},
+{code:"109", title:"Battery on a State Employee", cat:"PEN", txt:"Battery terhadap pegawai negeri yang bertugas.", variants:[
+  {label:"§", desc:"Kekerasan terhadap pegawai negeri yang bertugas.", cls:"M", jail:30, fine:500}
+]},
+{code:"110", title:"Aggravated Battery", cat:"PEN", txt:"Kekerasan besar/berkelanjutan yang menyebabkan kerugian berat.", variants:[
+  {label:"(a)", desc:"Kekerasan besar/berkelanjutan yang menyebabkan kerugian berat.", cls:"F", jail:36, fine:850},
+  {label:"(b)", desc:"Menggunakan senjata/alat/barang berbahaya untuk menyebabkan kerugian berat.", cls:"F", jail:48, fine:900}
+]},
+{code:"111", title:"Manslaughter", cat:"PEN", txt:"Membunuh manusia lain tanpa niat jahat.", variants:[
+  {label:"§", desc:"Membunuh tanpa niat jahat.", cls:"F", jail:72, fine:1000},
+  {label:"(a)", desc:"Manslaughter sukarela: akibat pertengkaran mendadak/emosi memuncak.", cls:"F", jail:72, fine:1000},
+  {label:"(b)", desc:"Manslaughter tidak sukarela: dalam tindakan tidak sah atau tanpa perhatian yang cukup.", cls:"F", jail:72, fine:1000},
+  {label:"(c)", desc:"Manslaughter kendaraan: mengemudi berbahaya dan ceroboh yang menyebabkan kematian.", cls:"F", jail:72, fine:1000},
+  {label:"(d)", desc:"Menghindari petugas dengan kendaraan dan menyebabkan kematian.", cls:"F", jail:72, fine:1000}
+]},
+{code:"112", title:"False Imprisonment", cat:"PEN", txt:"Menahan/menangkap orang tanpa persetujuan.", variants:[
+  {label:"(a)", desc:"Menahan/menangkap orang tanpa persetujuan, tanpa niat direncanakan atau tebusan.", cls:"F", jail:36, fine:650},
+  {label:"(b)", desc:"Melakukan penangkapan warga yang tidak sah.", cls:"M", jail:12, fine:250}
+]},
+{code:"113", title:"Kidnapping", cat:"PEN", txt:"Menculik/menahan orang dengan kekuatan atau ketakutan.", variants:[
+  {label:"(a)", desc:"Mengambil/menahan orang dengan kekuatan atau ketakutan, dengan niat direncanakan.", cls:"F", jail:48, fine:650},
+  {label:"(b)", desc:"Merebut/mengurung/menculik untuk tebusan, imbalan, atau pemerasan.", cls:"F", jail:56, fine:660}
+]},
+{code:"114", title:"Mayhem", cat:"PEN", txt:"Melukai/melumpuhkan bagian tubuh dengan tujuan sadis/pemerasan.", variants:[
+  {label:"§", desc:"Merusak/melumpuhkan bagian tubuh dengan tujuan balas dendam, pemerasan, atau sadis.", cls:"F", jail:82, fine:1000}
+]},
+{code:"115", title:"Stalking", cat:"PEN", txt:"Mengikuti/mengganggu orang secara sengaja dan berniat jahat.", variants:[
+  {label:"(a)", desc:"Sengaja mengikuti/mengganggu orang yang telah menyatakan tidak setuju.", cls:"M", jail:12, fine:350},
+  {label:"(b)", desc:"Melanggar perintah penahanan resmi dari pengadilan.", cls:"M", jail:16, fine:400}
+]},
+{code:"116", title:"Human Trafficking", cat:"PEN", txt:"Membatasi kebebasan orang untuk kerja paksa atau perdagangan seks.", variants:[
+  {label:"(a)", desc:"Membatasi kebebasan orang untuk memaksa kerja atau perdagangan seks.", cls:"F", jail:36, fine:750},
+  {label:"(b)", desc:"Menyelinap orang asing ke negara bagian tanpa visa/otorisasi.", cls:"F", jail:24, fine:660}
+]},
+{code:"185", title:"Wearing a Mask or Disguise to Evade Police", cat:"PEN", txt:"Mengenakan topeng/penyamaran untuk menghindari identifikasi.", variants:[
+  {label:"§", desc:"Mengenakan topeng/penyamaran untuk menghindari identifikasi saat pelanggaran.", cls:"M", jail:4, fine:150}
+]},
+{code:"187", title:"Murder", cat:"PEN", txt:"Pembunuhan dengan tingkat kesengajaan berbeda.", variants:[
+  {label:"(a)", desc:"First Degree: alat penghancur, racun, penyiksaan, atau dengan perencanaan/deliberate/premeditated. Terhadap petugas keamanan dianggap first degree.", cls:"F", jail:132, fine:1500},
+  {label:"(b)", desc:"Second Degree: membunuh tanpa perencanaan, tetapi dengan niat jahat sebelumnya.", cls:"F", jail:120, fine:1250},
+  {label:"(c)", desc:"Felony Murder: pembunuhan saat terlibat tindakan felony premeditated.", cls:"F", jail:120, fine:1300}
+]},
+{code:"188", title:"Attempted Murder", cat:"PEN", txt:"Percobaan membunuh atau menyebabkan bahaya mengancam jiwa.", variants:[
+  {label:"(a)", desc:"Sengaja dan tegas mencoba membunuh melalui tindakan premeditasi.", cls:"F", jail:56, fine:950},
+  {label:"(b)", desc:"Akibat kecelakaan kriminal/kelalaian/emosi tinggi menyebabkan kerusakan parah.", cls:"F", jail:48, fine:870}
+]},
+{code:"211", title:"Robbery", cat:"PEN", txt:"Mengambil harta orang lain tanpa izin dengan kekuatan/rasa takut.", variants:[
+  {label:"§", desc:"Mengambil harta dari kepemilikan orang lain dengan kekuatan atau rasa takut.", cls:"F", jail:30, fine:650}
+]},
+{code:"215", title:"Carjacking", cat:"PEN", txt:"Mengambil kendaraan milik orang lain dengan kekuatan/rasa takut.", variants:[
+  {label:"§", desc:"Mengambil kendaraan dari tangan/kehadiran orang dengan kekuatan atau rasa takut.", cls:"F", jail:30, fine:450}
+]},
+{code:"216", title:"Rape", cat:"PEN", txt:"Hubungan seksual dengan paksaan / tanpa persetujuan.", variants:[
+  {label:"§", desc:"Memaksa orang untuk hubungan seksual, tanpa persetujuan, atau pada orang yang tidak mampu memberi persetujuan.", cls:"F", jail:56, fine:540}
+]},
+{code:"217", title:"Lewd Or Dissolute Conduct In Public", cat:"PEN", txt:"Perilaku seksual tidak pantas di tempat umum.", variants:[
+  {label:"§", desc:"Meminta atau terlibat perilaku seksual tidak pantas di tempat umum.", cls:"M", jail:12, fine:250}
+]},
+{code:"218", title:"Indecent Exposure", cat:"PEN", txt:"Memperlihatkan tubuh telanjang/genitalia.", variants:[
+  {label:"(a)", desc:"Memperlihatkan tubuh telanjang/genitalia di tanah publik atau area bisnis.", cls:"M", jail:14, fine:300},
+  {label:"(b)", desc:"Memperlihatkan tubuh telanjang/genitalia di tanah pribadi tanpa izin.", cls:"M", jail:12, fine:250},
+  {label:"(c)", desc:"Terlibat seks/aktivitas seksual di depan anak di bawah umur.", cls:"F", jail:18, fine:350}
+]},
+{code:"219", title:"Sexual Assault", cat:"PEN", txt:"Penghinaan verbal seksual atau ancaman kontak seksual tidak disetujui.", variants:[
+  {label:"§", desc:"Penghinaan verbal untuk penggairahan seksual atau ancaman kontak seksual tidak disetujui.", cls:"M", jail:24, fine:450}
+]},
+{code:"220", title:"Sexual Battery", cat:"PEN", txt:"Sentuhan tidak diinginkan atau kontak seksual.", variants:[
+  {label:"(a)", desc:"Sentuhan tidak diinginkan atau kontak seksual.", cls:"M", jail:30, fine:350},
+  {label:"(b)", desc:"Serangan/kontak fisik agresif untuk penggairahan seksual, gratifikasi, atau penyalahgunaan.", cls:"F", jail:36, fine:550}
+]},
+{code:"221", title:"Prostitution", cat:"PEN", txt:"Terlibat tindakan seksual sebagai imbalan pembayaran.", variants:[
+  {label:"§", desc:"Sadar terlibat tindakan seksual sebagai imbalan pembayaran/barang/layanan.", cls:"M", jail:8, fine:150}
+]},
+{code:"222", title:"Solicitation of a Prostitute", cat:"PEN", txt:"Menawarkan imbalan untuk tindakan seksual.", variants:[
+  {label:"§", desc:"Menawarkan pembayaran/barang/layanan untuk tindakan seksual.", cls:"M", jail:8, fine:150}
+]},
+{code:"223", title:"Pandering / Pimping", cat:"PEN", txt:"Mengajak/mengawasi orang dalam prostitusi dan mengambil hasilnya.", variants:[
+  {label:"§", desc:"Mengajak/mengiklankan/membantu/mengawasi orang dalam prostitusi dan mengambil hasilnya.", cls:"F", jail:20, fine:350}
+]},
+{code:"224", title:"Statutory Rape", cat:"PEN", txt:"Hubungan seksual dengan orang di bawah 18 tahun.", variants:[
+  {label:"§", desc:"Hubungan seksual dengan orang di bawah 18 tahun yang tidak dapat memberi persetujuan hukum.", cls:"F", jail:18, fine:250}
+]},
+{code:"225", title:"Child Abuse", cat:"PEN", txt:"Siksaan/cedera pada anak di bawah 18 tahun.", variants:[
+  {label:"§", desc:"Sengaja menyebabkan siksaan kejam atau cedera traumatis pada anak di bawah 18 tahun.", cls:"F", jail:35, fine:550}
+]},
+{code:"226", title:"Possession of Child Pornography", cat:"PEN", txt:"Memiliki konten seksual anak di bawah 18 tahun.", variants:[
+  {label:"§", desc:"Sengaja memiliki gambar/film/video konten anak di bawah 18 tahun dalam perilaku seksual.", cls:"F", jail:65, fine:1000}
+]},
+{code:"227", title:"Solicitation of a Minor", cat:"PEN", txt:"Berkomunikasi dengan anak di bawah umur untuk tujuan seksual.", variants:[
+  {label:"§", desc:"Berkomunikasi dengan anak di bawah umur untuk bertemu dengan tujuan tindakan seksual.", cls:"F", jail:24, fine:450}
+]},
+{code:"228", title:"Minor Alcohol Violation", cat:"PEN", txt:"Anak di bawah 21 tahun memiliki/mengonsumsi alkohol.", variants:[
+  {label:"§", desc:"Anak di bawah 21 tahun memiliki alkohol atau berada di bawah pengaruhnya.", cls:"I", jail:0, fine:2500}
+]},
+{code:"229", title:"Sale of Alcohol to a Minor", cat:"PEN", txt:"Menjual alkohol kepada anak di bawah 21 tahun.", variants:[
+  {label:"§", desc:"Sengaja menjual alkohol kepada anak di bawah 21 tahun.", cls:"M", jail:4, fine:50}
+]},
+{code:"230", title:"Animal Abuse / Cruelty", cat:"PEN", txt:"Melukai/membunuh hewan.", variants:[
+  {label:"(a)", desc:"Dengan sengaja melukai, menyiksa, atau membunuh hewan hidup.", cls:"F", jail:16, fine:200},
+  {label:"(b)", desc:"Karena kelalaian melukai, menyiksa, atau membunuh hewan hidup.", cls:"F", jail:12, fine:150}
+]},
+{code:"232", title:"Sale of Tobacco to a Minor", cat:"PEN", txt:"Menjual produk tembakau kepada minor di bawah 21 tahun.", variants:[
+  {label:"§", desc:"Sengaja menjual produk tembakau kepada minor di bawah 21 tahun.", cls:"M", jail:4, fine:50}
+]},
+{code:"301", title:"Littering", cat:"PEN", txt:"Membuang sampah/limbah yang menciptakan bahaya.", variants:[
+  {label:"§", desc:"Sengaja atau karena kelalaian membuang sampah/limbah yang dapat melukai atau membahayakan lalu lintas.", cls:"I", jail:0, fine:300}
+]},
+{code:"302", title:"Illegally Discharging a Firearm", cat:"PEN", txt:"Melepaskan tembakan secara sangat ceroboh.", variants:[
+  {label:"§", desc:"Sengaja melepaskan tembakan secara sangat ceroboh yang dapat menyebabkan cedera/kematian.", cls:"M", jail:4, fine:100}
+]},
+{code:"303", title:"Shooting At An Inhabited Dwelling Or Occupied Car", cat:"PEN", txt:"Menembak ke arah rumah/kendaraan yang dihuni.", variants:[
+  {label:"§", desc:"Sengaja melepaskan tembakan ke arah rumah/gedung/kendaraan/pesawat/trailer yang dihuni.", cls:"F", jail:36, fine:550}
+]},
+{code:"304", title:"Possession of a Controlled Substance Other than Marijuana", cat:"PEN", txt:"Memiliki zat terkontrol selain ganja.", variants:[
+  {label:"§", desc:"Memiliki zat terkontrol selain ganja tanpa dasar legal (medis/resep).", cls:"M", jail:4, fine:100}
+]},
+{code:"305", title:"Possession of Controlled Substance with Intent To Sell", cat:"PEN", txt:"Memiliki zat terkontrol >10 gram dengan niat menjual.", variants:[
+  {label:"§", desc:"Memiliki zat terkontrol selain ganja lebih dari 10 gram dengan niat menjual.", cls:"F", jail:24, fine:350}
+]},
+{code:"306", title:"Possession of Drug Paraphernalia", cat:"PEN", txt:"Memiliki alat untuk mengonsumsi zat terkontrol ilegal.", variants:[
+  {label:"§", desc:"Sengaja memiliki alat khusus untuk memproses/mengonsumsi zat terkontrol ilegal.", cls:"M", jail:4, fine:50}
+]},
+{code:"307", title:"Maintaining A Place For Distribution", cat:"PEN", txt:"Memelihara properti untuk distribusi ilegal.", variants:[
+  {label:"§", desc:"Membuka/memelihara properti untuk menjual/menyimpan zat terkontrol/senjata ilegal.", cls:"F", jail:28, fine:450}
+]},
+{code:"308", title:"Manufacture of a Controlled Substance", cat:"PEN", txt:"Memproduksi zat ilegal.", variants:[
+  {label:"§", desc:"Memproduksi/menyiapkan zat ilegal secara langsung maupun tidak langsung.", cls:"F", jail:48, fine:550}
+]},
+{code:"309", title:"Sale of a Controlled Substance Other than Marijuana", cat:"PEN", txt:"Menjual zat terkontrol selain ganja.", variants:[
+  {label:"§", desc:"Menjual atau berniat menjual zat terkontrol selain ganja.", cls:"F", jail:36, fine:350}
+]},
+{code:"310", title:"Sale of a Controlled Substance", cat:"PEN", txt:"Menjual ganja atau obat resep.", variants:[
+  {label:"§", desc:"Menjual atau berniat menjual ganja atau obat resep.", cls:"M", jail:14, fine:150}
+]},
+{code:"311", title:"Possession of an Open Container", cat:"PEN", txt:"Wadah alkohol terbuka di tempat umum.", variants:[
+  {label:"§", desc:"Memiliki wadah alkohol terbuka di tempat umum atau kendaraan.", cls:"I", jail:0, fine:500}
+]},
+{code:"312", title:"Public Intoxication", cat:"PEN", txt:"Di bawah pengaruh alkohol di tempat umum.", variants:[
+  {label:"§", desc:"Ditemukan di tempat umum di bawah pengaruh alkohol.", cls:"M", jail:4, fine:40}
+]},
+{code:"313", title:"Under The Influence of a Controlled Substance", cat:"PEN", txt:"Berada di bawah pengaruh zat terlarang.", variants:[
+  {label:"(a)", desc:"Menggunakan atau berada di bawah pengaruh zat terlarang tanpa izin/resep.", cls:"M", jail:5, fine:50},
+  {label:"(b)", desc:"Menggunakan atau berada di bawah pengaruh ganja di tempat umum atau saat kejahatan lain.", cls:"M", jail:4, fine:30}
+]},
+{code:"314", title:"Possession of Marijuana", cat:"PEN", txt:"Kepemilikan ganja (legal kecuali kondisi tertentu).", variants:[
+  {label:"(a)", desc:"Memiliki lebih dari 5 gram marijuana.", cls:"M", jail:6, fine:50},
+  {label:"(b)", desc:"Berusia di bawah 21 tahun dan memiliki hingga 5 gram.", cls:"M", jail:4, fine:40},
+  {label:"(c)", desc:"Berusia di bawah 18 tahun dan memiliki hingga 5 gram.", cls:"I", jail:0, fine:200}
+]},
+{code:"315", title:"Possession of an Unlicensed Firearm", cat:"PEN", txt:"Membawa senjata legal tanpa lisensi.", variants:[
+  {label:"§", desc:"Membawa senjata legal tanpa lisensi di tubuh/kendaraan/tempat usaha.", cls:"M", jail:40, fine:450}
+]},
+{code:"316", title:"Possession of a Destructive Device", cat:"PEN", txt:"Memiliki alat peledak/bahan mudah terbakar.", variants:[
+  {label:"§", desc:"Memiliki alat/perangkat dari bahan peledak atau cairan mudah terbakar.", cls:"F", jail:30, fine:450}
+]},
+{code:"317", title:"Manufacture of a Destructive Device or Prohibited Weapon", cat:"PEN", txt:"Memproduksi senjata berbahaya/peledak.", variants:[
+  {label:"§", desc:"Memproduksi/merakit/membongkar senjata berbahaya, peledak, perangkap, atau pisau.", cls:"F", jail:32, fine:500}
+]},
+{code:"318", title:"Illegal Sale, Lease, or Transfer of a Firearm", cat:"PEN", txt:"Memindahtangankan senjata tanpa FFL.", variants:[
+  {label:"§", desc:"Menjual/menyewa/mentransfer senjata api tanpa Federal Firearms License.", cls:"F", jail:60, fine:800}
+]},
+{code:"319", title:"Drive-By Shooting", cat:"PEN", txt:"Menembak dari kendaraan.", variants:[
+  {label:"(a)", desc:"Pengemudi/pemilik yang sengaja mengizinkan orang menembak dari kendaraan.", cls:"M", jail:16, fine:350},
+  {label:"(b)", desc:"Menembakkan senjata api dari kendaraan ke arah orang lain.", cls:"F", jail:30, fine:400}
+]},
+{code:"320", title:"Weapons License Violation", cat:"PEN", txt:"Pelanggaran lisensi CCW.", variants:[
+  {label:"§", desc:"Pelanggaran CCW: masuk area terlarang, menolak tunjukkan lisensi, alkohol saat membawa senjata, dll.", cls:"M", jail:50, fine:500}
+]},
+{code:"321", title:"Failure to Report a Stolen Firearm", cat:"PEN", txt:"Gagal melaporkan senjata hilang dalam 48 jam.", variants:[
+  {label:"§", desc:"Gagal melaporkan senjata api hilang dalam 48 jam setelah mengetahui.", cls:"M", jail:40, fine:500}
+]},
+{code:"322", title:"Illegal Distribution of Ammunition", cat:"PEN", txt:"Menjual/mendistribusikan amunisi ilegal.", variants:[
+  {label:"§", desc:"Menjual atau mendistribusikan amunisi secara ilegal.", cls:"F", jail:30, fine:550}
+]},
+{code:"323", title:"Terrorism", cat:"PEN", txt:"Ancaman/tindakan sistematis menimbulkan ketakutan skala besar.", variants:[
+  {label:"(a)", desc:"Ancaman/tindakan sistematis terhadap kepentingan umum untuk menimbulkan ketakutan skala besar.", cls:"F", jail:999, fine:0},
+  {label:"(b)", desc:"Serangan/ancaman terhadap fasilitas publik atau pribadi besar.", cls:"F", jail:999, fine:0}
+]},
+{code:"324", title:"Treason", cat:"PEN", txt:"Melakukan perang terhadap San Andreas / membantu musuh.", variants:[
+  {label:"§", desc:"Melakukan perang terhadap negara bagian atau memberi bantuan kepada musuh. Hukuman seumur hidup.", cls:"F", jail:999, fine:0}
+]},
+{code:"401", title:"Unlawful Assembly", cat:"PEN", txt:"Berkumpul untuk melakukan tindak pidana.", variants:[
+  {label:"(a)", desc:"Dua orang atau lebih berkumpul untuk tindak pidana atau tindak hukum kekerasan/anarkis.", cls:"M", jail:4, fine:50},
+  {label:"(b)", desc:"Kelompok gagal berunjuk rasa damai tanpa izin resmi (dikenakan ke pemimpin/pengorganisir).", cls:"I", jail:0, fine:900}
+]},
+{code:"402", title:"Incitement to Riot", cat:"PEN", txt:"Sengaja menggugah kerumunan untuk kekerasan.", variants:[
+  {label:"§", desc:"Sengaja menggugah kerumunan untuk mendorong kekerasan atau kerusuhan sipil.", cls:"F", jail:20, fine:450}
+]},
+{code:"403", title:"Riot", cat:"PEN", txt:"Kerusuhan / membebaskan tahanan saat kerusuhan.", variants:[
+  {label:"(a)", desc:"Tetap hadir di kerusuhan setelah peringatan hukum untuk beranjak.", cls:"M", jail:8, fine:50},
+  {label:"(b)", desc:"Berpartisipasi mengambil orang dari penahanan sah dengan kerusuhan.", cls:"F", jail:24, fine:500}
+]},
+{code:"404", title:"Brandishing a Firearm", cat:"PEN", txt:"Menunjukkan senjata api dengan cara mengancam.", variants:[
+  {label:"§", desc:"Mengeluarkan/memperlihatkan senjata api dengan cara marah atau mengancam, kecuali bela diri.", cls:"F", jail:120, fine:1500}
+]},
+{code:"405", title:"Brandishing a Deadly Weapon", cat:"PEN", txt:"Menunjukkan senjata mematikan non-api.", variants:[
+  {label:"§", desc:"Mengeluarkan/memperlihatkan senjata mematikan selain senjata api dengan cara mengancam.", cls:"M", jail:20, fine:250}
+]},
+{code:"406", title:"Unauthorized Entry on an Emergency Site", cat:"PEN", txt:"Memasuki/menolak meninggalkan area darurat.", variants:[
+  {label:"(a)", desc:"Memasuki area darurat/zona berbahaya yang telah ditutup.", cls:"M", jail:10, fine:250},
+  {label:"(b)", desc:"Menolak meninggalkan atau masuk kembali ke area darurat setelah dikeluarkan.", cls:"M", jail:15, fine:200},
+  {label:"(c)", desc:"Melakukan tindak pidana lain (pencurian/perampokan) saat berada di area darurat.", cls:"F", jail:20, fine:300}
+]},
+{code:"415", title:"Disturbing the Peace", cat:"PEN", txt:"Mengganggu ketertiban umum.", variants:[
+  {label:"(a)", desc:"Bertarung ilegal di tempat publik atau menantang orang untuk bertarung.", cls:"M", jail:3, fine:20},
+  {label:"(b)", desc:"Mengganggu orang lain dengan suara keras dan tidak wajar.", cls:"I", jail:0, fine:200},
+  {label:"(c)", desc:"Menggunakan kata-kata menyinggung di tempat publik yang memprovokasi kekerasan.", cls:"I", jail:0, fine:500}
+]},
+{code:"459", title:"Burglary", cat:"PEN", txt:"Memasuki bangunan/kendaraan dengan niat mencuri.", variants:[
+  {label:"§", desc:"Memasuki bangunan atau kendaraan dengan niat pencurian atau felony lain.", cls:"F", jail:20, fine:250}
+]},
+{code:"501", title:"Embezzlement", cat:"PEN", txt:"Mengambil barang yang dipercayakan.", variants:[
+  {label:"(a)", desc:"Secara curang mengambil barang yang dipercayakan oleh orang lain.", cls:"M", jail:8, fine:50},
+  {label:"(b)", desc:"Pegawai negara yang curang memperoleh/menggunakan barang dalam pengendaliannya.", cls:"F", jail:20, fine:250}
+]},
+{code:"502", title:"Arson", cat:"PEN", txt:"Membakar struktur/tanah/barang.", variants:[
+  {label:"(a)", desc:"Sengaja dan jahat membakar struktur, tanah hutan, atau barang tanpa izin.", cls:"F", jail:32, fine:550},
+  {label:"(b)", desc:"Karena kecelakaan kriminal/kelalaian menyebabkan kebakaran.", cls:"M", jail:4, fine:50}
+]},
+{code:"503", title:"Possession of Burglary Tools", cat:"PEN", txt:"Memiliki alat dan niat mencuri.", variants:[
+  {label:"§", desc:"Memiliki kombinasi alat dan niat melakukan pencurian.", cls:"M", jail:8, fine:20}
+]},
+{code:"504", title:"Forgery", cat:"PEN", txt:"Menandatangani nama lain dengan niat menipu.", variants:[
+  {label:"§", desc:"Menandatangani nama orang lain atau nama fiktif dengan niat menipu.", cls:"M", jail:6, fine:50}
+]},
+{code:"505", title:"Forgery of a State Document", cat:"PEN", txt:"Memalsukan dokumen negara.", variants:[
+  {label:"§", desc:"Memalsukan SIM, izin pilot, kartu identitas, atau izin senjata.", cls:"F", jail:15, fine:250}
+]},
+{code:"506", title:"Counterfeiting", cat:"PEN", txt:"Membuat/memiliki uang palsu.", variants:[
+  {label:"§", desc:"Membuat atau memiliki alat/uang palsu, tagihan, atau koin.", cls:"F", jail:12, fine:124}
+]},
+{code:"507", title:"Petty Theft", cat:"PEN", txt:"Mencuri barang ≤ $950.", variants:[
+  {label:"§", desc:"Mencuri barang pribadi/perusahaan bernilai tidak melebihi $950.", cls:"M", jail:8, fine:50}
+]},
+{code:"508", title:"Grand Theft", cat:"PEN", txt:"Pencurian dengan nilai besar / kendaraan / senjata.", variants:[
+  {label:"(a)", desc:"Mencuri barang pribadi/perusahaan bernilai melebihi $950.", cls:"F", jail:15, fine:250},
+  {label:"(b)", desc:"Mencuri mobil yang tidak dihuni.", cls:"F", jail:12, fine:187},
+  {label:"(c)", desc:"Mencuri senjata api.", cls:"F", jail:30, fine:550}
+]},
+{code:"509", title:"Extortion", cat:"PEN", txt:"Intimidasi untuk mendapatkan barang/layanan.", variants:[
+  {label:"(a)", desc:"Menggunakan intimidasi atau kekerasan untuk mendapatkan barang/layanan.", cls:"F", jail:22, fine:356},
+  {label:"(b)", desc:"Menggunakan/mengancam kekuasaan dengan niat jahat untuk memaksa tindakan.", cls:"F", jail:32, fine:432}
+]},
+{code:"510", title:"Receiving Stolen Property", cat:"PEN", txt:"Menerima barang hasil curian.", variants:[
+  {label:"§", desc:"Membeli/menerima barang yang telah dicuri atau diperoleh melalui pemerasan.", cls:"M", jail:6, fine:70}
+]},
+{code:"511", title:"Insurance Fraud", cat:"PEN", txt:"Penipuan asuransi.", variants:[
+  {label:"(a)", desc:"Menghancurkan/membuang barang diasuransikan dengan niat menipu perusahaan asuransi.", cls:"F", jail:14, fine:434},
+  {label:"(b)", desc:"Sengaja menyebabkan tabrakan untuk klaim palsu.", cls:"M", jail:8, fine:87}
+]},
+{code:"512", title:"Trespass", cat:"PEN", txt:"Memasuki properti tanpa izin.", variants:[
+  {label:"(a)", desc:"Memasuki properti orang lain saat ditutup tanpa izin.", cls:"M", jail:8, fine:80},
+  {label:"(b)", desc:"Memasuki fasilitas pemerintah atau bagian terlarang tanpa otorisasi.", cls:"F", jail:30, fine:140},
+  {label:"(c)", desc:"Memasuki tanah dengan tanda masuk dilarang.", cls:"M", jail:6, fine:50},
+  {label:"(d)", desc:"Menolak meninggalkan tempat usaha saat diminta pemilik.", cls:"M", jail:8, fine:70},
+  {label:"(e)", desc:"Melanggar peringatan larangan masuk yang telah diterima.", cls:"M", jail:8, fine:90}
+]},
+{code:"513", title:"Fraud", cat:"PEN", txt:"Menipu orang atas uang/barang/layanan.", variants:[
+  {label:"§", desc:"Menipu orang atas uang, tenaga, barang, atau layanan melalui pernyataan palsu.", cls:"F", jail:18, fine:560}
+]},
+{code:"514", title:"Vandalism", cat:"PEN", txt:"Merusak properti orang lain.", variants:[
+  {label:"§", desc:"Merusak atau menghancurkan properti milik orang lain.", cls:"M", jail:8, fine:80}
+]},
+{code:"601", title:"Bribery", cat:"PEN", txt:"Menyuap pejabat publik.", variants:[
+  {label:"§", desc:"Memberi hadiah/imbalan kepada pejabat publik untuk mempengaruhi tugas.", cls:"F", jail:25, fine:240}
+]},
+{code:"602", title:"Jury Tampering", cat:"PEN", txt:"Mempengaruhi/mengancam juri.", variants:[
+  {label:"(a)", desc:"Mempengaruhi juri melalui komunikasi, ancaman, atau bujukan di luar proses hukum.", cls:"F", jail:8, fine:80},
+  {label:"(b)", desc:"Mengancam juri terkait proses pidana di mana putusan telah dijatuhkan.", cls:"F", jail:18, fine:280}
+]},
+{code:"603", title:"Intimidating a Witness or Victim", cat:"PEN", txt:"Mencegah saksi/korban bersaksi.", variants:[
+  {label:"(a)", desc:"Mencegah/mendorong saksi atau korban untuk tidak hadir atau bersaksi.", cls:"F", jail:20, fine:250},
+  {label:"(b)", desc:"Mencegah distribusi/penyelesaian surat pernyataan hukum.", cls:"F", jail:16, fine:167}
+]},
+{code:"604", title:"Escape", cat:"PEN", txt:"Melarikan diri dari penahanan.", variants:[
+  {label:"§", desc:"Melarikan diri dari penjara, layanan masyarakat, rumah sakit, atau penahanan petugas.", cls:"F", jail:40, fine:650}
+]},
+{code:"605", title:"Aiding in the Escape from State Custody", cat:"PEN", txt:"Membantu tahanan melarikan diri.", variants:[
+  {label:"(a)", desc:"Membantu/menolong orang yang ditahan untuk melarikan diri dari hukum.", cls:"F", jail:30, fine:550},
+  {label:"(b)", desc:"Memberikan informasi yang membantu tahanan melarikan diri.", cls:"M", jail:8, fine:40}
+]},
+{code:"606", title:"Perjury", cat:"PEN", txt:"Kesaksian/laporan palsu di bawah sumpah.", variants:[
+  {label:"(a)", desc:"Sengaja memberi informasi palsu dalam surat pernyataan/kesaksian resmi.", cls:"F", jail:16, fine:168},
+  {label:"(b)", desc:"Petugas perdamaian sengaja membuat pernyataan palsu dalam laporan resmi.", cls:"F", jail:28, fine:272}
+]},
+{code:"607", title:"Filing a False Report", cat:"PEN", txt:"Melaporkan kejahatan/senjata hilang palsu.", variants:[
+  {label:"(a)", desc:"Melaporkan bahwa felony/misdemeanor terjadi, mengetahui laporan palsu.", cls:"M", jail:8, fine:80},
+  {label:"(b)", desc:"Melaporkan senjata api hilang/dicuri, mengetahui laporan palsu.", cls:"F", jail:24, fine:298}
+]},
+{code:"608", title:"Filing a False Complaint", cat:"PEN", txt:"Pengaduan palsu terhadap pejabat.", variants:[
+  {label:"§", desc:"Mengajukan keluhan palsu terhadap pejabat publik/pegawai untuk memulai tindakan administratif palsu.", cls:"M", jail:8, fine:50}
+]},
+{code:"609", title:"Corruption of Public Duty", cat:"PEN", txt:"Korupsi dalam tugas publik.", variants:[
+  {label:"(a)", desc:"Petugas/pegawai membocorkan informasi investigasi untuk keuntungan finansial.", cls:"F", jail:30, fine:560},
+  {label:"(b)", desc:"Petugas dengan wewenang menolak menangkap orang yang didakwa.", cls:"F", jail:24, fine:450},
+  {label:"(c)", desc:"Pegawai negara menunjukkan kelalaian kriminal dalam tugas.", cls:"F", jail:24, fine:460}
+]},
+{code:"610", title:"Obstruction of Justice", cat:"PEN", txt:"Menghalangi/menunda pegawai negara.", variants:[
+  {label:"(a)", desc:"Menunjukkan usaha jelas dan termotivasi untuk mencegah/menunda pegawai negara.", cls:"M", jail:6, fine:60},
+  {label:"(b)", desc:"Gagal mematuhi perintah sah dari petugas keamanan.", cls:"M", jail:4, fine:40}
+]},
+{code:"611", title:"Resisting a Peace Officer", cat:"PEN", txt:"Melawan/menghindari penangkapan.", variants:[
+  {label:"(a)", desc:"Menghindari penangkapan non-kendaraan atau melawan penangkapan secara fisik.", cls:"M", jail:8, fine:80},
+  {label:"(b)", desc:"Kabur dari penjagaan setelah ditahan dengan alat pembatas/kekuatan fisik.", cls:"F", jail:10, fine:100}
+]},
+{code:"612", title:"Failure To Pay A Fine", cat:"PEN", txt:"Gagal membayar denda pengadilan.", variants:[
+  {label:"§", desc:"Gagal membayar denda/biaya yang diperintahkan pengadilan dalam periode waktu yang ditentukan.", cls:"M", jail:8, fine:80}
+]},
+{code:"613", title:"Failure to Identify to a Peace Officer", cat:"PEN", txt:"Tidak memberikan identitas saat ditahan.", variants:[
+  {label:"§", desc:"Tidak memberikan nama/identitas saat ditahan atau ditangkap untuk tujuan MDC.", cls:"M", jail:4, fine:40}
+]},
+{code:"614", title:"Impersonation of a State Employee", cat:"PEN", txt:"Berpura-pura pegawai negara/federal.", variants:[
+  {label:"(a)", desc:"Berpura-pura sebagai pekerja pemerintah negara/daerah.", cls:"M", jail:8, fine:80},
+  {label:"(b)", desc:"Mengenakan seragam pegawai negara resmi/realistis dengan lencana.", cls:"M", jail:8, fine:80},
+  {label:"(c)", desc:"Berpura-pura sebagai pegawai federal.", cls:"F", jail:20, fine:520}
+]},
+{code:"615", title:"Making a False Report of an Emergency", cat:"PEN", txt:"Laporan darurat palsu.", variants:[
+  {label:"§", desc:"Melaporkan keadaan darurat palsu ke departemen negara/nomor darurat.", cls:"M", jail:8, fine:80}
+]},
+{code:"616", title:"Evidence Tampering", cat:"PEN", txt:"Menghancurkan/mengubah bukti.", variants:[
+  {label:"§", desc:"Menghancurkan, menyembunyikan, atau mengubah bukti investigasi/pengadilan.", cls:"F", jail:35, fine:535}
+]},
+{code:"617", title:"Introduction of Contraband", cat:"PEN", txt:"Memasukkan barang terlarang ke fasilitas.", variants:[
+  {label:"§", desc:"Memberikan barang terlarang kepada narapidana atau menyelundupkannya ke fasilitas.", cls:"F", jail:36, fine:850}
+]},
+{code:"618", title:"Violation of Parole", cat:"PEN", txt:"Melanggar ketentuan parol.", variants:[
+  {label:"§", desc:"Sengaja melanggar ketentuan perjanjian parol.", cls:"F", jail:48, fine:480}
+]},
+{code:"619", title:"Voter Fraud / Voter Pandering", cat:"PEN", txt:"Kecurangan pemilu.", variants:[
+  {label:"(a)", desc:"Menghalangi/memengaruhi hasil pemungutan suara secara ilegal/tidak etis.", cls:"F", jail:52, fine:524},
+  {label:"(b)", desc:"Membeli suara dengan menjanjikan/memberikan manfaat tidak semestinya.", cls:"F", jail:60, fine:650}
+]},
+{code:"620", title:"Corruption of Public Office", cat:"PEN", txt:"Bertindak di luar kepentingan publik.", variants:[
+  {label:"§", desc:"Bertindak di luar kepentingan kebaikan publik, keadilan publik, atau tugas kantor publik.", cls:"F", jail:64, fine:645}
+]},
+{code:"621", title:"Contempt of Senate", cat:"PEN", txt:"Melanggar proses Senat.", variants:[
+  {label:"§", desc:"Tidak mematuhi perintah Senat, tidak menghormati tata krama, atau melanggar proses Senat.", cls:"M", jail:8, fine:80}
+]},
+{code:"622", title:"Contempt of Court", cat:"PEN", txt:"Melanggar proses pengadilan.", variants:[
+  {label:"§", desc:"Tidak mematuhi perintah pengadilan, tidak menghormati tata krama, atau melanggar proses hukum.", cls:"M", jail:8, fine:80}
+]},
+{code:"623", title:"Subpoena Violation", cat:"PEN", txt:"Melanggar perintah subpoena.", variants:[
+  {label:"§", desc:"Mengabaikan atau melanggar perintah subpoena yang dikeluarkan pengadilan.", cls:"M", jail:8, fine:80}
+]},
+{code:"701", title:"Reckless Driving", cat:"PEN", txt:"Mengemudi mengabaikan keamanan.", variants:[
+  {label:"§", desc:"Mengemudikan kendaraan dengan sengaja atau sembarangan mengabaikan keamanan orang/harta.", cls:"M", jail:20, fine:350}
+]},
+{code:"702", title:"Felony Reckless Driving", cat:"PEN", txt:"Mengemudi berbahaya hingga menyebabkan cedera.", variants:[
+  {label:"§", desc:"Mengemudi berbahaya hingga menyebabkan cedera fisik. Penyitaan lisensi 24 jam.", cls:"F", jail:28, fine:540}
+]},
+{code:"703", title:"Driving Under the Influence", cat:"PEN", txt:"Mengemudi di bawah pengaruh alkohol/narkoba.", variants:[
+  {label:"(a)", desc:"Mengemudi dengan kadar alkohol 0,08% atau lebih.", cls:"F", jail:24, fine:246},
+  {label:"(b)", desc:"Pegawai negara mengemudi di bawah pengaruh narkoba/alkohol saat bertugas.", cls:"F", jail:30, fine:350},
+  {label:"(c)", desc:"Mengemudi kendaraan komersial dengan kadar alkohol 0,04% atau lebih.", cls:"F", jail:24, fine:542},
+  {label:"(d)", desc:"Mengemudi saat terganggu oleh alkohol, narkoba, atau kombinasinya.", cls:"M", jail:16, fine:165}
+]},
+{code:"704", title:"Evading a Peace Officer", cat:"PEN", txt:"Melarikan diri dari kendaraan petugas.", variants:[
+  {label:"§", desc:"Melarikan diri atau berusaha menghindar dari kendaraan petugas. Penyitaan lisensi 48 jam.", cls:"M", jail:16, fine:156}
+]},
+{code:"705", title:"Reckless Evading of a Peace Officer", cat:"PEN", txt:"Melarikan diri sambil mengemudi berbahaya.", variants:[
+  {label:"§", desc:"Melarikan diri dari petugas sambil mengemudi ceroboh/berbahaya. Penyitaan lisensi 60 jam.", cls:"F", jail:36, fine:365}
+]},
+{code:"706", title:"Hit and Run", cat:"PEN", txt:"Kabur setelah kecelakaan.", variants:[
+  {label:"(a)", desc:"Terlibat kecelakaan dengan cedera/kematian dan tidak berhenti di lokasi.", cls:"F", jail:35, fine:464},
+  {label:"(b)", desc:"Terlibat kecelakaan dengan kerusakan harta saja dan tidak berhenti di lokasi.", cls:"M", jail:10, fine:154}
+]},
+{code:"801", title:"Brandishing a Firearm", cat:"PEN", txt:"Menunjukkan senjata api untuk mengancam nyawa.", variants:[
+  {label:"§", desc:"Mengeluarkan/menunjukkan senjata api atau mematikan untuk mengancam nyawa orang.", cls:"M", jail:20, fine:1000}
+]},
+{code:"802", title:"Discharging a Firearm in Public", cat:"PEN", txt:"Menembak di tempat umum.", variants:[
+  {label:"§", desc:"Sengaja menembakkan senjata api di tempat umum tanpa alasan jelas.", cls:"M", jail:20, fine:500},
+  {label:"(ex)", desc:"Pengecualian: bila tembakan menyebabkan cedera, naik menjadi felony.", cls:"F", jail:40, fine:1500}
+]},
+{code:"803", title:"Unlicensed Possession of a Deadly Weapon", cat:"PEN", txt:"Membawa senjata mematikan tanpa lisensi.", variants:[
+  {label:"§", desc:"Membawa senjata mematikan di tempat umum/pribadi tanpa persetujuan atau lisensi valid.", cls:"M", jail:20, fine:760}
+]},
+{code:"804", title:"Possession of an Unlicensed Firearm", cat:"PEN", txt:"Kepemilikan senjata tanpa lisensi/curian.", variants:[
+  {label:"(a)", desc:"Memiliki senjata api yang tidak terdaftar di San Andreas.", cls:"M", jail:25, fine:850},
+  {label:"(b)", desc:"Memiliki senjata api hasil curian.", cls:"F", jail:30, fine:900},
+  {label:"(c)", desc:"Memiliki senjata replika dengan niat mengancam nyawa orang.", cls:"M", jail:20, fine:500}
+]},
+{code:"805", title:"Possession of an Illegal Firearm", cat:"PEN", txt:"Senjata api diproduksi/dibeli ilegal.", variants:[
+  {label:"§", desc:"Memiliki senjata api yang dihasilkan atau dibeli secara ilegal.", cls:"F", jail:40, fine:600}
+]},
+{code:"806", title:"Firearm Theft", cat:"PEN", txt:"Mencuri senjata api orang lain.", variants:[
+  {label:"§", desc:"Mencuri/mengambil senjata api orang lain dengan atau tanpa ancaman.", cls:"F", jail:50, fine:930}
+]},
+{code:"807", title:"Illegal Firearm Distribution", cat:"PEN", txt:"Senjata api ilegal untuk dijual.", variants:[
+  {label:"§", desc:"Memiliki senjata api ilegal dengan niat untuk diperjualbelikan.", cls:"F", jail:30, fine:910}
+]},
+{code:"808", title:"Illegal Modification of a Firearm", cat:"PEN", txt:"Modifikasi senjata api ilegal.", variants:[
+  {label:"§", desc:"Modifikasi ilegal: suppressor, full-auto conversion, extended magazine tanpa izin.", cls:"F", jail:90, fine:2500}
+]},
+{code:"809", title:"Negligent Storage of a Firearm", cat:"PEN", txt:"Penyimpanan senjata tanpa pengamanan.", variants:[
+  {label:"§", desc:"Menyimpan senjata api tanpa pengamanan memadai, dapat diakses anak di bawah umur.", cls:"M", jail:30, fine:750}
+]},
+
+/* ---------- VEHICLE CODE ---------- */
+{code:"V-001", title:"License Suspension and Revocation", cat:"VEH", txt:"Sistem poin lisensi pengemudi.", variants:[
+  {label:"§", desc:"3 poin = suspensi lisensi 48 jam; 5 poin = penyitaan kendaraan dan pencabutan lisensi.", cls:"I", jail:0, fine:0}
+]},
+{code:"V-002", title:"Officer Discretion", cat:"VEH", txt:"Kebijaksanaan petugas dalam pelanggaran kendaraan.", variants:[
+  {label:"§", desc:"Petugas dapat menggunakan kebijaksanaan saat mengeluarkan pelanggaran/poin, kecuali tindakan tidak aman.", cls:"I", jail:0, fine:0}
+]},
+{code:"V-101", title:"Vehicle Registration Violation", cat:"VEH", txt:"Kendaraan tidak terdaftar / tanpa plat valid.", variants:[
+  {label:"(a)", desc:"Mengemudi/meninggalkan kendaraan yang belum terdaftar. Denda bertingkat sesuai level kendaraan.", cls:"I", jail:0, fine:0},
+  {label:"(b)", desc:"Mengemudi kendaraan tanpa nomor plat valid yang dipajang.", cls:"I", jail:0, fine:0}
+]},
+{code:"V-201", title:"Driving without a Valid License", cat:"VEH", txt:"Mengemudi tanpa SIM valid.", variants:[
+  {label:"(a)", desc:"Mengemudi tanpa SIM valid atau dengan SIM yang dicabut.", cls:"M", jail:4, fine:0},
+  {label:"(b)", desc:"Mengemudi tanpa membawa SIM dalam penguasaan fisik.", cls:"M", jail:5, fine:450},
+  {label:"(c)", desc:"Mengemudi dengan SIM yang kedaluwarsa.", cls:"I", jail:0, fine:500}
+]},
+{code:"V-202", title:"Driving on a Suspended License", cat:"VEH", txt:"Mengemudi dengan SIM disita.", variants:[
+  {label:"§", desc:"Mengemudi dengan SIM yang disita tetapi masih valid.", cls:"M", jail:4, fine:550}
+]},
+{code:"V-203", title:"Learner's Permit Violation", cat:"VEH", txt:"Pelanggaran izin belajar.", variants:[
+  {label:"(a)", desc:"Usia 16-18 tahun mengemudi tanpa izin belajar valid.", cls:"I", jail:0, fine:200},
+  {label:"(b)", desc:"Usia 16-18 tahun mengemudi tanpa pendamping dewasa berlisensi.", cls:"I", jail:0, fine:300}
+]},
+{code:"V-301", title:"Driving without Insurance", cat:"VEH", txt:"Mengemudi tanpa asuransi valid.", variants:[
+  {label:"§", desc:"Mengemudi tanpa asuransi kendaraan bermotor valid. Kendaraan ditahan.", cls:"I", jail:0, fine:200}
+]},
+{code:"V-401", title:"Speeding", cat:"VEH", txt:"Mengemudi melebihi batas kecepatan.", variants:[
+  {label:"(a)", desc:"Di daerah bisnis/pemukiman >40 MPH (1 poin).", cls:"I", jail:0, fine:200},
+  {label:"(b)", desc:"Di luar daerah bisnis/pemukiman >65 MPH (1 poin).", cls:"I", jail:0, fine:500},
+  {label:"(c)", desc:"Di jalan raya >90 MPH (2 poin).", cls:"I", jail:0, fine:750},
+  {label:"(d)", desc:"Kecepatan tidak wajar mempertimbangkan cuaca/visibilitas/lalu lintas (2 poin).", cls:"I", jail:0, fine:200}
+]},
+{code:"V-402", title:"Failure to Yield", cat:"VEH", txt:"Tidak memberi hak jalan.", variants:[
+  {label:"§", desc:"Tidak memberikan hak jalan kepada pengemudi lain di persimpangan.", cls:"I", jail:0, fine:350}
+]},
+{code:"V-403", title:"Failure to Yield to Emergency Vehicles", cat:"VEH", txt:"Tidak menyingkir untuk kendaraan darurat.", variants:[
+  {label:"§", desc:"Tidak memberi hak jalan dan menyingkir untuk kendaraan darurat bersirene.", cls:"I", jail:0, fine:400}
+]},
+{code:"V-404", title:"Failure to Abide by a Traffic Control Device", cat:"VEH", txt:"Tidak mematuhi alat pengatur lalu lintas.", variants:[
+  {label:"§", desc:"Tidak mematuhi tanda, sinyal, atau perangkat pengatur lalu lintas.", cls:"I", jail:0, fine:200}
+]},
+{code:"V-405", title:"Illegal Parking", cat:"VEH", txt:"Parkir di tempat terlarang.", variants:[
+  {label:"§", desc:"Parkir di persimpangan, hydrant, rel, jalur pemadam, dll. Denda + penyitaan kendaraan.", cls:"I", jail:0, fine:950}
+]},
+{code:"V-406", title:"Vehicular Noise Violation", cat:"VEH", txt:"Suara kendaraan berlebihan.", variants:[
+  {label:"§", desc:"Kendaraan mengeluarkan suara berlebihan menciptakan gangguan publik.", cls:"I", jail:0, fine:500}
+]},
+{code:"V-407", title:"Illegal Use of Hydraulics", cat:"VEH", txt:"Menggunakan hidrolik saat bergerak.", variants:[
+  {label:"§", desc:"Mengemudi kendaraan yang menggunakan peralatan hidrolik saat bergerak.", cls:"I", jail:0, fine:450}
+]},
+{code:"V-408", title:"Unsafe Usage of a Bicycle", cat:"VEH", txt:"Menggunakan sepeda dengan tidak aman.", variants:[
+  {label:"§", desc:"Menggunakan sepeda dengan cara menghalangi lalu lintas atau menciptakan bahaya.", cls:"I", jail:0, fine:500}
+]},
+{code:"V-409", title:"Jaywalking", cat:"VEH", txt:"Menyeberang di luar penyeberangan.", variants:[
+  {label:"§", desc:"Berjalan di jalan raya di luar penyeberangan di antara persimpangan.", cls:"I", jail:0, fine:250}
+]},
+{code:"V-410", title:"Speed Contests", cat:"VEH", txt:"Perlombaan kecepatan di jalan umum.", variants:[
+  {label:"§", desc:"Terlibat perlombaan kecepatan kendaraan di jalan umum.", cls:"I", jail:0, fine:500}
+]},
+{code:"V-411", title:"Unlawful Operation of Truck on Non-Designated Routes", cat:"VEH", txt:"Truk di jalan non-rute.", variants:[
+  {label:"§", desc:"Mengemudi kendaraan komersial/truk besar di jalan non-rute truk tanpa izin. + penyitaan.", cls:"I", jail:0, fine:1500}
+]},
+{code:"V-412", title:"Operating Commercial Vehicle Without Proper License", cat:"VEH", txt:"Kendaraan komersial tanpa lisensi sesuai.", variants:[
+  {label:"§", desc:"Mengemudi kendaraan komersial tanpa kelas lisensi sesuai. Tambahan $500 bila menimbulkan bahaya.", cls:"M", jail:0, fine:870}
+]},
+{code:"V-501", title:"Tinted Windows", cat:"VEH", txt:"Kaca dengan bahan penghalang.", variants:[
+  {label:"§", desc:"Kaca depan/samping/belakang dengan bahan penghalang pandangan.", cls:"I", jail:0, fine:195}
+]},
+{code:"V-502", title:"Driving Without use of Headlights", cat:"VEH", txt:"Tidak menyalakan lampu depan.", variants:[
+  {label:"§", desc:"Mengemudi saat gelap atau cuaca buruk tanpa lampu depan.", cls:"I", jail:0, fine:230}
+]},
+{code:"V-503", title:"Operating an Unsafe Vehicle", cat:"VEH", txt:"Kendaraan tidak aman.", variants:[
+  {label:"§", desc:"Ban kempes, lampu belakang mati, pintu/kap/bagasi hilang atau terbuka.", cls:"I", jail:0, fine:640}
+]},
+{code:"V-504", title:"Unauthorized Use of Red/Blue Lights", cat:"VEH", txt:"Lampu darurat tanpa izin.", variants:[
+  {label:"§", desc:"Kendaraan dengan lampu darurat merah/biru tanpa izin. + penyitaan hingga lampu dilepas.", cls:"M", jail:10, fine:350}
+]},
+{code:"V-601", title:"Failure to Wear a Helmet", cat:"VEH", txt:"Tanpa helm keselamatan.", variants:[
+  {label:"§", desc:"Pengemudi/penumpang motor tanpa helm keselamatan.", cls:"I", jail:0, fine:500}
+]},
+{code:"V-602", title:"Unlawful Riding and Towing", cat:"VEH", txt:"Menarik/mengangkut tidak aman.", variants:[
+  {label:"§", desc:"Menarik/mengangkut kendaraan dengan cara tidak aman.", cls:"I", jail:0, fine:400}
+]},
+{code:"V-603", title:"Reckless Operation of Machinery", cat:"VEH", txt:"Mesin berat di jalan umum.", variants:[
+  {label:"§", desc:"Mengoperasikan mesin berat (bulldozer, forklift, dll) di jalan umum.", cls:"I", jail:0, fine:250}
+]},
+{code:"V-604", title:"Reckless operation of an off-road vehicle", cat:"VEH", txt:"Kendaraan off-road di jalan umum.", variants:[
+  {label:"§", desc:"Mengoperasikan kendaraan off-road di jalan umum. + kendaraan dapat ditahan.", cls:"I", jail:0, fine:4100}
+]},
+{code:"V-605", title:"Unlawful Riding in a Vehicle", cat:"VEH", txt:"Naik di bagian bukan penumpang.", variants:[
+  {label:"§", desc:"Naik/mengizinkan naik di bagian kendaraan bukan untuk penumpang atau di bagasi.", cls:"I", jail:0, fine:250}
+]},
+];
+
+/* Vehicle registration fee table (untuk referensi detail) */
+const VEHICLE_FEES = {
+  MOTORCYCLES:{start:325,step:325},
+  CARS:{start:650,step:650},
+  "COMMERCIAL VEHICLES":{start:488,step:487},
+  "SPORT VEHICLES":{start:813,step:812}
+};
+
+/* ===================== STATE ===================== */
+let filterCat = "all";
+let query = "";
+let sortBy = "code";
+let expanded = {};      // code -> bool (sub-ayat terbuka)
+let selected = [];      // item = {code, vi}  (vi = index varian)
+const byCode = {};
+LAWS.forEach(l=>byCode[l.code]=l);
+
+/* helper: kunci unik varian */
+const key = (code,vi) => code + "#" + vi;
+const isSel = (code,vi) => selected.some(s=>s.code===code && s.vi===vi);
+/* statistik pasal: hukuman tertinggi antar varian (untuk sort) */
+function stat(l){
+  let jail=0, fine=0, cls=l.variants[0]?l.variants[0].cls:"M";
+  l.variants.forEach(v=>{ jail=Math.max(jail,v.jail||0); fine=Math.max(fine,v.fine||0); });
+  return {jail, fine, cls};
+}
+
+/* ===================== HELPERS ===================== */
+const $ = id => document.getElementById(id);
+const clsName = c => c==="F"?"Felony":c==="M"?"Misdemeanor":"Infraction";
+const fmtJail = m => (m>=999? "LIFE" : (m? m+" min" : "0 min"));
+const fmtFine = n => (n? "$"+n.toLocaleString("en-US") : "—");
+const fmtMoney = n => "$"+n.toLocaleString("en-US");
+
+/* ===================== FILTER ===================== */
+function filtered(){
+  let arr = LAWS.slice();
+  if(filterCat==="PEN"||filterCat==="VEH") arr = arr.filter(l=>l.cat===filterCat);
+  else if(["F","M","I"].includes(filterCat)) arr = arr.filter(l=> l.variants.some(v=>v.cls===filterCat));
+
+  if(query){
+    const q = query.toLowerCase();
+    arr = arr.filter(l =>
+      l.code.toLowerCase().includes(q) ||
+      l.title.toLowerCase().includes(q) ||
+      l.txt.toLowerCase().includes(q) ||
+      l.variants.some(v => (v.desc||"").toLowerCase().includes(q))
+    );
+  }
+  if(sortBy==="jailDesc") arr.sort((a,b)=>stat(b).jail-stat(a).jail);
+  else if(sortBy==="fineDesc") arr.sort((a,b)=>stat(b).fine-stat(a).fine);
+  else if(sortBy==="name") arr.sort((a,b)=>a.title.localeCompare(b.title));
+  else arr.sort((a,b)=>a.code.localeCompare(b.code,undefined,{numeric:true}));
+  return arr;
+}
+
+/* ===================== RENDER LIST ===================== */
+function renderList(){
+  const arr = filtered();
+  $("countLbl").textContent = arr.length + " / " + LAWS.length + " pasal";
+  const list = $("list");
+  if(!arr.length){ list.innerHTML = '<div class="empty">// TIDAK ADA DATA YANG COCOK //</div>'; return; }
+
+  list.innerHTML = arr.map(l=>{
+    const st = stat(l);
+    const open = expanded[l.code] ? " open" : "";
+    // tanda pada pasal yang punya varian terpilih
+    const hasSel = selected.some(s=>s.code===l.code) ? " sel" : "";
+    let variantsHtml = "";
+    if(expanded[l.code]){
+      variantsHtml = '<div class="variants">' + l.variants.map((v,vi)=>{
+        const sel = isSel(l.code,vi) ? " sel" : "";
+        return `<div class="vrow${sel}" data-code="${l.code}" data-vi="${vi}">
+          <span class="vlabel">${v.label}</span>
+          <span class="vdesc">${v.desc}</span>
+          <span class="vtags">
+            <span class="tag t-${v.cls}">${v.cls}</span>
+            <span class="vjail">${v.jail?fmtJail(v.jail):"—"}</span>
+            <span class="vfine">${fmtFine(v.fine)}</span>
+          </span>
+          <button class="add vadd" title="Tambah varian ini">+</button>
+        </div>`;
+      }).join("") + '</div>';
+    }
+    return `<div class="pgroup${open}${hasSel}">
+      <div class="row" data-code="${l.code}">
+        <div class="code">${l.code}</div>
+        <div class="name">${l.title}<span class="tag t-${st.cls}">${st.cls}</span></div>
+        <div class="fine">${fmtFine(st.fine)}</div>
+        <div class="jail">${st.jail?fmtJail(st.jail):"—"}</div>
+        <button class="add quick" title="Tambah varian utama">${selected.some(s=>s.code===l.code)?"✓":"+"}</button>
+      </div>
+      ${variantsHtml}
+    </div>`;
+  }).join("");
+}
+
+/* event delegation di daftar */
+$("list").addEventListener("click", e=>{
+  const vrow = e.target.closest(".vrow");
+  if(vrow){
+    const code = vrow.dataset.code, vi = +vrow.dataset.vi;
+    toggleSelect(code, vi);
+    return;
+  }
+  const row = e.target.closest(".row");
+  if(!row) return;
+  const code = row.dataset.code;
+  const l = byCode[code];
+  // tombol + cepat -> tambahkan varian utama (pertama) & buka detail varian
+  if(e.target.classList.contains("quick")){
+    if(l.variants.length===1){ toggleSelect(code,0); }
+    else { expanded[code]=true; renderList(); }
+    return;
+  }
+  // klik body baris -> expand/collapse varian
+  expanded[code] = !expanded[code];
+  renderList();
+});
+
+/* ===================== SELECTION / CALC ===================== */
+function toggleSelect(code, vi){
+  const i = selected.findIndex(s=>s.code===code && s.vi===vi);
+  if(i>=0) selected.splice(i,1); else selected.push({code, vi});
+  renderList(); renderCalc();
+}
+
+function renderCalc(){
+  const items = selected.map(s=>{
+    const l = byCode[s.code]; if(!l) return null;
+    const v = l.variants[s.vi]; if(!v) return null;
+    return {code:l.code, title:l.title, label:v.label, desc:v.desc, cls:v.cls, jail:v.jail||0, fine:v.fine||0};
+  }).filter(Boolean);
+
+  const jail = items.reduce((a,b)=>a+b.jail,0);
+  const fine = items.reduce((a,b)=>a+b.fine,0);
+  const life = items.some(i=>i.jail>=999);
+
+  $("totFine").textContent = fmtMoney(fine);
+  $("totJail").textContent = life? "LIFE" : jail+" min";
+  $("totCount").textContent = items.length;
+  const h = Math.floor((jail%9999)/60), m = (jail%60);
+  $("totTime").textContent = life? "LIFE" : (h+"j "+m+"m");
+
+  // basket
+  const bk = $("basket");
+  if(!items.length){
+    bk.innerHTML = '<div class="empty">Belum ada pasal dipilih.<br>Klik pasal untuk membuka sub-ayat,<br>lalu tekan + pada variannya.</div>';
+  } else {
+    bk.innerHTML = items.map((it,i)=>`<div class="bitem">
+      <span class="c">${it.code}${it.label!=="§"?"<b>"+it.label+"</b>":""}</span>
+      <span class="n">${it.title}</span>
+      <span class="tag t-${it.cls}">${it.cls}</span>
+      <span class="x" data-i="${i}" title="Hapus">✕</span>
+    </div>`).join("");
+  }
+
+  // chart: distribusi menit penjara per kelas
+  const chart = $("chart");
+  const groups = {F:0,M:0,I:0};
+  items.forEach(l=>{ if(groups[l.cls]!==undefined) groups[l.cls] += l.jail; });
+  const max = Math.max(groups.F, groups.M, groups.I, 1);
+  const rows = [
+    ["F", groups.F, "Felony"],
+    ["M", groups.M, "Misdemeanor"],
+    ["I", groups.I, "Infraction"]
+  ];
+  chart.innerHTML = rows.map(([k,v,label])=>{
+    const pct = Math.round(v/max*100);
+    return `<div class="cbar">
+      <div class="cl"><span>${label} (${k})</span><b>${v} min</b></div>
+      <div class="track"><div class="fill f-${k}" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join("") + `<div style="font-size:10.5px;color:var(--muted);margin-top:6px;letter-spacing:1px">
+      Total denda: <span style="color:var(--amber)">${fmtMoney(fine)}</span> &nbsp;•&nbsp; Total penjara: <span style="color:var(--green)">${life?"LIFE":jail+" menit"}</span>
+    </div>`;
+}
+
+$("basket").addEventListener("click", e=>{
+  const x = e.target.closest(".x");
+  if(!x) return;
+  selected.splice(+x.dataset.i,1);
+  renderList(); renderCalc();
+});
+
+$("clearBtn").addEventListener("click", ()=>{ selected=[]; renderList(); renderCalc(); });
+
+$("copyBtn").addEventListener("click", ()=>{
+  const items = selected.map(s=>{
+    const l=byCode[s.code], v=l&&l.variants[s.vi];
+    return v?{code:l.code,title:l.title,label:v.label,cls:v.cls,jail:v.jail||0,fine:v.fine||0}:null;
+  }).filter(Boolean);
+  if(!items.length){ alert("Belum ada pasal yang dipilih."); return; }
+  const jail = items.reduce((a,b)=>a+b.jail,0);
+  const fine = items.reduce((a,b)=>a+b.fine,0);
+  const life = items.some(i=>i.jail>=999);
+  let t = "=== SENTENCE REPORT — SAN ANDREAS LAW INFORMATION ===\n";
+  items.forEach(l=>{
+    t += `${l.code}${l.label!=="§"?" "+l.label:""} (${l.cls}) ${l.title} — ${l.jail?fmtJail(l.jail):"-"} / ${l.fine?fmtMoney(l.fine):"-"}\n`;
+  });
+  t += "--------------------------------\n";
+  t += `TOTAL: ${life?"LIFE":jail+" menit"} | ${fmtMoney(fine)}\n`;
+  navigator.clipboard.writeText(t).then(()=>{
+    const b=$("copyBtn"); const o=b.textContent; b.textContent="TERSALIN ✓";
+    setTimeout(()=>b.textContent=o,1400);
+  }).catch(()=>alert(t));
+});
+
+/* ===================== DETAIL MODAL ===================== */
+function openDetail(code){
+  const l = byCode[code]; if(!l) return;
+  $("mTitle").textContent = `${l.code} — ${l.title}`;
+  let extra = "";
+  if(code==="V-101"){
+    extra = '<div style="margin-top:14px"><div class="panel-hd" style="padding:6px 0;border:0;background:none"><span class="bar"></span> Tabel Biaya Registrasi Kendaraan</div>';
+    extra += '<table style="width:100%;border-collapse:collapse;font-size:11.5px;margin-top:6px">';
+    extra += '<tr style="color:var(--muted);text-align:left"><th style="padding:4px">Kategori</th><th>Level 1-5</th><th>Level 96-100</th></tr>';
+    for(const k in VEHICLE_FEES){
+      const f = VEHICLE_FEES[k];
+      extra += `<tr><td style="padding:4px;color:var(--text)">${k}</td><td style="padding:4px;color:var(--amber)">$${f.start.toLocaleString()}</td><td style="padding:4px;color:var(--amber)">$${(f.start+f.step*19).toLocaleString()}</td></tr>`;
+    }
+    extra += '</table><div style="font-size:10.5px;color:var(--muted);margin-top:6px">Biaya naik bertingkat tiap 5 level.</div></div>';
+  }
+  const vRows = l.variants.map((v,vi)=>{
+    const sel = isSel(code,vi);
+    return `<div class="vrow modal-vrow${sel?' sel':''}" data-code="${code}" data-vi="${vi}" style="cursor:pointer">
+      <span class="vlabel">${v.label}</span>
+      <span class="vdesc">${v.desc}</span>
+      <span class="vtags">
+        <span class="tag t-${v.cls}">${v.cls}</span>
+        <span class="vjail">${v.jail?fmtJail(v.jail):"—"}</span>
+        <span class="vfine">${fmtFine(v.fine)}</span>
+      </span>
+      <button class="add vadd">${sel?"✓":"+"}</button>
+    </div>`;
+  }).join("");
+
+  $("mBody").innerHTML = `
+    <div class="kv">
+      <div><span>KODE PASAL</span><br><b class="g">${l.code}</b></div>
+      <div><span>KODE KATEGORI</span><br><b class="a">${l.cat==="PEN"?"PENAL CODE":"VEHICLE CODE"}</b></div>
+      <div><span>JUMLAH AYAT</span><br><b>${l.variants.length}</b></div>
+    </div>
+    <div style="border-top:1px solid var(--line);padding-top:12px">${l.txt}</div>
+    <div style="margin-top:14px;font-size:11px;letter-spacing:1.5px;color:var(--green);text-transform:uppercase">Pilih Ayat / Varian Hukuman</div>
+    <div class="variants modal-variants">${vRows}</div>
+    ${extra}
+  `;
+  $("modal").classList.add("on");
+}
+$("mBody").addEventListener("click", e=>{
+  const vrow = e.target.closest(".modal-vrow");
+  if(!vrow) return;
+  toggleSelect(vrow.dataset.code, +vrow.dataset.vi);
+  openDetail(vrow.dataset.code); // re-render badge
+});
+$("mClose").onclick = ()=> $("modal").classList.remove("on");
+$("modal").onclick = e=>{ if(e.target.id==="modal") $("modal").classList.remove("on"); };
+
+/* ===================== INCIDENT REPORT ===================== */
+const DEPTS = {
+  LSSD:{county:"COUNTY OF LOS SANTOS", dept:"SHERIFF'S DEPARTMENT", state:"State of San Andreas", note:"LSSD SH-R-49 (Rev 2026)"},
+  LSPD:{county:"CITY OF LOS SANTOS",   dept:"POLICE DEPARTMENT",    state:"State of San Andreas", note:"LSPD IR FORM (Rev 2026)"},
+  SAHP:{county:"STATE OF SAN ANDREAS", dept:"HIGHWAY PATROL",       state:"State of San Andreas", note:"SAHP IR FORM (Rev 2026)"}
+};
+function applyDept(){
+  const d = DEPTS[$("rptDept").value] || DEPTS.LSSD;
+  $("rhCounty").textContent = d.county;
+  $("rhDept").textContent   = d.dept;
+  $("rhState").textContent  = d.state;
+  $("rfNote").textContent   = d.note + " — FOR OFFICIAL USE ONLY";
+}
+$("rptDept").addEventListener("change", applyDept);
+
+/* tarik charge dari kalkulator */
+function buildCharges(){
+  const items = selected.map(s=>{
+    const l = byCode[s.code], v = l && l.variants[s.vi];
+    return v ? {code:l.code, label:v.label, title:l.title, cls:v.cls, jail:v.jail||0, fine:v.fine||0} : null;
+  }).filter(Boolean);
+
+  const box = $("rCharges");
+  if(!items.length){
+    box.innerHTML = '<span class="empty-ch">Belum ada pasal dipilih di kalkulator. Criminal charge akan muncul otomatis di sini.</span>';
+    $("rChargeTotal").textContent = "";
+    return;
+  }
+  let jail = 0, fine = 0, life = false;
+  box.innerHTML = items.map(it=>{
+    jail += it.jail; fine += it.fine; if(it.jail>=999) life = true;
+    const code = it.code + (it.label!=="§" ? " " + it.label : "");
+    return `<div class="ch-line">${code} — ${it.title}
+      <span class="ch-tag">${it.cls}</span>
+      <span style="float:right">${it.jail?fmtJail(it.jail):"-"} / ${it.fine?fmtMoney(it.fine):"-"}</span></div>`;
+  }).join("");
+  $("rChargeTotal").textContent = `TOTAL: ${life?"LIFE":jail+" menit"}  |  Denda: $${fine.toLocaleString("en-US")}  |  Jumlah charge: ${items.length}`;
+}
+
+function openReport(){
+  applyDept();
+  buildCharges();
+  // auto-isi tanggal & officer bila kosong
+  const now = new Date(), p = n=>String(n).padStart(2,"0");
+  if(!$("rDate").value) $("rDate").value = `${now.getFullYear()}-${p(now.getMonth()+1)}-${p(now.getDate())}`;
+  if(!$("rTime").value) $("rTime").value = `${p(now.getHours())}:${p(now.getMinutes())}`;
+  if(!$("roBadge").value) $("roBadge").value = "";
+  $("rptModal").classList.add("on");
+}
+$("reportBtn").addEventListener("click", openReport);
+$("rptClose").onclick = ()=> $("rptModal").classList.remove("on");
+$("rptModal").onclick = e=>{ if(e.target.id==="rptModal") $("rptModal").classList.remove("on"); };
+
+/* sinkron nama -> tanda tangan */
+$("roName").addEventListener("input", e=> $("roSig").value = e.target.value);
+$("roSup").addEventListener("input", e=> $("supSig").value = e.target.value);
+
+/* export JPG */
+$("rptExport").addEventListener("click", function(){
+  if(typeof html2canvas === "undefined"){ alert("Library export belum termuat. Periksa koneksi internet."); return; }
+  const report = $("report-content");
+  const btn = this; btn.textContent = "MEMPROSES...";
+  const inputs = report.querySelectorAll("input, textarea, select");
+  const temp = [];
+  inputs.forEach(el=>{
+    const rep = document.createElement("div");
+    let val = "";
+    if(el.tagName==="SELECT"){ val = el.options[el.selectedIndex] ? el.options[el.selectedIndex].text : ""; if(val==="-") val=""; }
+    else if(el.type==="checkbox"){ val = el.checked ? "☑" : "☐"; }
+    else val = el.value;
+    rep.innerText = val || " ";
+    const cs = window.getComputedStyle(el);
+    rep.style.fontSize = cs.fontSize;
+    rep.style.color = "#111";
+    rep.style.whiteSpace = "pre-wrap";
+    rep.style.wordWrap = "break-word";
+    rep.style.display = "inline-block";
+    if(el.type==="checkbox"){ rep.style.fontFamily="Arial,sans-serif"; rep.style.marginRight="5px"; }
+    else rep.style.fontFamily = cs.fontFamily;
+    if(el.tagName==="INPUT" && el.type!=="checkbox"){ rep.style.borderBottom="1px solid #ddd"; rep.style.minWidth=el.offsetWidth+"px"; }
+    if(el.tagName==="TEXTAREA"){ rep.style.width="100%"; rep.style.minHeight=el.offsetHeight+"px"; rep.style.display="block"; }
+    if(el.type==="checkbox"){ el.style.opacity="0"; el.style.pointerEvents="none"; el.parentNode.insertBefore(rep, el); }
+    else { el.style.display="none"; el.parentNode.insertBefore(rep, el); }
+    temp.push({el, rep});
+  });
+  html2canvas(report, {scale:3, useCORS:true, backgroundColor:"#ffffff", logging:false, windowWidth:850, windowHeight:report.scrollHeight})
+    .then(canvas=>{
+      const link = document.createElement("a");
+      link.download = `${$("rptDept").value}-IncidentReport-${Date.now()}.jpg`;
+      link.href = canvas.toDataURL("image/jpeg",1.0);
+      link.click();
+      temp.forEach(t=>{ if(t.el.type==="checkbox"){ t.el.style.opacity=""; t.el.style.pointerEvents=""; } else t.el.style.display=""; t.rep.remove(); });
+      btn.textContent = "💾 EXPORT JPG";
+    }).catch(err=>{
+      alert("Gagal export: " + err.message);
+      temp.forEach(t=>{ if(t.el.type==="checkbox"){ t.el.style.opacity=""; t.el.style.pointerEvents=""; } else t.el.style.display=""; t.rep.remove(); });
+      btn.textContent = "💾 EXPORT JPG";
+    });
+});
+
+/* print */
+$("rptPrint").addEventListener("click", ()=> window.print());
+
+/* ===================== CONTROLS ===================== */
+$("search").addEventListener("input", e=>{ query=e.target.value.trim(); renderList(); });
+$("sortSel").addEventListener("change", e=>{ sortBy=e.target.value; renderList(); });
+$("chips").addEventListener("click", e=>{
+  const c = e.target.closest(".chip"); if(!c) return;
+  document.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));
+  c.classList.add("on");
+  filterCat = c.dataset.cat;
+  renderList();
+});
+
+/* keyboard: ESC close modal */
+document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ $("modal").classList.remove("on"); $("rptModal").classList.remove("on"); } });
+
+/* clock */
+function tick(){
+  const d = new Date();
+  const p = n => String(n).padStart(2,"0");
+  $("clock").textContent = `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+}
+setInterval(tick,1000); tick();
+
+/* ===================== INIT ===================== */
+renderList();
+renderCalc();
+</script>
+</body>
+</html>
