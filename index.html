@@ -30,8 +30,10 @@
     font-family:"Consolas","Courier New",ui-monospace,monospace;
     font-size:14px;
     padding:14px;
-    min-height:100vh;
+    height:100vh;
+    overflow:hidden;
   }
+  @media(max-width:1050px){body{height:auto;overflow:auto}}
   /* subtle scanlines */
   body::after{
     content:"";
@@ -40,8 +42,8 @@
     opacity:.35;
   }
 
-  .wrap{max-width:1420px;margin:0 auto;display:grid;grid-template-columns:1fr 380px;gap:14px}
-  @media(max-width:1050px){.wrap{grid-template-columns:1fr}}
+  .wrap{max-width:1420px;margin:0 auto;display:grid;grid-template-columns:1fr 380px;grid-template-rows:auto 1fr auto;gap:14px;height:100%;box-sizing:border-box;min-height:0}
+  @media(max-width:1050px){.wrap{grid-template-columns:1fr;height:auto;grid-template-rows:auto;gap:14px;padding-bottom:30px}}
 
   /* watermark seal */
   .watermark{
@@ -83,6 +85,9 @@
     border-radius:6px;
     overflow:hidden;
   }
+  /* panel kiri: header+toolbar+chips tetap, list scroll di dalam */
+  .index-panel{display:flex;flex-direction:column;min-height:0;height:100%}
+  .index-panel .list{flex:1;min-height:0}
   .panel-hd{
     display:flex;align-items:center;gap:10px;
     padding:9px 13px;
@@ -105,6 +110,16 @@
   }
   .search input:focus,.toolbar select:focus{border-color:var(--green-dim);box-shadow:0 0 0 2px rgba(57,255,136,.08)}
   .search input::placeholder{color:#3a5a4a}
+  .kbd-hint{
+    position:absolute;right:9px;top:50%;transform:translateY(-50%);
+    font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:3px;
+    padding:1px 6px;background:#0a1015;pointer-events:none;
+  }
+  .lang-btn{
+    flex:0 0 auto;background:#060b0f;border:1px solid var(--line);border-radius:4px;
+    color:var(--green);font-family:inherit;font-size:12px;padding:9px 12px;cursor:pointer;letter-spacing:.5px;
+  }
+  .lang-btn:hover{border-color:var(--green-dim);background:rgba(57,255,136,.08)}
 
   /* chips */
   .chips{display:flex;gap:6px;padding:9px 11px;flex-wrap:wrap;border-bottom:1px solid var(--line);background:var(--panel2)}
@@ -115,9 +130,33 @@
   }
   .chip:hover{color:var(--text);border-color:var(--green-dim)}
   .chip.on{background:rgba(57,255,136,.12);border-color:var(--green-dim);color:var(--green)}
+  .chip[data-cat="POP"]{color:var(--amber);border-color:rgba(255,176,32,.35)}
+  .chip[data-cat="POP"].on{background:rgba(255,176,32,.14);color:var(--amber)}
+
+  /* highlight pasal sering dipakai */
+  .pgroup.pop>.row{box-shadow:inset 3px 0 0 var(--amber)}
+  .pgroup.pop.sel>.row{box-shadow:inset 3px 0 0 var(--amber), inset 6px 0 0 var(--green)}
+  .star{color:var(--amber);margin-right:5px;font-size:12px;text-shadow:0 0 6px rgba(255,176,32,.6)}
+  .foot-mark{color:var(--cyan);margin-right:5px;font-size:12px;font-weight:bold}
+  .footnote{
+    margin-top:14px;padding:10px 12px;border:1px solid var(--line);border-left:3px solid var(--cyan);
+    background:#060b0f;border-radius:4px;font-size:11.5px;line-height:1.55;color:#bcd; 
+  }
+  .footnote .fn-mark{color:var(--cyan);font-weight:bold;font-size:14px}
+  .footnote b{color:var(--cyan);letter-spacing:1px;font-size:10.5px}
+  .en-note{margin-top:10px;font-size:11px;color:var(--cyan);letter-spacing:.5px}
+
+  /* keyboard shortcuts panel */
+  .shortcuts{padding:10px 13px;display:flex;flex-direction:column;gap:7px}
+  .shortcuts .sc{display:flex;align-items:center;gap:10px;font-size:11.5px;color:#bcd}
+  .shortcuts kbd{
+    display:inline-block;min-width:22px;text-align:center;
+    background:#0a1015;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;
+    padding:2px 6px;font-family:inherit;font-size:11px;color:var(--green);
+  }
 
   /* list */
-  .list{max-height:calc(100vh - 300px);overflow:auto}
+  .list{overflow-y:auto;overflow-x:hidden}
   .list::-webkit-scrollbar{width:9px}
   .list::-webkit-scrollbar-track{background:#060b0f}
   .list::-webkit-scrollbar-thumb{background:#1b2a36;border-radius:4px}
@@ -178,25 +217,29 @@
   .empty{padding:30px;text-align:center;color:var(--muted);font-size:12px}
 
   /* ===== right rail ===== */
-  .rail{display:flex;flex-direction:column;gap:14px}
+  .rail{display:flex;flex-direction:column;gap:16px;align-self:stretch;min-height:0;overflow-y:auto;overflow-x:hidden;padding-right:4px}
+  .rail>.panel{flex:0 0 auto}
+  .rail::-webkit-scrollbar{width:8px}
+  .rail::-webkit-scrollbar-thumb{background:#1b2a36;border-radius:4px}
+  @media(max-width:1050px){.rail{height:auto;overflow:visible}}
   .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line)}
-  .stat{background:var(--panel);padding:12px}
+  .stat{background:var(--panel);padding:14px}
   .stat .lbl{font-size:10px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase}
-  .stat .val{font-size:20px;color:var(--green);margin-top:4px;font-variant-numeric:tabular-nums;text-shadow:0 0 10px rgba(57,255,136,.4)}
+  .stat .val{font-size:20px;color:var(--green);margin-top:5px;font-variant-numeric:tabular-nums;text-shadow:0 0 10px rgba(57,255,136,.4)}
   .stat .val.amber{color:var(--amber);text-shadow:0 0 10px rgba(255,176,32,.35)}
 
-  .basket{max-height:230px;overflow:auto}
+  .basket{max-height:320px;overflow:auto}
   .basket::-webkit-scrollbar{width:8px}
   .basket::-webkit-scrollbar-thumb{background:#1b2a36;border-radius:4px}
-  .bitem{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid #0f1a22;font-size:12px}
+  .bitem{display:flex;align-items:center;gap:8px;padding:10px 13px;border-bottom:1px solid #0f1a22;font-size:12px}
   .bitem .c{color:var(--cyan);font-weight:bold;min-width:44px}
-  .bitem .n{flex:1;color:#cfeedd;font-size:11.5px;line-height:1.25}
+  .bitem .n{flex:1;color:#cfeedd;font-size:11.5px;line-height:1.35}
   .bitem .x{cursor:pointer;color:var(--red);padding:0 4px;font-size:14px}
   .bitem .x:hover{text-shadow:0 0 8px var(--red)}
 
-  .chart{padding:12px}
-  .cbar{margin-bottom:9px}
-  .cbar .cl{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;color:var(--muted)}
+  .chart{padding:14px}
+  .cbar{margin-bottom:12px}
+  .cbar .cl{display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px;color:var(--muted)}
   .cbar .cl b{color:var(--text);font-weight:normal;font-variant-numeric:tabular-nums}
   .track{height:9px;background:#060b0f;border:1px solid var(--line);border-radius:3px;overflow:hidden}
   .fill{height:100%;border-radius:2px;transition:width .35s ease}
@@ -312,12 +355,13 @@
   </header>
 
   <!-- LEFT -->
-  <section class="panel">
+  <section class="panel index-panel">
     <div class="panel-hd"><span class="bar"></span> Statutory Index &nbsp;•&nbsp; <span id="countLbl">0</span> records</div>
 
     <div class="toolbar">
       <div class="search">
-        <input type="text" id="search" placeholder="Cari kode / pasal / kata kunci... (contoh: 187, murder, denda)">
+        <input type="text" id="search" placeholder="Cari kode / pasal / kata kunci... (tekan / untuk fokus)">
+        <span class="kbd-hint">/</span>
       </div>
       <select id="sortSel">
         <option value="code">Urut: Kode</option>
@@ -325,10 +369,12 @@
         <option value="fineDesc">Urut: Denda tertinggi</option>
         <option value="name">Urut: Nama A-Z</option>
       </select>
+      <button class="lang-btn" id="langBtn" title="Ganti bahasa ID/EN">🌐 ID</button>
     </div>
 
     <div class="chips" id="chips">
       <span class="chip on" data-cat="all">SEMUA</span>
+      <span class="chip" data-cat="POP">★ SERING DIPAKAI</span>
       <span class="chip" data-cat="PEN">PENAL CODE</span>
       <span class="chip" data-cat="VEH">VEHICLE CODE</span>
       <span class="chip" data-cat="F">FELONY (F)</span>
@@ -358,7 +404,7 @@
         <button class="btn danger" id="clearBtn">Kosongkan</button>
         <button class="btn primary" id="copyBtn">Salin Laporan</button>
       </div>
-      <div class="btns" style="border-top:0;padding-top:0">
+      <div class="btns" style="border-top:0;padding-top:2px">
         <button class="btn primary" id="reportBtn" style="font-weight:bold">📄 Buat Incident Report</button>
       </div>
     </div>
@@ -366,6 +412,18 @@
     <div class="panel">
       <div class="panel-hd"><span class="bar"></span> Grafik Distribusi Hukuman</div>
       <div class="chart" id="chart"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-hd"><span class="bar"></span> Keyboard Shortcuts</div>
+      <div class="shortcuts">
+        <div class="sc"><kbd>/</kbd><span>Fokus ke pencarian</span></div>
+        <div class="sc"><kbd>L</kbd><span>Ganti bahasa ID / EN</span></div>
+        <div class="sc"><kbd>P</kbd><span>Filter ★ Sering Dipakai</span></div>
+        <div class="sc"><kbd>C</kbd><span>Kosongkan pilihan</span></div>
+        <div class="sc"><kbd>R</kbd><span>Buat Incident Report</span></div>
+        <div class="sc"><kbd>Esc</kbd><span>Tutup modal / keluar search</span></div>
+      </div>
     </div>
   </aside>
 
@@ -1056,14 +1114,211 @@ const VEHICLE_FEES = {
   "SPORT VEHICLES":{start:813,step:812}
 };
 
+/* ===================== HIGHLIGHT: PASAL SERING DIPAKAI =====================
+   Daftar kode pasal yang paling sering dipakai di roleplay / penegakan harian.
+   Ditandai bintang ★ pada daftar dan bisa difilter "SERING DIPAKAI". */
+const POPULAR = [
+  "187",  // Murder
+  "211",  // Robbery
+  "215",  // Carjacking
+  "459",  // Burglary
+  "508",  // Grand Theft
+  "507",  // Petty Theft
+  "105",  // Assault w/ Deadly Weapon
+  "107",  // Battery
+  "108",  // Battery on Peace Officer
+  "404",  // Brandishing a Firearm
+  "415",  // Disturbing the Peace
+  "512",  // Trespass
+  "611",  // Resisting a Peace Officer
+  "610",  // Obstruction of Justice
+  "313",  // Under the Influence
+  "305",  // Possession w/ Intent to Sell
+  "618",  // Violation of Parole
+  "703",  // DUI
+  "704",  // Evading
+  "705",  // Reckless Evading
+  "804",  // Possession of Unlicensed Firearm
+  "806",  // Firearm Theft
+  "V-201",// Driving without Valid License
+  "V-301",// Driving without Insurance
+  "V-401",// Speeding
+  "V-404",// Traffic Control Device
+  "V-504" // Unauthorized Red/Blue Lights
+];
+const POPULAR_SET = new Set(POPULAR);
+const isPopular = code => POPULAR_SET.has(code);
+
+/* ===================== CATATAN KAKI (FOOTNOTES) =====================
+   Penjelasan tambahan / catatan praktik penegakan untuk pasal tertentu. */
+const FOOTNOTES = {
+  "187": {ref:"187", note:"First Degree (187a) mencakup pembunuhan terhadap petugas keamanan yang sedang bertugas. Felony Murder (187c) didakwa bersamaan dengan felony asalnya."},
+  "111": {ref:"111", note:"Manslaughter kendaraan (111d) berlaku bila pelaku menyebabkan kematian saat menghindari petugas dengan kendaraan."},
+  "114": {ref:"114", note:"Mayhem diukur dari beratnya kerusakan bagian tubuh; tujuan sadis/pemerasan menjadi pemberat."},
+  "216": {ref:"216", note:"Termasuk korban yang tidak mampu/cacat/tidak dapat memberi persetujuan secara hukum."},
+  "218": {ref:"218", note:"218(c) meningkat menjadi felony bila dilakukan di depan anak di bawah umur."},
+  "228": {ref:"228", note:"228 adalah infraction (bukan pidana penjara) dengan denda $2.500."},
+  "230": {ref:"230", note:"Pemburu dan profesi yang mengharuskan pembunuhan hewan dikecualikan dari 230(a), sepanjang menghindari penderitaan yang tidak perlu."},
+  "314": {ref:"314", note:"Kepemilikan marijuana legal kecuali >5 gram (314a) atau oleh pihak di bawah usia (314b/314c)."},
+  "318": {ref:"318", note:"Transfer senjata api antara orang tua–anak atau nenek–cucu dikecualikan dari persyaratan Federal Firearms License."},
+  "323": {ref:"323", note:"Hukuman hingga seumur hidup (LIFE). Bukan pasal yang dapat dikombinasikan dengan percobaan."},
+  "324": {ref:"324", note:"Treason dihukum seumur hidup (LIFE)."},
+  "402": {ref:"402", note:"Incitement to Riot berbeda dari Riot (403): 402 menekankan tindakan menggugah/mendorong kerumunan."},
+  "406": {ref:"406", note:"406(c) naik menjadi felony bila dilakukan tindak pidana lain (pencurian/perampokan) di area darurat."},
+  "508": {ref:"508", note:"Ambang batas Grand Theft adalah nilai > $950 (508a). Mencuri senjata api dikenakan 508(c)."},
+  "512": {ref:"512", note:"512(b) felony berlaku untuk masuk fasilitas pemerintah terlarang; varian lain misdemeanor."},
+  "703": {ref:"703", note:"Batas legal alkohol: 0,08% (reguler), 0,04% (kendaraan komersial). Disertai penyitaan lisensi 24 jam."},
+  "706": {ref:"706", note:"706(a) felony bila ada cedera/kematian; 706(b) misdemeanor bila hanya kerusakan harta."},
+  "802": {ref:"802", note:"Discharging Firearm naik ke felony (40 menit / $1.500) bila tembakan menyebabkan cedera."},
+  "808": {ref:"808", note:"Modifikasi ilegal mencakup suppressor, full-auto conversion, dan extended magazine tanpa izin."},
+  "V-001":{ref:"VEH 001", note:"Sistem poin: 3 poin = suspensi 48 jam; 5 poin = penyitaan kendaraan + pencabutan lisensi. Poin hilang tiap 2 minggu."},
+  "V-101":{ref:"VEH 101", note:"Biaya registrasi bertingkat sesuai level kendaraan (Motorcyle/Car/Commercial/Sport). Lihat tabel di detail pasal."},
+  "V-201":{ref:"VEH 201", note:"201(a) tanpa SIM valid; 201(c) SIM kedaluwarsa adalah infraction."},
+  "V-405":{ref:"VEH 405", note:"Illegal Parking disertai penyitaan kendaraan dan berlaku di banyak lokasi terlarang."},
+  "V-604":{ref:"VEH 604", note:"Kendaraan off-road di jalan umum: denda $4.100 dan kendaraan dapat ditahan."}
+};
+
+/* ===================== TERJEMAHAN ENGLISH =====================
+   Peta code -> { title, var: { labelIndex: descEN } }  (opsional).
+   Bila tersedia, tombol ID/EN mengubah judul & deskripsi. */
+const EN = {
+  "101":{title:"Criminal Threats", var:{
+    0:"Threatens to physically injure or kill the person, directly, in writing, or via media.",
+    1:"Threatens to physically injure or kill a close friend or relative of another person."
+  }},
+  "102":{title:"Assault", var:{0:"Unlawfully attempts, and is able, to commit violent injury upon another."}},
+  "103":{title:"Assault on a Peace Officer", var:{0:"Attempts violent injury upon an on-duty peace officer."}},
+  "104":{title:"Assault on a State Employee", var:{0:"Attempts violent injury upon an on-duty state employee."}},
+  "105":{title:"Assault with a Deadly Weapon", var:{0:"Threatens immediate harm using a weapon, instrument, or dangerous object."}},
+  "106":{title:"Assault with a Deadly Weapon on a Peace Officer", var:{0:"Threatens immediate harm with a weapon to an on-duty peace officer."}},
+  "107":{title:"Battery", var:{0:"Willfully and unlawfully uses force or violence causing physical harm."}},
+  "108":{title:"Battery on a Peace Officer", var:{0:"Willfully and unlawfully uses force upon an on-duty peace officer."}},
+  "109":{title:"Battery on a State Employee", var:{0:"Willfully and unlawfully uses force upon an on-duty state employee."}},
+  "110":{title:"Aggravated Battery", var:{
+    0:"Great or continuous force causing serious injury.",
+    1:"Uses a weapon, instrument, or dangerous object to cause serious injury."
+  }},
+  "111":{title:"Manslaughter", var:{
+    0:"Unlawfully kills another human being without malice aforethought.",
+    1:"Voluntary manslaughter: sudden quarrel or heat of passion.",
+    2:"Involuntary manslaughter: during an unlawful act or a lawful act without due caution.",
+    3:"Vehicular manslaughter: driving dangerously and recklessly causing death.",
+    4:"Causes death while evading officers with a motor vehicle."
+  }},
+  "112":{title:"False Imprisonment", var:{
+    0:"Detains or arrests another without consent, without premeditation or ransom.",
+    1:"Unlawfully makes a citizen's arrest."
+  }},
+  "113":{title:"Kidnapping", var:{
+    0:"Steals, takes, or detains another by force or fear, with premeditation.",
+    1:"Seizes, confines, entices, or carries away another for ransom, reward, or extortion."
+  }},
+  "187":{title:"Murder", var:{
+    0:"First Degree: destructive device, poison, torture, or deliberate/premeditated killing. Killing an on-duty peace officer is first degree.",
+    1:"Second Degree: unlawful killing without premeditation but with malice aforethought.",
+    2:"Felony Murder: killing committed during a premeditated felony."
+  }},
+  "188":{title:"Attempted Murder", var:{
+    0:"Willfully attempts to kill through a premeditated act.",
+    1:"Criminal accident, negligence, or heat of passion causing severe/ life-threatening injury."
+  }},
+  "211":{title:"Robbery", var:{0:"Takes property from another's possession without consent, by force or fear."}},
+  "215":{title:"Carjacking", var:{0:"Takes a motor vehicle from another's possession by force or fear."}},
+  "216":{title:"Rape", var:{0:"Forces sexual intercourse, or has sex without consent, or with a person unable to consent."}},
+  "220":{title:"Sexual Battery", var:{
+    0:"Unwanted touching or sexual contact.",
+    1:"Aggressive contact for sexual arousal, gratification, or abuse."
+  }},
+  "225":{title:"Child Abuse", var:{0:"Willfully causes cruel torture or traumatic injury to a child under 18."}},
+  "313":{title:"Under The Influence of a Controlled Substance", var:{
+    0:"Uses or is under the influence of an illegal substance without authorization or prescription.",
+    1:"Under the influence of marijuana in public or during another crime."
+  }},
+  "314":{title:"Possession of Marijuana", var:{
+    0:"Possesses more than 5 grams of marijuana.",
+    1:"Under 21 years old and possesses up to 5 grams.",
+    2:"Under 18 years old and possesses up to 5 grams."
+  }},
+  "323":{title:"Terrorism", var:{
+    0:"Systematic threats or acts against the public interest to create fear and intimidation on a large scale. Up to life imprisonment.",
+    1:"Attack on, or threat against, major public or private facilities."
+  }},
+  "324":{title:"Treason", var:{0:"Levies war against the State, adheres to its enemies, or gives them aid. Life imprisonment."}},
+  "415":{title:"Disturbing the Peace", var:{
+    0:"Unlawfully fights in public or challenges another to fight.",
+    1:"Disturbs others with loud and unreasonable noise.",
+    2:"Uses offensive words in public likely to provoke immediate violence."
+  }},
+  "459":{title:"Burglary", var:{0:"Enters a building or vehicle with intent to commit theft or another felony."}},
+  "508":{title:"Grand Theft", var:{
+    0:"Steals property of another worth more than $950.",
+    1:"Steals an unoccupied car.",
+    2:"Steals a firearm."
+  }},
+  "512":{title:"Trespass", var:{
+    0:"Enters another's property while closed without permission.",
+    1:"Enters a government facility or restricted area without authorization.",
+    2:"Enters land posted as no-trespassing.",
+    3:"Refuses to leave a business when asked by the owner.",
+    4:"Enters or remains on property after being warned not to."
+  }},
+  "611":{title:"Resisting a Peace Officer", var:{
+    0:"Evades arrest on foot or physically resists arrest.",
+    1:"Escapes custody after being restrained while awaiting charges."
+  }},
+  "703":{title:"Driving Under the Influence", var:{
+    0:"Drives with a blood alcohol level of 0.08% or higher.",
+    1:"State employee drives under the influence while on duty.",
+    2:"Drives a commercial vehicle with a blood alcohol level of 0.04% or higher.",
+    3:"Drives while impaired by alcohol, drugs, or a combination."
+  }},
+  "704":{title:"Evading a Peace Officer", var:{0:"Willfully flees or attempts to evade an officer's vehicle. License impound 48 hours."}},
+  "705":{title:"Reckless Evading of a Peace Officer", var:{0:"Flees from officers while driving recklessly or dangerously. License impound 60 hours."}},
+  "706":{title:"Hit and Run", var:{
+    0:"Involved in a crash causing injury/death and fails to stop.",
+    1:"Involved in a crash causing only property damage and fails to stop."
+  }},
+  "805":{title:"Possession of an Illegal Firearm", var:{0:"Possesses a firearm that was illegally produced or purchased."}},
+  "806":{title:"Firearm Theft", var:{0:"Steals or takes another's firearm with or without threat."}},
+  "808":{title:"Illegal Modification of a Firearm", var:{0:"Illegal modification: suppressor, full-auto conversion, or unlicensed extended magazine."}},
+  "809":{title:"Negligent Storage of a Firearm", var:{0:"Stores a firearm without adequate safety, accessible to minors."}},
+  "V-101":{title:"Vehicle Registration Violation", var:{
+    0:"Drives/leaves an unregistered vehicle. Fee scales with vehicle level.",
+    1:"Drives a motor vehicle without a valid displayed license plate."
+  }},
+  "V-201":{title:"Driving without a Valid License", var:{
+    0:"Drives with no valid license or a revoked license.",
+    1:"Drives without a physical license in possession.",
+    2:"Drives with an expired license (infraction)."
+  }},
+  "V-301":{title:"Driving without Insurance", var:{0:"Drives without valid motor vehicle insurance. Vehicle impounded."}},
+  "V-401":{title:"Speeding", var:{
+    0:"Commercial/residential area over 40 MPH (1 point).",
+    1:"Outside commercial/residential over 65 MPH (1 point).",
+    2:"Highway over 90 MPH (2 points).",
+    3:"Unreasonable speed considering weather/visibility/traffic (2 points)."
+  }},
+  "V-405":{title:"Illegal Parking", var:{0:"Parks in prohibited areas. Fine + vehicle impound."}},
+  "V-504":{title:"Unauthorized Use of Red/Blue Lights", var:{0:"Vehicle with red/blue emergency lights without authorization. Impound until removed."}},
+  "V-604":{title:"Reckless operation of an off-road vehicle", var:{0:"Operates an off-road vehicle on a public road. + vehicle may be impounded."}}
+};
+
 /* ===================== STATE ===================== */
 let filterCat = "all";
 let query = "";
 let sortBy = "code";
 let expanded = {};      // code -> bool (sub-ayat terbuka)
 let selected = [];      // item = {code, vi}  (vi = index varian)
+let lang = "id";        // "id" | "en"
 const byCode = {};
 LAWS.forEach(l=>byCode[l.code]=l);
+
+/* helper bahasa: ambil judul & deskripsi varian sesuai bahasa aktif */
+function locTitle(l){ return (lang==="en" && EN[l.code] && EN[l.code].title) ? EN[l.code].title : l.title; }
+function locDesc(l, vi, v){
+  if(lang==="en" && EN[l.code] && EN[l.code].var && EN[l.code].var[vi]) return EN[l.code].var[vi];
+  return v.desc;
+}
 
 /* helper: kunci unik varian */
 const key = (code,vi) => code + "#" + vi;
@@ -1085,17 +1340,22 @@ const fmtMoney = n => "$"+n.toLocaleString("en-US");
 /* ===================== FILTER ===================== */
 function filtered(){
   let arr = LAWS.slice();
-  if(filterCat==="PEN"||filterCat==="VEH") arr = arr.filter(l=>l.cat===filterCat);
+  if(filterCat==="POP") arr = arr.filter(l=>isPopular(l.code));
+  else if(filterCat==="PEN"||filterCat==="VEH") arr = arr.filter(l=>l.cat===filterCat);
   else if(["F","M","I"].includes(filterCat)) arr = arr.filter(l=> l.variants.some(v=>v.cls===filterCat));
 
   if(query){
     const q = query.toLowerCase();
-    arr = arr.filter(l =>
-      l.code.toLowerCase().includes(q) ||
-      l.title.toLowerCase().includes(q) ||
-      l.txt.toLowerCase().includes(q) ||
-      l.variants.some(v => (v.desc||"").toLowerCase().includes(q))
-    );
+    arr = arr.filter(l => {
+      const en = EN[l.code] || {};
+      const enDescs = en.var ? Object.values(en.var).join(" ") : "";
+      return l.code.toLowerCase().includes(q) ||
+        l.title.toLowerCase().includes(q) ||
+        (en.title||"").toLowerCase().includes(q) ||
+        l.txt.toLowerCase().includes(q) ||
+        enDescs.toLowerCase().includes(q) ||
+        l.variants.some(v => (v.desc||"").toLowerCase().includes(q));
+    });
   }
   if(sortBy==="jailDesc") arr.sort((a,b)=>stat(b).jail-stat(a).jail);
   else if(sortBy==="fineDesc") arr.sort((a,b)=>stat(b).fine-stat(a).fine);
@@ -1114,15 +1374,18 @@ function renderList(){
   list.innerHTML = arr.map(l=>{
     const st = stat(l);
     const open = expanded[l.code] ? " open" : "";
+    const pop = isPopular(l.code) ? " pop" : "";
     // tanda pada pasal yang punya varian terpilih
     const hasSel = selected.some(s=>s.code===l.code) ? " sel" : "";
+    const star = isPopular(l.code) ? '<span class="star" title="Sering dipakai">★</span>' : '';
+    const foot = FOOTNOTES[l.code] ? '<span class="foot-mark" title="Ada catatan kaki">†</span>' : '';
     let variantsHtml = "";
     if(expanded[l.code]){
       variantsHtml = '<div class="variants">' + l.variants.map((v,vi)=>{
         const sel = isSel(l.code,vi) ? " sel" : "";
         return `<div class="vrow${sel}" data-code="${l.code}" data-vi="${vi}">
           <span class="vlabel">${v.label}</span>
-          <span class="vdesc">${v.desc}</span>
+          <span class="vdesc">${locDesc(l,vi,v)}</span>
           <span class="vtags">
             <span class="tag t-${v.cls}">${v.cls}</span>
             <span class="vjail">${v.jail?fmtJail(v.jail):"—"}</span>
@@ -1132,10 +1395,10 @@ function renderList(){
         </div>`;
       }).join("") + '</div>';
     }
-    return `<div class="pgroup${open}${hasSel}">
+    return `<div class="pgroup${open}${hasSel}${pop}">
       <div class="row" data-code="${l.code}">
         <div class="code">${l.code}</div>
-        <div class="name">${l.title}<span class="tag t-${st.cls}">${st.cls}</span></div>
+        <div class="name">${star}${foot}${locTitle(l)}<span class="tag t-${st.cls}">${st.cls}</span></div>
         <div class="fine">${fmtFine(st.fine)}</div>
         <div class="jail">${st.jail?fmtJail(st.jail):"—"}</div>
         <button class="add quick" title="Tambah varian utama">${selected.some(s=>s.code===l.code)?"✓":"+"}</button>
@@ -1179,7 +1442,7 @@ function renderCalc(){
   const items = selected.map(s=>{
     const l = byCode[s.code]; if(!l) return null;
     const v = l.variants[s.vi]; if(!v) return null;
-    return {code:l.code, title:l.title, label:v.label, desc:v.desc, cls:v.cls, jail:v.jail||0, fine:v.fine||0};
+    return {code:l.code, title:locTitle(l), label:v.label, desc:locDesc(l,s.vi,v), cls:v.cls, jail:v.jail||0, fine:v.fine||0};
   }).filter(Boolean);
 
   const jail = items.reduce((a,b)=>a+b.jail,0);
@@ -1238,7 +1501,7 @@ $("clearBtn").addEventListener("click", ()=>{ selected=[]; renderList(); renderC
 $("copyBtn").addEventListener("click", ()=>{
   const items = selected.map(s=>{
     const l=byCode[s.code], v=l&&l.variants[s.vi];
-    return v?{code:l.code,title:l.title,label:v.label,cls:v.cls,jail:v.jail||0,fine:v.fine||0}:null;
+    return v?{code:l.code,title:locTitle(l),label:v.label,cls:v.cls,jail:v.jail||0,fine:v.fine||0,note:(FOOTNOTES[l.code]||{}).note}:null;
   }).filter(Boolean);
   if(!items.length){ alert("Belum ada pasal yang dipilih."); return; }
   const jail = items.reduce((a,b)=>a+b.jail,0);
@@ -1247,6 +1510,7 @@ $("copyBtn").addEventListener("click", ()=>{
   let t = "=== SENTENCE REPORT — SAN ANDREAS LAW INFORMATION ===\n";
   items.forEach(l=>{
     t += `${l.code}${l.label!=="§"?" "+l.label:""} (${l.cls}) ${l.title} — ${l.jail?fmtJail(l.jail):"-"} / ${l.fine?fmtMoney(l.fine):"-"}\n`;
+    if(l.note) t += `    † ${l.note}\n`;
   });
   t += "--------------------------------\n";
   t += `TOTAL: ${life?"LIFE":jail+" menit"} | ${fmtMoney(fine)}\n`;
@@ -1259,7 +1523,7 @@ $("copyBtn").addEventListener("click", ()=>{
 /* ===================== DETAIL MODAL ===================== */
 function openDetail(code){
   const l = byCode[code]; if(!l) return;
-  $("mTitle").textContent = `${l.code} — ${l.title}`;
+  $("mTitle").textContent = `${l.code} — ${locTitle(l)}`;
   let extra = "";
   if(code==="V-101"){
     extra = '<div style="margin-top:14px"><div class="panel-hd" style="padding:6px 0;border:0;background:none"><span class="bar"></span> Tabel Biaya Registrasi Kendaraan</div>';
@@ -1271,11 +1535,21 @@ function openDetail(code){
     }
     extra += '</table><div style="font-size:10.5px;color:var(--muted);margin-top:6px">Biaya naik bertingkat tiap 5 level.</div></div>';
   }
+  // catatan kaki
+  const fn = FOOTNOTES[l.code];
+  let footHtml = "";
+  if(fn){
+    footHtml = `<div class="footnote"><span class="fn-mark">†</span> <b>CATATAN KAKI — ${fn.ref}</b><br>${fn.note}</div>`;
+  }
+  let enHtml = "";
+  if(EN[l.code] && lang==="en"){
+    enHtml = `<div class="en-note">English translation active for this article.</div>`;
+  }
   const vRows = l.variants.map((v,vi)=>{
     const sel = isSel(code,vi);
     return `<div class="vrow modal-vrow${sel?' sel':''}" data-code="${code}" data-vi="${vi}" style="cursor:pointer">
       <span class="vlabel">${v.label}</span>
-      <span class="vdesc">${v.desc}</span>
+      <span class="vdesc">${locDesc(l,vi,v)}</span>
       <span class="vtags">
         <span class="tag t-${v.cls}">${v.cls}</span>
         <span class="vjail">${v.jail?fmtJail(v.jail):"—"}</span>
@@ -1290,10 +1564,13 @@ function openDetail(code){
       <div><span>KODE PASAL</span><br><b class="g">${l.code}</b></div>
       <div><span>KODE KATEGORI</span><br><b class="a">${l.cat==="PEN"?"PENAL CODE":"VEHICLE CODE"}</b></div>
       <div><span>JUMLAH AYAT</span><br><b>${l.variants.length}</b></div>
+      ${isPopular(l.code)?'<div><span>STATUS</span><br><b style="color:var(--amber)">★ SERING DIPAKAI</b></div>':''}
     </div>
     <div style="border-top:1px solid var(--line);padding-top:12px">${l.txt}</div>
+    ${enHtml}
     <div style="margin-top:14px;font-size:11px;letter-spacing:1.5px;color:var(--green);text-transform:uppercase">Pilih Ayat / Varian Hukuman</div>
     <div class="variants modal-variants">${vRows}</div>
+    ${footHtml}
     ${extra}
   `;
   $("modal").classList.add("on");
@@ -1326,7 +1603,7 @@ $("rptDept").addEventListener("change", applyDept);
 function buildCharges(){
   const items = selected.map(s=>{
     const l = byCode[s.code], v = l && l.variants[s.vi];
-    return v ? {code:l.code, label:v.label, title:l.title, cls:v.cls, jail:v.jail||0, fine:v.fine||0} : null;
+    return v ? {code:l.code, label:v.label, title:locTitle(l), cls:v.cls, jail:v.jail||0, fine:v.fine||0} : null;
   }).filter(Boolean);
 
   const box = $("rCharges");
@@ -1421,8 +1698,67 @@ $("chips").addEventListener("click", e=>{
   renderList();
 });
 
-/* keyboard: ESC close modal */
-document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ $("modal").classList.remove("on"); $("rptModal").classList.remove("on"); } });
+/* toggle bahasa ID/EN */
+function setLang(l){
+  lang = l;
+  const b = $("langBtn");
+  b.textContent = lang==="en" ? "🌐 EN" : "🌐 ID";
+  renderList(); renderCalc();
+  if($("modal").classList.contains("on") && currentDetail) openDetail(currentDetail);
+}
+$("langBtn").addEventListener("click", ()=> setLang(lang==="id" ? "en" : "id"));
+
+/* ===================== KEYBOARD SHORTCUTS ===================== */
+let currentDetail = null;
+const _origOpenDetail = openDetail;
+openDetail = function(code){ currentDetail = code; return _origOpenDetail(code); };
+
+function anyModalOpen(){ return $("modal").classList.contains("on") || $("rptModal").classList.contains("on"); }
+function closeModals(){ $("modal").classList.remove("on"); $("rptModal").classList.remove("on"); }
+
+document.addEventListener("keydown", e=>{
+  const tag = (e.target.tagName||"").toLowerCase();
+  const typing = tag==="input" || tag==="textarea" || tag==="select" || e.target.isContentEditable;
+
+  // ESC — tutup modal / keluar dari search
+  if(e.key==="Escape"){
+    if(anyModalOpen()){ closeModals(); }
+    else if(document.activeElement === $("search")){ $("search").blur(); }
+    return;
+  }
+
+  // "/" — fokus ke search (kecuali sedang mengetik)
+  if(e.key==="/" && !typing){
+    e.preventDefault();
+    $("search").focus(); $("search").select();
+    return;
+  }
+
+  // "L" — toggle bahasa (kecuali sedang mengetik)
+  if((e.key==="l"||e.key==="L") && !typing){
+    setLang(lang==="id" ? "en" : "id");
+    return;
+  }
+
+  // "P" — filter sering dipakai (kecuali sedang mengetik)
+  if((e.key==="p"||e.key==="P") && !typing){
+    const chip = document.querySelector('.chip[data-cat="POP"]');
+    if(chip) chip.click();
+    return;
+  }
+
+  // "C" — clear pilihan (kecuali sedang mengetik)
+  if((e.key==="c"||e.key==="C") && !typing && !e.ctrlKey && !e.metaKey){
+    $("clearBtn").click();
+    return;
+  }
+
+  // "R" — buka Incident Report (kecuali sedang mengetik)
+  if((e.key==="r"||e.key==="R") && !typing && !e.ctrlKey && !e.metaKey){
+    $("reportBtn").click();
+    return;
+  }
+}, true);
 
 /* clock */
 function tick(){

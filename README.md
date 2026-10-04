@@ -19,14 +19,27 @@ Buka langsung: **[https://mochgilang17.github.io/Penal-code-and-Incident-Report/
 - **Sub-ayat expandable** — klik pasal untuk membuka varian (a)(b)(c) dengan hukuman masing-masing.
 - **Badge klasifikasi warna**: 🔴 Felony (F) · 🟠 Misdemeanor (M) · 🔵 Infraction (I).
 - **Pencarian real-time** berdasarkan kode, nama pasal, kata kunci, atau isi sub-ayat.
-- **Filter kategori**: Penal / Vehicle / Felony / Misdemeanor / Infraction.
+- **Filter kategori**: ★ Sering Dipakai / Penal / Vehicle / Felony / Misdemeanor / Infraction.
 - **Sorting**: kode, hukuman tertinggi, denda tertinggi, nama A–Z.
+- **★ Highlight pasal sering dipakai** — pasal populer (Robbery, Murder, DUI, dll.) ditandai bintang dan bisa difilter khusus.
+- **† Catatan kaki pasal** — penjelasan tambahan & catatan praktik penegakan pada pasal tertentu (muncul di detail pasal).
+- **🌐 Terjemahan English** — toggle ID/EN mengubah judul & deskripsi pasal ke bahasa Inggris.
 
 ### 🧮 Sentence Calculator
 - Tambahkan pasal/ayat mana pun lewat tombol `+`.
 - **Total denda**, **total penjara**, **jumlah charge**, dan **estimasi waktu** otomatis.
 - **Grafik distribusi** hukuman per kelas (Felony / Misdemeanor / Infraction).
-- **Salin Laporan** ke clipboard dengan satu klik.
+- **Salin Laporan** ke clipboard dengan satu klik (termasuk catatan kaki).
+
+### ⌨️ Keyboard Shortcuts
+| Tombol | Fungsi |
+|--------|--------|
+| `/` | Fokus ke kolom pencarian |
+| `L` | Ganti bahasa ID / EN |
+| `P` | Filter ★ Sering Dipakai |
+| `C` | Kosongkan pilihan |
+| `R` | Buat Incident Report |
+| `Esc` | Tutup modal / keluar dari search |
 
 ### 📄 Incident Report Generator
 - **Header otomatis** sesuai departemen (dropdown):
