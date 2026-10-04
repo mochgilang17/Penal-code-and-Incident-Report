@@ -143,10 +143,18 @@
   }
 
   /* card deskripsi pasal */
+  .hidden{display:none !important}
+  .detail-card .panel-hd .closer{margin-left:auto;cursor:pointer;color:var(--red);font-size:14px;line-height:1}
   .detail-body{padding:12px 13px}
   .detail-body .d-code{color:var(--cyan);font-weight:bold;font-size:13px}
   .detail-body .d-title{color:#eafff3;font-size:13.5px;margin:3px 0 8px;line-height:1.35}
   .detail-body .d-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .detail-body .d-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:4px;overflow:hidden;margin-bottom:11px}
+  .detail-body .d-stat{background:#070d11;padding:8px 9px;text-align:center}
+  .detail-body .d-stat span{display:block;font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:3px}
+  .detail-body .d-stat b{font-size:13px;color:var(--text);font-variant-numeric:tabular-nums}
+  .detail-body .d-stat b.g{color:var(--green)}
+  .detail-body .d-stat b.a{color:var(--amber)}
   .detail-body .d-desc{
     font-size:12px;line-height:1.6;color:#cfeedd;
     border-top:1px solid var(--line);padding-top:10px;
@@ -254,6 +262,7 @@
   .cbar{margin-bottom:12px}
   .cbar .cl{display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px;color:var(--muted)}
   .cbar .cl b{color:var(--text);font-weight:normal;font-variant-numeric:tabular-nums}
+  .csub{font-size:10px;color:var(--muted);margin-top:3px;font-variant-numeric:tabular-nums;letter-spacing:.5px}
   .track{height:9px;background:#060b0f;border:1px solid var(--line);border-radius:3px;overflow:hidden}
   .fill{height:100%;border-radius:2px;transition:width .35s ease}
   .f-F{background:linear-gradient(90deg,#7a1d1d,#ff4d4d);box-shadow:0 0 10px rgba(255,77,77,.4)}
@@ -270,7 +279,7 @@
   .btn.primary:hover{background:var(--green);color:#03110a}
   .btn.danger:hover{border-color:var(--red);color:var(--red)}
 
-  footer{grid-column:1/-1;text-align:center;color:var(--muted);font-size:10.5px;letter-spacing:1.5px;padding:6px 0}
+  footer{grid-column:1/-1;text-align:center;color:var(--muted);font-size:9px;letter-spacing:1px;padding:2px 0}
 
   /* detail modal */
   .modal{position:fixed;inset:0;background:rgba(2,5,8,.86);display:none;place-items:center;z-index:1000;padding:20px}
@@ -399,11 +408,12 @@
 
   <!-- RIGHT -->
   <aside class="rail">
-    <div class="panel detail-card">
-      <div class="panel-hd"><span class="bar"></span> Deskripsi Pasal</div>
-      <div class="detail-body" id="detailBody">
-        <div class="empty">Belum ada pasal dipilih.<br>Klik salah satu pasal untuk melihat deskripsi di sini.</div>
+    <div class="panel detail-card hidden" id="detailCard">
+      <div class="panel-hd">
+        <span class="bar"></span> Deskripsi Pasal
+        <span class="closer" id="detailClose" title="Tutup">✕</span>
       </div>
+      <div class="detail-body" id="detailBody"></div>
     </div>
 
     <div class="panel">
@@ -445,7 +455,7 @@
     </div>
   </aside>
 
-  <footer>SAN ANDREAS LAW INFORMATION INSTITUTE &copy; &mdash; UNOFFICIAL ROLEPLAY LEGAL DATABASE &nbsp;|&nbsp; DATA: PENAL CODE &amp; VEHICLE CODE<br><span style="font-size:10px;letter-spacing:1px">WATERMARK / CREDIT: <a href="https://github.com/mochgilang17" target="_blank" style="color:var(--green);text-decoration:none">MOCH GILANG (@mochgilang17)</a></span></footer>
+  <footer>SAN ANDREAS LAW INFORMATION INSTITUTE &mdash; ROLEPLAY LEGAL DATABASE &nbsp;|&nbsp; Credit: <a href="https://github.com/mochgilang17" target="_blank" style="color:var(--green-dim);text-decoration:none">Moch Gilang (@mochgilang17)</a></footer>
 </div>
 
 <!-- DETAIL MODAL -->
@@ -1414,20 +1424,32 @@ $("list").addEventListener("click", e=>{
 
 /* ===================== CARD DESKRIPSI PASAL ===================== */
 let detailCode = null;
+const DETAIL_ICON = {PEN:"⚖", VEH:"🚔"};
+function hideDetail(){
+  detailCode = null;
+  $("detailCard").classList.add("hidden");
+}
 function renderDetail(code){
   detailCode = code;
+  const card = $("detailCard");
   const box = $("detailBody");
   const l = byCode[code];
-  if(!l){
-    box.innerHTML = '<div class="empty">Belum ada pasal dipilih.<br>Klik salah satu pasal untuk melihat deskripsi di sini.</div>';
-    return;
-  }
+  if(!l){ hideDetail(); return; }
+  card.classList.remove("hidden");
+
   const st = stat(l);
   const fn = FOOTNOTES[code];
   const enActive = (lang==="en" && EN[code]);
-  const varsHtml = l.variants.length>1 ? `
+  const catLabel = l.cat==="PEN" ? "PENAL CODE" : "VEHICLE CODE";
+
+  // ringkasan hukuman dari varian terpilih (atau tertinggi)
+  const selVars = l.variants.map((v,vi)=>({v,vi})).filter(x=>isSel(code,x.vi));
+  const useJail = selVars.length ? selVars.reduce((a,x)=>a+(x.v.jail||0),0) : st.jail;
+  const useFine = selVars.length ? selVars.reduce((a,x)=>a+(x.v.fine||0),0) : st.fine;
+
+  const varsHtml = `
     <div class="d-vars">
-      <div class="vt">Varian Ayat</div>
+      <div class="vt">Varian Ayat (${l.variants.length}) — klik untuk tambah/hapus</div>
       ${l.variants.map((v,vi)=>{
         const sel = isSel(code,vi) ? " sel" : "";
         return `<div class="d-vrow${sel}" data-code="${code}" data-vi="${vi}">
@@ -1436,15 +1458,20 @@ function renderDetail(code){
           <span class="vp">${v.jail?fmtJail(v.jail):"—"}<br>${fmtFine(v.fine)}</span>
         </div>`;
       }).join("")}
-    </div>` : "";
+    </div>`;
 
   box.innerHTML = `
-    <div class="d-code">${l.code}</div>
+    <div class="d-code">${DETAIL_ICON[l.cat]||""} ${l.code}</div>
     <div class="d-title">${locTitle(l)}</div>
     <div class="d-meta">
       <span class="tag t-${st.cls}">${clsName(st.cls)} (${st.cls})</span>
-      <span class="tag t-I">${l.cat==="PEN"?"PENAL CODE":"VEHICLE CODE"}</span>
+      <span class="tag t-I">${catLabel}</span>
       ${enActive?'<span class="tag t-M">EN</span>':''}
+    </div>
+    <div class="d-stats">
+      <div class="d-stat"><span>PENJARA</span><b class="g">${useJail?fmtJail(useJail):"0 min"}</b></div>
+      <div class="d-stat"><span>DENDA</span><b class="a">${useFine?fmtMoney(useFine):"—"}</b></div>
+      <div class="d-stat"><span>AYAT</span><b>${l.variants.length}</b></div>
     </div>
     <div class="d-desc">${l.txt}</div>
     ${fn ? `<div class="d-note"><b>CATATAN — ${fn.ref}</b>${fn.note}</div>` : ""}
@@ -1457,6 +1484,7 @@ $("detailBody").addEventListener("click", e=>{
   toggleSelect(v.dataset.code, +v.dataset.vi);
   renderDetail(v.dataset.code);
 });
+$("detailClose").addEventListener("click", hideDetail);
 
 /* ===================== SELECTION / CALC ===================== */
 function toggleSelect(code, vi){
@@ -1495,23 +1523,29 @@ function renderCalc(){
     </div>`).join("");
   }
 
-  // chart: distribusi menit penjara per kelas
+  // chart: distribusi jumlah charge per kelas (Infraction tetap terhitung walau tanpa penjara)
   const chart = $("chart");
-  const groups = {F:0,M:0,I:0};
-  items.forEach(l=>{ if(groups[l.cls]!==undefined) groups[l.cls] += l.jail; });
-  const max = Math.max(groups.F, groups.M, groups.I, 1);
+  const groups = {F:{n:0,fine:0,jail:0}, M:{n:0,fine:0,jail:0}, I:{n:0,fine:0,jail:0}};
+  items.forEach(l=>{
+    if(!groups[l.cls]) return;
+    groups[l.cls].n += 1;
+    groups[l.cls].fine += l.fine;
+    groups[l.cls].jail += l.jail;
+  });
+  const max = Math.max(groups.F.n, groups.M.n, groups.I.n, 1);
   const rows = [
     ["F", groups.F, "Felony"],
     ["M", groups.M, "Misdemeanor"],
     ["I", groups.I, "Infraction"]
   ];
-  chart.innerHTML = rows.map(([k,v,label])=>{
-    const pct = Math.round(v/max*100);
+  chart.innerHTML = rows.map(([k,g,label])=>{
+    const pct = Math.round(g.n/max*100);
     return `<div class="cbar">
-      <div class="cl"><span>${label} (${k})</span><b>${v} min</b></div>
+      <div class="cl"><span>${label} (${k})</span><b>${g.n} charge</b></div>
       <div class="track"><div class="fill f-${k}" style="width:${pct}%"></div></div>
+      <div class="csub">${g.jail?fmtJail(g.jail):"0 min"} &nbsp;•&nbsp; ${fmtMoney(g.fine)}</div>
     </div>`;
-  }).join("") + `<div style="font-size:10.5px;color:var(--muted);margin-top:6px;letter-spacing:1px">
+  }).join("") + `<div style="font-size:10.5px;color:var(--muted);margin-top:8px;letter-spacing:1px">
       Total denda: <span style="color:var(--amber)">${fmtMoney(fine)}</span> &nbsp;•&nbsp; Total penjara: <span style="color:var(--green)">${life?"LIFE":jail+" menit"}</span>
     </div>`;
 }
