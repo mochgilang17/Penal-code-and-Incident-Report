@@ -184,7 +184,7 @@
   .list::-webkit-scrollbar-thumb:hover{background:var(--green-dim)}
 
   .row{
-    display:grid;grid-template-columns:64px 1fr 96px 66px 40px;
+    display:grid;grid-template-columns:64px 1fr 96px 66px 28px 34px;
     gap:8px;align-items:center;
     padding:9px 12px;border-bottom:1px solid #0f1a22;cursor:pointer;
     transition:background .12s;
@@ -202,6 +202,13 @@
   }
   .add:hover{background:var(--green);color:#03110a}
   .row.sel .add{background:var(--green);color:#03110a;border-color:var(--green)}
+  .info{
+    width:22px;height:22px;line-height:20px;text-align:center;border-radius:50%;
+    border:1px solid var(--cyan);color:var(--cyan);background:transparent;
+    font-size:12px;font-weight:bold;font-family:inherit;cursor:pointer;justify-self:center;padding:0;
+  }
+  .info:hover{background:var(--cyan);color:#03110a}
+  .vrow .info{justify-self:center;margin-left:2px}
 
   .tag{display:inline-block;font-size:9px;padding:1px 6px;border-radius:3px;margin-left:6px;letter-spacing:1px;vertical-align:middle}
   .t-I{background:rgba(56,210,255,.15);color:var(--cyan);border:1px solid rgba(56,210,255,.35)}
@@ -216,7 +223,7 @@
   .pgroup.sel>.row{box-shadow:inset 3px 0 0 var(--green)}
   .variants{background:#060b0f;border-top:1px dashed #16242e;padding:2px 0}
   .vrow{
-    display:grid;grid-template-columns:42px 1fr auto 34px;gap:9px;align-items:center;
+    display:grid;grid-template-columns:42px 1fr auto 26px 34px;gap:9px;align-items:center;
     padding:8px 12px 8px 22px;border-bottom:1px solid #0c161d;cursor:pointer;
     transition:background .12s;
   }
@@ -1380,6 +1387,7 @@ function renderList(){
             <span class="vjail">${v.jail?fmtJail(v.jail):"—"}</span>
             <span class="vfine">${fmtFine(v.fine)}</span>
           </span>
+          <button class="info" data-code="${l.code}" title="Lihat deskripsi pasal">?</button>
           <button class="add vadd" title="Tambah varian ini">+</button>
         </div>`;
       }).join("") + '</div>';
@@ -1390,6 +1398,7 @@ function renderList(){
         <div class="name">${locTitle(l)}<span class="tag t-${st.cls}">${st.cls}</span></div>
         <div class="fine">${fmtFine(st.fine)}</div>
         <div class="jail">${st.jail?fmtJail(st.jail):"—"}</div>
+        <button class="info" data-code="${l.code}" title="Lihat deskripsi pasal">?</button>
         <button class="add quick" title="Tambah varian utama">${selected.some(s=>s.code===l.code)?"✓":"+"}</button>
       </div>
       ${variantsHtml}
@@ -1399,6 +1408,12 @@ function renderList(){
 
 /* event delegation di daftar */
 $("list").addEventListener("click", e=>{
+  // tombol ? -> tampilkan Deskripsi Pasal
+  const info = e.target.closest(".info");
+  if(info){
+    renderDetail(info.dataset.code);
+    return;
+  }
   const vrow = e.target.closest(".vrow");
   if(vrow){
     const code = vrow.dataset.code, vi = +vrow.dataset.vi;
@@ -1409,16 +1424,14 @@ $("list").addEventListener("click", e=>{
   if(!row) return;
   const code = row.dataset.code;
   const l = byCode[code];
-  // tombol + cepat -> tambahkan varian utama (pertama) & buka detail varian
+  // tombol + cepat -> tambahkan varian utama (pertama) & buka varian
   if(e.target.classList.contains("quick")){
     if(l.variants.length===1){ toggleSelect(code,0); }
     else { expanded[code]=true; renderList(); }
-    renderDetail(code);
     return;
   }
-  // klik body baris -> expand/collapse varian
+  // klik body baris -> expand/collapse varian (tanpa memunculkan deskripsi)
   expanded[code] = !expanded[code];
-  renderDetail(code);
   renderList();
 });
 
