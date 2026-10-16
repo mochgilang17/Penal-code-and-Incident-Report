@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>San Andreas Law Information // Mobile Data Computer</title>
+<link rel="icon" type="image/webp" href="SA_Seal.webp">
+<link rel="apple-touch-icon" href="SA_Seal.webp">
+<style>
+  :root{
+    --bg:#05070a;
+    --panel:#0a0f14;
+    --panel2:#0d141b;
+    --line:#1b2a36;
+    --green:#39ff88;
+    --green-dim:#1f8a4d;
+    --amber:#ffb020;
+    --cyan:#38d2ff;
+    --red:#ff4d4d;
+    --text:#bfe9d0;
+    --muted:#5b7f6d;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:
+      radial-gradient(1200px 600px at 20% -10%, #0c1a14 0%, transparent 60%),
+      linear-gradient(180deg,#04060a 0%, #05070a 100%);
+    color:var(--text);
+    font-family:"Consolas","Courier New",ui-monospace,monospace;
+    font-size:14px;
+    padding:14px;
+    height:100vh;
+    overflow:hidden;
+  }
+  @media(max-width:1050px){body{height:auto;overflow:auto}}
+  /* subtle scanlines */
+  body::after{
+    content:"";
+    position:fixed;inset:0;pointer-events:none;z-index:9999;
+    background:repeating-linear-gradient(180deg,rgba(0,0,0,0) 0 2px,rgba(0,0,0,.22) 2px 3px);
+    opacity:.35;
+  }
+
+  .wrap{max-width:1420px;margin:0 auto;display:grid;grid-template-columns:1fr 380px;grid-template-rows:auto 1fr auto;gap:14px;height:100%;box-sizing:border-box;min-height:0}
+  @media(max-width:1050px){.wrap{grid-template-columns:1fr;height:auto;grid-template-rows:auto;gap:14px;padding-bottom:30px}}
+
+  /* watermark seal */
+  .watermark{
+    position:fixed;right:-90px;bottom:-110px;width:520px;height:520px;
+    opacity:.045;pointer-events:none;z-index:0;
+    -webkit-user-drag:none;user-select:none;
+  }
+  .wrap{position:relative;z-index:1}
+
+  /* ===== header ===== */
+  header{
+    grid-column:1/-1;
+    border:1px solid var(--line);
+    background:linear-gradient(180deg,#0b1218,#080d11);
+    border-radius:6px;
+    padding:12px 16px;
+    display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+    box-shadow:0 0 0 1px #000 inset,0 8px 30px rgba(57,255,136,.05);
+  }
+  .badge{
+    width:52px;height:52px;flex:0 0 52px;border-radius:50%;
+    background:linear-gradient(145deg,#123223,#0a1a12);
+    border:1px solid var(--green-dim);
+    display:grid;place-items:center;overflow:hidden;
+    box-shadow:0 0 14px rgba(57,255,136,.25);
+  }
+  .badge img{width:100%;height:100%;object-fit:contain;display:block}
+  .titles h1{font-size:16px;letter-spacing:2px;color:#eafff3;font-weight:600}
+  .titles p{font-size:11px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-top:2px}
+  .status{margin-left:auto;display:flex;gap:18px;align-items:center;font-size:11px;letter-spacing:1px}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:blink 1.6s infinite}
+  @keyframes blink{50%{opacity:.25}}
+  .clock{color:var(--cyan);font-variant-numeric:tabular-nums}
+
+  /* ===== left panel ===== */
+  .panel{
+    border:1px solid var(--line);
+    background:var(--panel);
+    border-radius:6px;
+    overflow:hidden;
+  }
+  /* panel kiri: header+toolbar+chips tetap, list scroll di dalam */
+  .index-panel{display:flex;flex-direction:column;min-height:0;height:100%}
+  .index-panel .list{flex:1;min-height:0}
+  .panel-hd{
+    display:flex;align-items:center;gap:10px;
+    padding:9px 13px;
+    background:linear-gradient(180deg,#0e1922,#0a1218);
+    border-bottom:1px solid var(--line);
+    font-size:11px;letter-spacing:2px;color:var(--green);text-transform:uppercase;
+  }
+  .panel-hd .bar{width:3px;height:14px;background:var(--green);box-shadow:0 0 8px var(--green)}
+
+  /* toolbar */
+  .toolbar{padding:11px;border-bottom:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
+  .search{
+    flex:1;min-width:180px;position:relative;
+  }
+  .search input,.toolbar select{
+    width:100%;
+    background:#060b0f;border:1px solid var(--line);border-radius:4px;
+    color:var(--green);font-family:inherit;font-size:13px;
+    padding:9px 11px;outline:none;
+  }
+  .search input:focus,.toolbar select:focus{border-color:var(--green-dim);box-shadow:0 0 0 2px rgba(57,255,136,.08)}
+  .search input::placeholder{color:#3a5a4a}
+  .kbd-hint{
+    position:absolute;right:9px;top:50%;transform:translateY(-50%);
+    font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:3px;
+    padding:1px 6px;background:#0a1015;pointer-events:none;
+  }
+  .lang-btn{
+    flex:0 0 auto;background:#060b0f;border:1px solid var(--line);border-radius:4px;
+    color:var(--green);font-family:inherit;font-size:12px;padding:9px 12px;cursor:pointer;letter-spacing:.5px;
+  }
+  .lang-btn:hover{border-color:var(--green-dim);background:rgba(57,255,136,.08)}
+
+  /* chips */
+  .chips{display:flex;gap:6px;padding:9px 11px;flex-wrap:wrap;border-bottom:1px solid var(--line);background:var(--panel2)}
+  .chip{
+    border:1px solid var(--line);background:#060b0f;color:var(--muted);
+    padding:4px 10px;border-radius:20px;font-size:11px;cursor:pointer;letter-spacing:.5px;
+    transition:.15s;user-select:none;
+  }
+  .chip:hover{color:var(--text);border-color:var(--green-dim)}
+  .chip.on{background:rgba(57,255,136,.12);border-color:var(--green-dim);color:var(--green)}
+
+  .en-note{margin-top:10px;font-size:11px;color:var(--cyan);letter-spacing:.5px}
+
+  /* keyboard shortcuts panel */
+  .shortcuts{padding:10px 13px;display:flex;flex-direction:column;gap:7px}
+  .shortcuts .sc{display:flex;align-items:center;gap:10px;font-size:11.5px;color:#bcd}
+  .shortcuts kbd{
+    display:inline-block;min-width:22px;text-align:center;
+    background:#0a1015;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;
+    padding:2px 6px;font-family:inherit;font-size:11px;color:var(--green);
+  }
+
+  /* card deskripsi pasal */
+  .hidden{display:none !important}
+  .detail-card .panel-hd .closer{margin-left:auto;cursor:pointer;color:var(--red);font-size:14px;line-height:1}
+  .detail-body{padding:12px 13px}
+  .detail-body .d-code{color:var(--cyan);font-weight:bold;font-size:13px}
+  .detail-body .d-title{color:#eafff3;font-size:13.5px;margin:3px 0 8px;line-height:1.35}
+  .detail-body .d-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .detail-body .d-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:4px;overflow:hidden;margin-bottom:11px}
+  .detail-body .d-stat{background:#070d11;padding:8px 9px;text-align:center}
+  .detail-body .d-stat span{display:block;font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:3px}
+  .detail-body .d-stat b{font-size:13px;color:var(--text);font-variant-numeric:tabular-nums}
+  .detail-body .d-stat b.g{color:var(--green)}
+  .detail-body .d-stat b.a{color:var(--amber)}
+  .detail-body .d-desc{
+    font-size:12px;line-height:1.6;color:#cfeedd;
+    border-top:1px solid var(--line);padding-top:10px;
+  }
+  .detail-body .d-note{
+    margin-top:12px;padding:9px 11px;border:1px solid var(--line);border-left:3px solid var(--cyan);
+    background:#060b0f;border-radius:4px;font-size:11.5px;line-height:1.55;color:#bcd;
+  }
+  .detail-body .d-note b{color:var(--cyan);letter-spacing:1px;font-size:10.5px;display:block;margin-bottom:4px}
+  .detail-body .d-vars{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+  .detail-body .d-vars .vt{font-size:10px;letter-spacing:1.5px;color:var(--green);text-transform:uppercase;margin-bottom:7px}
+  .detail-body .d-vrow{
+    display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px dotted #16242e;cursor:pointer;
+  }
+  .detail-body .d-vrow:last-child{border-bottom:0}
+  .detail-body .d-vrow:hover{background:#0c161d}
+  .detail-body .d-vrow.sel{background:rgba(57,255,136,.07)}
+  .detail-body .d-vrow .vl{color:var(--green);font-weight:bold;font-size:11px;min-width:26px}
+  .detail-body .d-vrow .vd{flex:1;font-size:11px;color:#a9cfbd;line-height:1.4}
+  .detail-body .d-vrow .vp{font-size:10.5px;color:var(--amber);white-space:nowrap;text-align:right}
+
+  /* list */
+  .list{overflow-y:auto;overflow-x:hidden}
+  .list::-webkit-scrollbar{width:9px}
+  .list::-webkit-scrollbar-track{background:#060b0f}
+  .list::-webkit-scrollbar-thumb{background:#1b2a36;border-radius:4px}
+  .list::-webkit-scrollbar-thumb:hover{background:var(--green-dim)}
+
+  .row{
+    display:grid;grid-template-columns:64px 1fr 96px 66px 28px 34px;
+    gap:8px;align-items:center;
+    padding:9px 12px;border-bottom:1px solid #0f1a22;cursor:pointer;
+    transition:background .12s;
+  }
+  .row:hover{background:#0c161d}
+  .row.sel{background:rgba(57,255,136,.07);box-shadow:inset 3px 0 0 var(--green)}
+  .code{color:var(--cyan);font-weight:bold;font-size:12px}
+  .name{color:#d6f5e4;font-size:12.5px;line-height:1.3}
+  .fine{text-align:right;color:var(--amber);font-size:12px;font-variant-numeric:tabular-nums}
+  .jail{text-align:right;color:var(--text);font-size:12px;font-variant-numeric:tabular-nums}
+  .add{
+    width:26px;height:26px;line-height:24px;text-align:center;border-radius:4px;
+    border:1px solid var(--green-dim);color:var(--green);background:transparent;
+    font-size:15px;font-family:inherit;cursor:pointer;justify-self:end;
+  }
+  .add:hover{background:var(--green);color:#03110a}
+  .row.sel .add{background:var(--green);color:#03110a;border-color:var(--green)}
+  .info{
+    width:22px;height:22px;line-height:20px;text-align:center;border-radius:50%;
+    border:1px solid var(--cyan);color:var(--cyan);background:transparent;
+    font-size:12px;font-weight:bold;font-family:inherit;cursor:pointer;justify-self:center;padding:0;
+  }
+  .info:hover{background:var(--cyan);color:#03110a}
+  .vrow .info{justify-self:center;margin-left:2px}
+
+  .tag{display:inline-block;font-size:9px;padding:1px 6px;border-radius:3px;margin-left:6px;letter-spacing:1px;vertical-align:middle}
+  .t-I{background:rgba(56,210,255,.15);color:var(--cyan);border:1px solid rgba(56,210,255,.35)}
+  .t-M{background:rgba(255,176,32,.15);color:var(--amber);border:1px solid rgba(255,176,32,.35)}
+  .t-F{background:rgba(255,77,77,.15);color:var(--red);border:1px solid rgba(255,77,77,.35)}
+
+  /* ==== expandable sub-ayat ==== */
+  .pgroup{border-bottom:1px solid #0f1a22}
+  .pgroup .row{border-bottom:0}
+  .pgroup.open>.row{background:#0b141b}
+  .pgroup.open>.row .code::before{content:"▾ ";color:var(--green)}
+  .pgroup.sel>.row{box-shadow:inset 3px 0 0 var(--green)}
+  .variants{background:#060b0f;border-top:1px dashed #16242e;padding:2px 0}
+  .vrow{
+    display:grid;grid-template-columns:42px 1fr auto 26px 34px;gap:9px;align-items:center;
+    padding:8px 12px 8px 22px;border-bottom:1px solid #0c161d;cursor:pointer;
+    transition:background .12s;
+  }
+  .vrow:last-child{border-bottom:0}
+  .vrow:hover{background:#0d191f}
+  .vrow.sel{background:rgba(57,255,136,.08);box-shadow:inset 3px 0 0 var(--green)}
+  .vlabel{color:var(--green);font-weight:bold;font-size:11px;letter-spacing:.5px}
+  .vdesc{color:#a9cfbd;font-size:11.5px;line-height:1.35}
+  .vtags{display:flex;align-items:center;gap:8px;white-space:nowrap}
+  .vtags .tag{margin-left:0}
+  .vjail{color:var(--text);font-size:11.5px;font-variant-numeric:tabular-nums;min-width:52px;text-align:right}
+  .vfine{color:var(--amber);font-size:11.5px;font-variant-numeric:tabular-nums;min-width:62px;text-align:right}
+  .vadd{width:24px;height:24px;line-height:22px;font-size:14px}
+  .vrow.sel .vadd{background:var(--green);color:#03110a;border-color:var(--green)}
+  .pgroup.sel>.row .quick{background:var(--green);color:#03110a;border-color:var(--green)}
+  .modal-variants{border:1px solid var(--line);border-radius:4px;background:#060b0f;margin-top:8px}
+  .modal-vrow{padding:10px 12px}
+
+  .empty{padding:30px;text-align:center;color:var(--muted);font-size:12px}
+
+  /* ===== right rail ===== */
+  .rail{display:flex;flex-direction:column;gap:16px;align-self:stretch;min-height:0;overflow-y:auto;overflow-x:hidden;padding-right:4px}
+  .rail>.panel{flex:0 0 auto}
+  .rail::-webkit-scrollbar{width:8px}
+  .rail::-webkit-scrollbar-thumb{background:#1b2a36;border-radius:4px}
+  @media(max-width:1050px){.rail{height:auto;overflow:visible}}
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line)}
+  .stat{background:var(--panel);padding:14px}
+  .stat .lbl{font-size:10px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase}
+  .stat .val{font-size:20px;color:var(--green);margin-top:5px;font-variant-numeric:tabular-nums;text-shadow:0 0 10px rgba(57,255,136,.4)}
+  .stat .val.amber{color:var(--amber);text-shadow:0 0 10px rgba(255,176,32,.35)}
+
+  .basket{max-height:320px;overflow:auto}
+  .basket::-webkit-scrollbar{width:8px}
+  .basket::-webkit-scrollbar-thumb{background:#1b2a36;border-radius:4px}
+  .bitem{display:flex;align-items:center;gap:8px;padding:10px 13px;border-bottom:1px solid #0f1a22;font-size:12px}
+  .bitem .c{color:var(--cyan);font-weight:bold;min-width:44px}
+  .bitem .n{flex:1;color:#cfeedd;font-size:11.5px;line-height:1.35}
+  .bitem .x{cursor:pointer;color:var(--red);padding:0 4px;font-size:14px}
+  .bitem .x:hover{text-shadow:0 0 8px var(--red)}
+
+  .chart{padding:14px}
+  .cbar{margin-bottom:12px}
+  .cbar .cl{display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px;color:var(--muted)}
+  .cbar .cl b{color:var(--text);font-weight:normal;font-variant-numeric:tabular-nums}
+  .csub{font-size:10px;color:var(--muted);margin-top:3px;font-variant-numeric:tabular-nums;letter-spacing:.5px}
+  .track{height:9px;background:#060b0f;border:1px solid var(--line);border-radius:3px;overflow:hidden}
+  .fill{height:100%;border-radius:2px;transition:width .35s ease}
+  .f-F{background:linear-gradient(90deg,#7a1d1d,#ff4d4d);box-shadow:0 0 10px rgba(255,77,77,.4)}
+  .f-M{background:linear-gradient(90deg,#7a5410,#ffb020);box-shadow:0 0 10px rgba(255,176,32,.35)}
+  .f-I{background:linear-gradient(90deg,#0d5e78,#38d2ff);box-shadow:0 0 10px rgba(56,210,255,.35)}
+
+  .btns{display:flex;gap:8px;padding:11px;border-top:1px solid var(--line)}
+  .btn{
+    flex:1;padding:10px;border-radius:4px;cursor:pointer;font-family:inherit;font-size:12px;
+    letter-spacing:1px;text-transform:uppercase;border:1px solid var(--line);background:#060b0f;color:var(--text);
+  }
+  .btn:hover{border-color:var(--green-dim);color:var(--green)}
+  .btn.primary{background:rgba(57,255,136,.1);border-color:var(--green-dim);color:var(--green)}
+  .btn.primary:hover{background:var(--green);color:#03110a}
+  .btn.danger:hover{border-color:var(--red);color:var(--red)}
+
+  footer{grid-column:1/-1;text-align:center;color:var(--muted);font-size:9px;letter-spacing:1px;padding:2px 0}
+
+  /* detail modal */
+  .modal{position:fixed;inset:0;background:rgba(2,5,8,.86);display:none;place-items:center;z-index:1000;padding:20px}
+  .modal.on{display:grid}
+  .modal .card{
+    width:100%;max-width:620px;max-height:80vh;overflow:auto;
+    background:var(--panel);border:1px solid var(--green-dim);border-radius:6px;
+    box-shadow:0 0 40px rgba(57,255,136,.15);
+  }
+  .modal .hd{padding:13px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;background:#0b1218}
+  .modal .hd h3{font-size:14px;color:var(--green);letter-spacing:1px}
+  .modal .hd .close{margin-left:auto;cursor:pointer;color:var(--red);font-size:18px}
+  .modal .bd{padding:16px;line-height:1.65;color:#cfeedd;font-size:12.5px}
+  .modal .bd strong{color:var(--amber)}
+  .kv{display:flex;gap:20px;margin-bottom:12px;flex-wrap:wrap}
+  .kv span{font-size:11px;color:var(--muted);letter-spacing:1px}
+  .kv b{color:var(--text);font-size:13px}
+  .kv b.g{color:var(--green)}
+  .kv b.a{color:var(--amber)}
+
+  /* ===== incident report sheet ===== */
+  .rpt-modal .card{background:#e9edf1;border-color:#3a4a58}
+  .rpt-modal .hd{background:#0b1218}
+  .rpt-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .rpt-tools select{
+    flex:1;min-width:220px;background:#060b0f;border:1px solid var(--line);border-radius:4px;
+    color:var(--green);font-family:inherit;font-size:12.5px;padding:9px 11px;outline:none;
+  }
+  .report-sheet{
+    background:#fff;color:#111;padding:15px;border:2px solid #000;
+    font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.4;
+    max-width:850px;margin:0 auto;
+  }
+  .report-sheet .rh{position:relative;text-align:center;border-bottom:2px solid #000;padding-bottom:9px;margin-bottom:10px}
+  .report-sheet .rh-mid h2{font-size:19px;margin:0;text-transform:uppercase;color:#12381f;letter-spacing:1px}
+  .report-sheet .rh-mid h1{font-size:21px;margin:1px 0;text-transform:uppercase;color:#12381f;font-weight:800}
+  .report-sheet .rh-mid p{margin:1px 0;font-size:12px;color:#333}
+  .report-sheet .rh-mid h3{margin:6px 0 0;font-size:13px;text-decoration:underline;letter-spacing:2px}
+  .report-sheet .rh-right{position:absolute;right:0;top:0;width:96px;font-size:9px;font-weight:bold;text-align:right;color:#a00}
+  .report-sheet .topbar{display:grid;grid-template-columns:repeat(3,1fr);border:2px solid #000;margin-bottom:10px}
+  .report-sheet .ig{display:flex;align-items:center;gap:6px;padding:5px 6px;border-bottom:.5px solid #ccc}
+  .report-sheet .topbar .ig{border-bottom:0;border-right:1px solid #000}
+  .report-sheet .topbar .ig:last-child{border-right:0}
+  .report-sheet .ig label{font-weight:bold;white-space:nowrap;font-size:10.5px}
+  .report-sheet input[type=text],.report-sheet input[type=date],.report-sheet input[type=time],.report-sheet select{
+    border:0;border-bottom:1px solid #ddd;width:100%;outline:none;background:transparent;
+    font-family:"Courier New",monospace;font-size:12px;color:#111;padding:1px 0;
+  }
+  .report-sheet select{cursor:pointer}
+  .report-sheet .g4{display:grid;grid-template-columns:repeat(4,1fr)}
+  .report-sheet .g3{display:grid;grid-template-columns:repeat(3,1fr)}
+  .report-sheet .g2{display:grid;grid-template-columns:1fr 1fr}
+  .report-sheet .g2col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .report-sheet .fs{border:1px solid #000;margin-bottom:10px}
+  .report-sheet .st{background:#e0e0e0;padding:3px 9px;font-weight:bold;border-bottom:1px solid #000;font-size:10.5px;letter-spacing:.5px}
+  .report-sheet textarea{width:100%;padding:9px;box-sizing:border-box;border:0;resize:vertical;font-family:"Courier New",monospace;font-size:12px;color:#111;line-height:1.5}
+  .report-sheet .charges-box{padding:6px 9px;min-height:34px;white-space:pre-wrap;font-family:"Courier New",monospace;font-size:11.5px}
+  .report-sheet .charges-box .empty-ch{color:#888;font-style:italic}
+  .report-sheet .ch-line{padding:2px 0;border-bottom:.5px dotted #ccc}
+  .report-sheet .ch-line .ch-tag{font-weight:bold;font-size:9px;padding:0 4px;border-radius:2px;background:#eee;margin-left:6px}
+  .report-sheet .charge-total{padding:5px 9px;border-top:1px solid #000;font-weight:bold;font-size:11.5px;background:#f4f4f4}
+  .report-sheet .chkgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:9px}
+  .report-sheet .chkgrid label{display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:bold}
+  .report-sheet .rf{display:flex;justify-content:space-around;margin-top:8px;border-top:2px solid #000;padding-top:18px}
+  .report-sheet .sig{text-align:center;width:44%;max-width:230px}
+  .report-sheet .sig-input{font-family:"Brush Script MT","Segoe Script",cursive;font-size:18px;text-align:center;border:0;border-bottom:1px solid #000;width:100%}
+  .report-sheet .sig p{margin:3px 0;font-size:10px;font-weight:bold;letter-spacing:.5px}
+  .report-sheet .rf-note{text-align:center;font-size:9px;color:#555;margin-top:12px}
+
+  @media print{ .no-print{display:none!important} body *{visibility:hidden} #report-content,#report-content *{visibility:visible} #report-content{position:absolute;left:0;top:0;width:100%} }
+  @media(max-width:640px){
+    .report-sheet .topbar{grid-template-columns:1fr}
+    .report-sheet .topbar .ig{border-right:0;border-bottom:1px solid #000}
+    .report-sheet .g4,.report-sheet .g3,.report-sheet .g2,.report-sheet .g2col{grid-template-columns:1fr}
+    .report-sheet .rf{flex-direction:column;align-items:center;gap:18px}
+    .report-sheet .rh-right{position:static;width:100%;text-align:center;margin-top:5px;border:1px dashed #a00;padding:2px 0}
+  }
+</style>
+</head>
+<body>
+<img class="watermark" src="SA_Seal.webp" alt="">
+<div class="wrap">
+
+  <header>
+    <div class="badge"><img src="SA_Seal.webp" alt="Seal of the State of San Andreas"></div>
+    <div class="titles">
+      <h1>SAN ANDREAS LAW INFORMATION INSTITUTE</h1>
+      <p>Mobile Data Computer &mdash; Penal Code Terminal</p>
+    </div>
+    <div class="status">
+      <span><span class="dot"></span> SYSTEM ONLINE</span>
+      <span>TERMINAL <b style="color:var(--amber)">SA-LAW-01</b></span>
+      <span class="clock" id="clock">--:--:--</span>
+    </div>
+  </header>
+
+  <!-- LEFT -->
+  <section class="panel index-panel">
+    <div class="panel-hd"><span class="bar"></span> Statutory Index &nbsp;•&nbsp; <span id="countLbl">0</span> records</div>
+
+    <div class="toolbar">
+      <div class="search">
+        <input type="text" id="search" placeholder="Cari kode / pasal / kata kunci... (tekan / untuk fokus)">
+        <span class="kbd-hint">/</span>
+      </div>
+      <select id="sortSel">
+        <option value="code">Urut: Kode</option>
+        <option value="jailDesc">Urut: Hukuman tertinggi</option>
+        <option value="fineDesc">Urut: Denda tertinggi</option>
+        <option value="name">Urut: Nama A-Z</option>
+      </select>
+      <button class="lang-btn" id="langBtn" title="Ganti bahasa ID/EN">🌐 ID</button>
+    </div>
+
+    <div class="chips" id="chips">
+      <span class="chip on" data-cat="all">SEMUA</span>
+      <span class="chip" data-cat="T1">T1 · PERSONS</span>
+      <span class="chip" data-cat="T2">T2 · THEFT</span>
+      <span class="chip" data-cat="T3">T3 · PROPERTY</span>
+      <span class="chip" data-cat="T4">T4 · PUBLIC ADMIN</span>
+      <span class="chip" data-cat="T5">T5 · HEALTH &amp; SAFETY</span>
+      <span class="chip" data-cat="T6">T6 · WEAPONS</span>
+      <span class="chip" data-cat="T7">T7 · VEHICLE OPS</span>
+      <span class="chip" data-cat="T8">T8 · ROAD LAW</span>
+      <span class="chip" data-cat="F">FELONY (F)</span>
+      <span class="chip" data-cat="M">MISDEMEANOR (M)</span>
+      <span class="chip" data-cat="I">INFRACTION (I)</span>
+    </div>
+
+    <div class="list" id="list"></div>
+  </section>
+
+  <!-- RIGHT -->
+  <aside class="rail">
+    <div class="panel detail-card hidden" id="detailCard">
+      <div class="panel-hd">
+        <span class="bar"></span> Deskripsi Pasal
+        <span class="closer" id="detailClose" title="Tutup">✕</span>
+      </div>
+      <div class="detail-body" id="detailBody"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-hd"><span class="bar"></span> Sentence Calculator</div>
+      <div class="stat-grid">
+        <div class="stat"><div class="lbl">Total Denda</div><div class="val amber" id="totFine">$0</div></div>
+        <div class="stat"><div class="lbl">Total Penjara</div><div class="val" id="totJail">0 bln</div></div>
+        <div class="stat"><div class="lbl">Pasal Terpilih</div><div class="val" id="totCount">0</div></div>
+        <div class="stat"><div class="lbl">Estimasi Waktu</div><div class="val" id="totTime">0m 0s</div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-hd"><span class="bar"></span> Daftar Pasal Terpilih</div>
+      <div class="basket" id="basket"><div class="empty">Belum ada pasal dipilih.<br>Klik tombol + pada daftar.</div></div>
+      <div class="btns">
+        <button class="btn danger" id="clearBtn">Kosongkan</button>
+        <button class="btn primary" id="copyBtn">Salin Laporan</button>
+      </div>
+      <div class="btns" style="border-top:0;padding-top:2px">
+        <button class="btn primary" id="reportBtn" style="font-weight:bold">📄 Buat Incident Report</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-hd"><span class="bar"></span> Grafik Distribusi Hukuman</div>
+      <div class="chart" id="chart"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-hd"><span class="bar"></span> Keyboard Shortcuts</div>
+      <div class="shortcuts">
+        <div class="sc"><kbd>/</kbd><span>Fokus ke pencarian</span></div>
+        <div class="sc"><kbd>L</kbd><span>Ganti bahasa ID / EN</span></div>
+        <div class="sc"><kbd>C</kbd><span>Kosongkan pilihan</span></div>
+        <div class="sc"><kbd>R</kbd><span>Buat Incident Report</span></div>
+        <div class="sc"><kbd>Esc</kbd><span>Tutup modal / keluar search</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <footer>SAN ANDREAS LAW INFORMATION INSTITUTE &mdash; ROLEPLAY LEGAL DATABASE &nbsp;|&nbsp; Credit: <a href="https://github.com/mochgilang17" target="_blank" style="color:var(--green-dim);text-decoration:none">Moch Gilang (@mochgilang17)</a></footer>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal" id="modal">
+  <div class="card">
+    <div class="hd"><h3 id="mTitle">—</h3><span class="close" id="mClose">✕</span></div>
+    <div class="bd" id="mBody"></div>
+  </div>
+</div>
+
+<!-- INCIDENT REPORT MODAL -->
+<div class="modal rpt-modal" id="rptModal">
+  <div class="card" style="max-width:900px">
+    <div class="hd">
+      <h3>INCIDENT REPORT GENERATOR</h3>
+      <span class="close" id="rptClose">✕</span>
+    </div>
+    <div class="bd" style="padding:14px">
+      <div class="rpt-tools no-print">
+        <label style="font-size:11px;color:var(--muted);letter-spacing:1px">DEPARTMENT HEADER:</label>
+        <select id="rptDept">
+          <option value="LSSD">Los Santos County Sheriff's Department (LSSD)</option>
+          <option value="LSPD">Los Santos Police Department (LSPD)</option>
+          <option value="SAHP">San Andreas Highway Patrol (SAHP)</option>
+        </select>
+        <button class="btn primary" id="rptExport" style="flex:0 0 auto;padding:9px 16px">💾 EXPORT JPG</button>
+        <button class="btn no-print" id="rptPrint" style="flex:0 0 auto;padding:9px 16px">🖨 PRINT</button>
+      </div>
+
+      <div id="report-content" class="report-sheet">
+        <header class="rh">
+          <div class="rh-left"></div>
+          <div class="rh-mid">
+            <h2 id="rhCounty">COUNTY OF LOS SANTOS</h2>
+            <h1 id="rhDept">SHERIFF'S DEPARTMENT</h1>
+            <p id="rhState">State of San Andreas</p>
+            <h3 id="rhTitle">INCIDENT REPORT</h3>
+          </div>
+          <div class="rh-right">FOR OFFICIAL USE ONLY</div>
+        </header>
+
+        <div class="topbar">
+          <div class="ig"><label>URN:</label><input type="text" id="rUrn" placeholder="26-XXXX-CCCC"></div>
+          <div class="ig"><label>DR#:</label><input type="text" id="rDr" placeholder="26-CCCC-CCCC"></div>
+          <div class="ig"><label>STATION:</label><input type="text" id="rStation" placeholder="Ketik nama station..."></div>
+        </div>
+
+        <section class="fs">
+          <div class="st">INCIDENT INFORMATION</div>
+          <div class="g4">
+            <div class="ig"><label>DATE:</label><input type="date" id="rDate"></div>
+            <div class="ig"><label>TIME:</label><input type="time" id="rTime"></div>
+            <div class="ig"><label>BEAT:</label><input type="text" id="rBeat"></div>
+            <div class="ig"><label>UNIT:</label><input type="text" id="rUnit"></div>
+          </div>
+          <div class="ig"><label>LOCATION:</label><input type="text" id="rLoc" placeholder="street address, District, Los Santos"></div>
+          <div class="g2">
+            <div class="ig"><label>INCIDENT TYPE:</label><input type="text" id="rType" placeholder="mis. Robbery / Traffic Stop"></div>
+            <div class="ig"><label>CLASSIFICATION:</label>
+              <select id="rClass">
+                <option value="">-</option>
+                <option>FELONY</option>
+                <option>MISDEMEANOR</option>
+                <option>INFRACTION</option>
+                <option>CIVIL</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <div class="g2col">
+          <section class="fs">
+            <div class="st">VICTIM / REPORTING PARTY</div>
+            <div class="ig"><label>NAME:</label><input type="text" id="rvName"></div>
+            <div class="g3">
+              <div class="ig"><label>AGE:</label><input type="text" id="rvAge"></div>
+              <div class="ig"><label>SEX:</label><select id="rvSex"><option value="">-</option><option>Male</option><option>Female</option></select></div>
+              <div class="ig"><label>RACE:</label><select id="rvRace"><option value="">-</option><option>White</option><option>Black</option><option>Hispanic</option><option>Asian</option><option>Other</option></select></div>
+            </div>
+            <div class="ig"><label>PHONE:</label><input type="text" id="rvPhone"></div>
+          </section>
+
+          <section class="fs">
+            <div class="st">SUSPECT INFORMATION</div>
+            <div class="ig"><label>NAME:</label><input type="text" id="rsName"></div>
+            <div class="g3">
+              <div class="ig"><label>AGE:</label><input type="text" id="rsAge"></div>
+              <div class="ig"><label>SEX:</label><select id="rsSex"><option value="">-</option><option>Male</option><option>Female</option></select></div>
+              <div class="ig"><label>RACE:</label><select id="rsRace"><option value="">-</option><option>White</option><option>Black</option><option>Hispanic</option><option>Asian</option><option>Other</option></select></div>
+            </div>
+            <div class="ig"><label>DESCRIPTION:</label><input type="text" id="rsDesc"></div>
+          </section>
+        </div>
+
+        <section class="fs">
+          <div class="st">CHARGES / VIOLATIONS <span style="font-weight:normal;font-style:italic">(otomatis dari kalkulator — dapat diedit)</span></div>
+          <div id="rCharges" class="charges-box"></div>
+          <div class="charge-total" id="rChargeTotal"></div>
+        </section>
+
+        <section class="fs">
+          <div class="st">NARRATIVE SUMMARY</div>
+          <textarea id="rNarr" rows="6" placeholder="Brief description of incident: What happened, when, where. Actions taken by officers. Statements from parties involved. Any follow-up required."></textarea>
+        </section>
+
+        <div class="g2col">
+          <section class="fs">
+            <div class="st">REPORTING OFFICER</div>
+            <div class="ig"><label>NAME:</label><input type="text" id="roName" class="ro-name" placeholder="Lastname, Firstname"></div>
+            <div class="g2">
+              <div class="ig"><label>BADGE#:</label><input type="text" id="roBadge"></div>
+              <div class="ig"><label>UNIT:</label><input type="text" id="roUnit"></div>
+            </div>
+            <div class="ig"><label>SUPERVISOR:</label><input type="text" id="roSup" class="sup-name" placeholder="Lastname, Firstname"></div>
+          </section>
+
+          <section class="fs">
+            <div class="st">DISPOSITION</div>
+            <div class="chkgrid">
+              <label><input type="checkbox"> REPORT COMPLETED</label>
+              <label><input type="checkbox"> ARREST MADE</label>
+              <label><input type="checkbox"> CITATION ISSUED</label>
+              <label><input type="checkbox"> TO DETECTIVE</label>
+              <label><input type="checkbox"> UNFOUNDED</label>
+              <label><input type="checkbox"> CIVIL MATTER</label>
+            </div>
+          </section>
+        </div>
+
+        <footer class="rf">
+          <div class="sig">
+            <input type="text" id="roSig" class="sig-input" placeholder="Lastname, Firstname" readonly>
+            <p>REPORTING OFFICER</p>
+            <input type="date" id="roSigDate">
+          </div>
+          <div class="sig">
+            <input type="text" id="supSig" class="sig-input" placeholder="Lastname, Firstname" readonly>
+            <p>SUPERVISOR</p>
+            <input type="date" id="supSigDate">
+          </div>
+        </footer>
+        <div class="rf-note" id="rfNote">SA-LAW IR FORM (Rev 2026) — FOR OFFICIAL USE ONLY</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+/* =========================================================
+   DATA — Penal Code (GTAC)
+   Klasifikasi: I = Infraction, M = Misdemeanor, F = Felony
+   Struktur tiap pasal:
+     variants: [ {label, desc, cls, jail, fine}, ... ]
+     - label : "(a)", "(b)", atau "§" bila hanya satu ketentuan
+     - cls   : I = Infraction, M = Misdemeanor, F = Felony
+   jail = hukuman maksimum dalam BULAN ; 999 = hukuman seumur hidup (LIFE)
+   cat  : T1..T8 = TITLE 1..8
+   ========================================================= */
+const LAWS = [
+/* ---------- TITLE 1. OFFENSES AGAINST PERSONS ---------- */
+{code:"(1)01", title:"Intimidation", cat:"T1", txt:"Menyampaikan ancaman akan menyakiti secara fisik atau membunuh orang lain, baik secara langsung, tertulis, atau melalui media.", variants:[
+  {label:"§", desc:"Setiap orang yang menyampaikan kepada orang lain bahwa mereka akan menyakiti secara fisik atau membunuh orang itu, baik secara langsung, tertulis, atau melalui media.", cls:"M", jail:15, fine:275}
+]},
+{code:"(1)02", title:"Assault", cat:"T1", txt:"Mengancam atau mencoba melakukan kontak fisik yang menyinggung atau melukai orang lain.", variants:[
+  {label:"§", desc:"Setiap orang yang mengancam atau mencoba melakukan kontak fisik yang menyinggung atau melukai orang lain.", cls:"M", jail:25, fine:470}
+]},
+{code:"(1)03", title:"Assault with a Deadly Weapon on Government Employee", cat:"T1", txt:"Upaya melakukan cedera kekerasan pada pegawai pemerintah dengan senjata mematikan.", variants:[
+  {label:"§", desc:"Upaya untuk melakukan cedera kekerasan pada pegawai pemerintah dengan senjata mematikan. Senjata digambarkan sebagai senjata api atau segala jenis barang jarak dekat, juga termasuk kendaraan bermotor.", cls:"F", jail:45, fine:850}
+]},
+{code:"(1)04", title:"Assault with a Deadly Weapon", cat:"T1", txt:"Upaya melakukan cedera kekerasan pada orang lain dengan senjata mematikan.", variants:[
+  {label:"§", desc:"Upaya untuk melakukan cedera kekerasan pada orang lain dengan senjata mematikan. Senjata digambarkan sebagai senjata api atau segala jenis barang jarak dekat, juga termasuk kendaraan bermotor.", cls:"F", jail:40, fine:650}
+]},
+{code:"(1)05", title:"Battery", cat:"T1", txt:"Menggunakan kekuatan atau kekerasan yang disengaja dan melanggar hukum untuk menyebabkan kerugian fisik pada orang lain.", variants:[
+  {label:"§", desc:"Setiap orang yang menggunakan kekuatan atau kekerasan yang disengaja dan melanggar hukum untuk menyebabkan kerugian fisik pada orang lain.", cls:"M", jail:27, fine:480}
+]},
+{code:"(1)06", title:"Battery on Government Employee", cat:"T1", txt:"Menggunakan kekuatan atau kekerasan yang disengaja untuk menyebabkan kerugian fisik pada pegawai pemerintah.", variants:[
+  {label:"§", desc:"Setiap orang yang menggunakan kekuatan atau kekerasan yang disengaja dan melanggar hukum untuk menyebabkan kerugian fisik pada pegawai pemerintah.", cls:"F", jail:38, fine:680}
+]},
+{code:"(1)07", title:"Kidnapping", cat:"T1", txt:"Menahan atau menangkap orang lain tanpa persetujuan mereka dengan maksud yang direncanakan.", variants:[
+  {label:"§", desc:"Setiap orang yang menahan atau menangkap orang lain tanpa persetujuan mereka dengan maksud yang direncanakan, dan memindahkan dengan jarak yang cukup jauh.", cls:"F", jail:30, fine:620}
+]},
+{code:"(1)08", title:"Kidnapping a Government Employee", cat:"T1", txt:"Menculik pegawai pemerintah dan menahan mereka di luar kehendak mereka.", variants:[
+  {label:"§", desc:"Setiap orang yang menculik pegawai pemerintah dan menahan mereka di luar kehendak mereka.", cls:"F", jail:35, fine:670}
+]},
+{code:"(1)09", title:"Unlawful Imprisonment", cat:"T1", txt:"Secara tidak sah menahan atau mengurung orang lain tanpa persetujuan mereka.", variants:[
+  {label:"§", desc:"Setiap orang yang secara tidak sah menahan atau mengurung orang lain tanpa ada persetujuan mereka selama satu jam tanpa maksud atau tebusan yang direncanakan.", cls:"M", jail:25, fine:580}
+]},
+{code:"(1)10", title:"Manslaughter", cat:"T1", txt:"Melawan hukum membunuh orang lain sebagai akibat dari kelalaian tanpa niat jahat sebelumnya.", variants:[
+  {label:"§", desc:"Setiap orang yang melawan hukum membunuh orang lain sebagai akibat dari kelalaian atau membahayakan tanpa ada niat jahat sebelumnya.", cls:"F", jail:50, fine:1450}
+]},
+{code:"(1)11", title:"First Degree Murder", cat:"T1", txt:"Membunuh manusia lain melalui tindakan niat jahat yang telah direncanakan sebelumnya.", variants:[
+  {label:"§", desc:"Setiap orang yang membunuh manusia lain melalui tindakan niat jahat yang telah direncanakan sebelumnya.", cls:"F", jail:60, fine:5850}
+]},
+{code:"(1)12", title:"Second Degree Murder", cat:"T1", txt:"Membunuh manusia lain tanpa perencanaan namun dengan niat jahat sebelumnya.", variants:[
+  {label:"§", desc:"Setiap orang yang membunuh manusia lain melalui tindakan yang tidak direncanakan dengan niat jahat sebelumnya.", cls:"F", jail:50, fine:5550}
+]},
+{code:"(1)13", title:"Attempted Murder", cat:"T1", txt:"Mengambil langkah langsung untuk membunuh orang lain dengan maksud membunuh mereka.", variants:[
+  {label:"§", desc:"Setiap orang yang mengambil setidaknya satu langkah langsung untuk membunuh orang lain dengan maksud untuk membunuh mereka.", cls:"F", jail:50, fine:2850}
+]},
+{code:"(1)14", title:"Rape", cat:"T1", txt:"Melakukan hubungan non-konsensual dengan kekerasan, ancaman, atau penipuan.", variants:[
+  {label:"§", desc:"Setiap orang yang melakukan hubungan non-konsensual dilakukan dengan cara kekerasan, ancaman, penipuan, dan serta menyentuh bagian intim orang lain gairah sexual.", cls:"F", jail:40, fine:975}
+]},
+
+/* ---------- TITLE 2. OFFENSES INVOLVING THEFT ---------- */
+{code:"(2)01", title:"Petty Theft", cat:"T2", txt:"Mencuri properti dengan nilai kurang dari $200 dari orang lain.", variants:[
+  {label:"§", desc:"Mencuri properti dengan nilai kurang dari $200 dari orang lain.", cls:"M", jail:30, fine:325}
+]},
+{code:"(2)02", title:"Grand Theft", cat:"T2", txt:"Mencuri properti dengan nilai lebih dari $200 dari orang lain.", variants:[
+  {label:"§", desc:"Mencuri properti dengan nilai lebih dari $200 dari orang lain.", cls:"M", jail:35, fine:585}
+]},
+{code:"(2)03", title:"Grand Theft Auto", cat:"T2", txt:"Memasuki kendaraan terkunci secara melawan hukum dengan maksud mencuri kendaraan atau harta di dalamnya.", variants:[
+  {label:"§", desc:"Setiap orang yang memasuki kendaraan yang terkunci secara melawan hukum atau bagasinya dengan maksud untuk mencuri kendaraan tersebut, mencuri harta benda yang terdapat di dalam kendaraan tersebut, atau melakukan kejahatan lain di dalam kendaraan tersebut.", cls:"F", jail:40, fine:680}
+]},
+{code:"(2)04", title:"Tampering with a Vehicle", cat:"T2", txt:"Dengan sengaja merusak kendaraan atau isinya tanpa persetujuan pemiliknya.", variants:[
+  {label:"§", desc:"Tidak seorang pun baik secara sendiri-sendiri atau bersama-sama, dengan sengaja merusak kendaraan atau isinya, atau merusak atau memindahkan bagian mana pun dari kendaraan tanpa persetujuan pemiliknya.", cls:"M", jail:20, fine:400}
+]},
+{code:"(2)05", title:"Robbery", cat:"T2", txt:"Mengambil properti dari kepemilikan orang lain di luar kehendak mereka dengan paksaan atau kekerasan.", variants:[
+  {label:"§", desc:"Seseorang yang mengambil properti dari kepemilikan orang lain di luar kehendak mereka, dengan cara paksaan, intimidasi, dan kekerasan yang difasilitasi dengan senjata atau dengan barang yang digunakan sebagai senjata.", cls:"F", jail:55, fine:625}
+]},
+{code:"(2)06", title:"Receiving Stolen Property", cat:"T2", txt:"Dengan sengaja membeli, menjual, menerima, menyembunyikan, atau menahan harta curian.", variants:[
+  {label:"§", desc:"Setiap orang dengan sengaja membeli, menjual, menerima, menyembunyikan, atau menahan harta curian.", cls:"M", jail:25, fine:550}
+]},
+{code:"(2)07", title:"Extortion", cat:"T2", txt:"Menggunakan kekerasan atau ancaman untuk memaksa orang lain memberi uang atau properti.", variants:[
+  {label:"§", desc:"Setiap orang yang menggunakan kekerasan atau ancaman untuk memaksa orang lain memberi mereka uang atau properti lain, menggunakan kekuatan atau ancaman untuk memaksa figur otoritas melakukan tindakan resmi, atau menjadi pejabat publik dan memaksa orang lain untuk memberi mereka uang.", cls:"F", jail:40, fine:725}
+]},
+{code:"(2)08", title:"Forgery", cat:"T2", txt:"Melakukan pemalsuan dengan maksud melakukan penipuan atau menipu orang lain.", variants:[
+  {label:"§", desc:"Setiap orang yang melakukan pemalsuan dengan maksud untuk melakukan penipuan atau menipu orang lain.", cls:"M", jail:30, fine:500}
+]},
+
+/* ---------- TITLE 3. OFFENSES INVOLVING DAMAGE TO PROPERTY ---------- */
+{code:"(3)01", title:"Burglary", cat:"T3", txt:"Secara paksa memasuki suatu bangunan dengan maksud melakukan kejahatan.", variants:[
+  {label:"§", desc:"Setiap orang secara paksa memasuki suatu bangunan dengan maksud untuk melakukan kejahatan.", cls:"M", jail:25, fine:455}
+]},
+{code:"(3)02", title:"Trespassing", cat:"T3", txt:"Memasuki properti orang lain tanpa izin atau hak untuk melakukannya.", variants:[
+  {label:"§", desc:"Setiap orang yang memasuki properti orang lain tanpa izin atau hak untuk melakukannya.", cls:"M", jail:30, fine:425}
+]},
+{code:"(3)03", title:"Arson", cat:"T3", txt:"Dengan sengaja atau ceroboh membakar properti tanpa persetujuan pemilik.", variants:[
+  {label:"§", desc:"Setiap orang dengan sengaja dan jahat, atau ceroboh, membakar properti tanpa persetujuan pemilik atau orang yang berwenang.", cls:"F", jail:45, fine:785}
+]},
+{code:"(3)04", title:"Vandalism", cat:"T3", txt:"Mengotori, merusak, atau menghancurkan properti publik atau pribadi.", variants:[
+  {label:"§", desc:"Setiap orang yang mengotori, merusak, atau menghancurkan properti publik atau pribadi.", cls:"M", jail:30, fine:535}
+]},
+
+/* ---------- TITLE 4. OFFENSES AGAINST PUBLIC ADMINISTRATION ---------- */
+{code:"(4)01", title:"Bribery", cat:"T4", txt:"Memberikan sesuatu yang berharga dengan niat korup untuk mempengaruhi pejabat.", variants:[
+  {label:"§", desc:"Setiap orang memberikan sesuatu yang berharga atau keuntungan, atau membuat janji atau usaha untuk memberikan, diminta, diberikan, atau diterima, dengan niat korup untuk mempengaruhi, secara melawan hukum, orang yang kepadanya diberikan, dalam nya tindakan, suara, atau opini, dalam kapasitas publik atau resmi.", cls:"F", jail:45, fine:955}
+]},
+{code:"(4)02", title:"Resisting Arrest", cat:"T4", txt:"Dengan sengaja melawan, menunda, atau menghalangi petugas saat melakukan penangkapan.", variants:[
+  {label:"§", desc:"Setiap orang dengan sengaja melawan, menunda, atau menghalangi petugas perdamaian ketika petugas tersebut sedang melakukan penangkapan.", cls:"M", jail:35, fine:550}
+]},
+{code:"(4)03", title:"Contempt of Court", cat:"T4", txt:"Tidak mematuhi perintah langsung dari pejabat pengadilan atau surat perintah resmi.", variants:[
+  {label:"§", desc:"Setiap orang yang tidak mematuhi perintah langsung dari pejabat pengadilan atau surat perintah resmi.", cls:"M", jail:35, fine:575}
+]},
+{code:"(4)04", title:"Misuse of a 911 System", cat:"T4", txt:"Membuat panggilan darurat untuk tujuan yang tidak relevan.", variants:[
+  {label:"§", desc:"Setiap orang yang membuat panggilan darurat maupun tidak darurat untuk tujuan yang tidak relevan dengan kantor, departemen, atau badan pemerintah tertentu.", cls:"M", jail:25, fine:435}
+]},
+{code:"(4)05", title:"Failure to Pay a Fine", cat:"T4", txt:"Menolak untuk memenuhi pembayaran sejumlah uang yang diminta oleh tiket.", variants:[
+  {label:"§", desc:"Setiap orang yang menolak untuk memenuhi pembayaran sejumlah uang yang diminta oleh tiket.", cls:"M", jail:20, fine:515}
+]},
+{code:"(4)06", title:"Failure to Identify to a Peace Officer", cat:"T4", txt:"Menolak memberikan informasi identifikasi kepada penegak hukum.", variants:[
+  {label:"§", desc:"Setiap orang yang menolak untuk memberikan informasi atau menahan informasi mengenai identifikasi dan semua upaya oleh penegak hukum untuk mendapatkan informasi tersebut telah dibebaskan.", cls:"M", jail:35, fine:415}
+]},
+{code:"(4)07", title:"Obstruction of a Government Employee", cat:"T4", txt:"Menghalangi pejabat pemerintah dalam melaksanakan tugasnya.", variants:[
+  {label:"§", desc:"Setiap orang yang menghalangi kejaksaan, penyidik, atau pejabat pemerintah lainnya dalam melaksanakan tugasnya untuk menjamin tertib administrasi hukum dan keadilan.", cls:"M", jail:30, fine:565}
+]},
+{code:"(4)08", title:"Harboring a Criminal", cat:"T4", txt:"Membantu tersangka menyembunyikan diri dalam proses penahanan.", variants:[
+  {label:"§", desc:"Setiap orang yang membantu tersangka untuk menyembunyikan, menjauhkan atau memperlambat dalam proses penahan oleh petugas penegak hukum.", cls:"M", jail:45, fine:485}
+]},
+
+/* ---------- TITLE 5. OFFENSES AGAINST THE PUBLIC HEALTH AND SAFETY ---------- */
+{code:"(5)01", title:"Possession of a Controlled Substance", cat:"T5", txt:"Memiliki segala bentuk narkotika tanpa resep yang sah. Kepemilikan ganja tidak termasuk.", variants:[
+  {label:"§", desc:"Setiap orang yang memiliki segala bentuk narkotika tanpa resep yang sah. Kepemilikan ganja tidak termasuk dalam bagian ini.", cls:"F", jail:55, fine:2155}
+]},
+{code:"(5)02", title:"Possession of a Controlled Substance with Intent to Sell", cat:"T5", txt:"Memiliki narkotika dengan maksud menjual, atau 25 gram atau lebih.", variants:[
+  {label:"§", desc:"Setiap orang yang memiliki narkotika dalam bentuk apapun dengan maksud tertentu untuk menjual dan/atau memiliki narkotika jenis apa pun sebanyak 25,0 (dua puluh lima) gram atau lebih.", cls:"F", jail:55, fine:2175}
+]},
+{code:"(5)03", title:"Possession of Marijuana", cat:"T5", txt:"Memiliki ganja tanpa resep yang sah dengan jumlah di bawah 5,0 gram.", variants:[
+  {label:"§", desc:"Setiap orang yang memiliki ganja tanpa resep yang sah dengan jumlah di bawah 5,0 (lima) gram. - Jika jumlahnya antara 5,0 gram sampai dengan 25,0 gram, maka dikenakan (5)01. - Jika melebihi 25,0 gram, dikenakan (5)02.", cls:"M", jail:35, fine:60}
+]},
+{code:"(5)04", title:"Maintaining a Place for the Purpose of Distribution", cat:"T5", txt:"Memiliki, mengoperasikan, atau terlibat dalam penyimpanan zat terkontrol atau senjata untuk penjualan ilegal.", variants:[
+  {label:"§", desc:"Setiap orang yang memiliki, mengoperasikan, atau terlibat dalam aktivitas yang melibatkan penyimpanan zat yang dikendalikan atau senjata api untuk tujuan penjualan atau perdagangan ilegal.", cls:"F", jail:45, fine:950}
+]},
+{code:"(5)05", title:"Sale of a Controlled Substance", cat:"T5", txt:"Secara melawan hukum meminta atau terlibat dalam penjualan narkotika.", variants:[
+  {label:"§", desc:"Setiap orang yang secara melawan hukum meminta atau terlibat dalam pengangkutan, impor, penjualan, memfasilitasi, membiayai, atau pemberian narkotika dalam bentuk apa pun.", cls:"F", jail:45, fine:985}
+]},
+{code:"(5)06", title:"Manufacture of a Controlled Substance", cat:"T5", txt:"Membuat, menggabungkan, mengubah, memproduksi, atau menyiapkan zat ilegal.", variants:[
+  {label:"§", desc:"Setiap orang yang, kecuali ditentukan lain oleh undang-undang, membuat, menggabungkan, mengubah, memproduksi, atau menyiapkan, baik secara langsung maupun tidak langsung dengan ekstraksi kimia atau alami, zat ilegal apa pun.", cls:"F", jail:55, fine:985}
+]},
+{code:"(5)07", title:"Possession of an Open Container", cat:"T5", txt:"Memiliki wadah alkohol yang terlihat dan terbuka di tempat umum atau kendaraan.", variants:[
+  {label:"§", desc:"Setiap orang yang memiliki wadah alkohol yang terlihat dan terbuka di tempat umum atau di kendaraan bermotor.", cls:"I", jail:0, fine:125}
+]},
+{code:"(5)08", title:"Public Intoxication", cat:"T5", txt:"Ditemukan di tempat umum di bawah pengaruh minuman keras yang memabukkan.", variants:[
+  {label:"§", desc:"Setiap orang yang ditemukan di tempat umum di bawah pengaruh minuman keras yang memabukkan.", cls:"M", jail:15, fine:215}
+]},
+{code:"(5)09", title:"Under the Influence of a Controlled Substance", cat:"T5", txt:"Ditemukan di tempat umum dengan sengaja menggunakan atau berada di bawah pengaruh narkotika.", variants:[
+  {label:"§", desc:"Setiap orang yang ditemukan di tempat umum dengan sengaja menggunakan atau berada di bawah pengaruh narkotika jenis apa pun.", cls:"M", jail:25, fine:285}
+]},
+{code:"(5)10", title:"Facial Obstruction", cat:"T5", txt:"Mengenakan topeng atau penyamaran untuk menghindari pengakuan.", variants:[
+  {label:"§", desc:"Setiap orang yang mengenakan topeng, kumis palsu, atau penyamaran pribadi apa pun, baik seluruhnya atau sebagian, dengan tujuan untuk menghindari pengakuan selama melakukan kejahatan dan/atau menolak untuk menghilangkan penghalang wajah atas perintah petugas perdamaian untuk tujuan menghindari pengakuan.", cls:"M", jail:20, fine:275}
+]},
+{code:"(5)11", title:"Public Indecency", cat:"T5", txt:"Memperlihatkan tubuh telanjang atau alat kelamin dengan niat cabul di depan umum.", variants:[
+  {label:"§", desc:"Setiap orang di depan umum memperlihatkan tubuh telanjang atau alat kelamin mereka dengan niat cabul.", cls:"M", jail:20, fine:235}
+]},
+{code:"(5)12", title:"Inciting a Riot", cat:"T5", txt:"Mendesak orang lain untuk terlibat dalam gejolak dan perilaku kekerasan.", variants:[
+  {label:"§", desc:"Setiap orang yang mendesak orang lain untuk terlibat dalam gejolak dan perilaku kekerasan dari jenis yang mungkin membuat alarm publik.", cls:"M", jail:25, fine:355}
+]},
+{code:"(5)13", title:"Riotous Activities", cat:"T5", txt:"Terlibat dalam gejolak dan perilaku kekerasan yang membuat alarm publik.", variants:[
+  {label:"§", desc:"Setiap orang yang terlibat dalam gejolak dan perilaku kekerasan dari jenis yang mungkin membuat alarm publik.", cls:"F", jail:30, fine:495}
+]},
+{code:"(5)14", title:"Desecration of a Human Corpse", cat:"T5", txt:"Perbuatan terhadap mayat seperti pemotongan, perusakan, atau pembakaran.", variants:[
+  {label:"§", desc:"Setiap perbuatan yang dilakukan setelah kematian seorang manusia termasuk, tetapi tidak terbatas pada, pemotongan, perusakan, pembakaran, atau setiap perbuatan yang dilakukan sehingga mayat itu dimakan, dicerai-beraikan, atau dihamburkan; kecuali, prosedur-prosedur yang dilakukan oleh lembaga negara atau otoritas berlisensi dalam tugas dan tanggung jawabnya. Ini termasuk pemindahan mayat dari tahanan kamar mayat.", cls:"F", jail:55, fine:3880}
+]},
+{code:"(5)15", title:"Illegal Logging", cat:"T5", txt:"Melakukan penebangan pohon tanpa izin dan lisensi yang sah.", variants:[
+  {label:"§", desc:"Setiap individu maupun kelompok atau sebuah pihak yang melakukan penebangan pohon tanpa izin dan memiliki lisensi yang sah dan berlaku.", cls:"M", jail:30, fine:1525}
+]},
+
+/* ---------- TITLE 6. CONTROL OF DEADLY WEAPONS AND EQUIPMENT ---------- */
+{code:"(6)01", title:"Possession of a Firearm Without a Permit", cat:"T6", txt:"Memiliki senjata api tanpa memiliki izin yang sah.", variants:[
+  {label:"§", desc:"Setiap orang yang memiliki senjata api tanpa memiliki izin yang sah.", cls:"M", jail:35, fine:1370}
+]},
+{code:"(6)02", title:"Possession of an Illegal Firearm", cat:"T6", txt:"Memiliki senjata api tanpa nomor seri atau yang dimodifikasi secara ilegal.", variants:[
+  {label:"§", desc:"Setiap orang yang memiliki senjata api tanpa nomor seri dan identifikasi terdaftar yang relevan dan/atau setiap orang yang memiliki segala jenis senjata api yang diubah atau dimodifikasi secara ilegal dan/atau setiap orang yang memiliki senjata api otomatis atau semi-otomatis.", cls:"F", jail:40, fine:1680}
+]},
+{code:"(6)03", title:"Discharging a Firearm from a Motor Vehicle", cat:"T6", txt:"Menembakkan senjata api dari dalam kendaraan bermotor.", variants:[
+  {label:"§", desc:"Setiap orang yang menjadi pengemudi atau pemilik kendaraan bermotor dan dengan sengaja mengizinkan orang lain untuk membawa senjata api ke dalam kendaraan bermotor dan melepaskan senjata api dari dalam kendaraan bermotor, atau dengan sengaja dan jahat menembakkan senjata api dari dalam kendaraan bermotor.", cls:"F", jail:45, fine:1280}
+]},
+{code:"(6)04", title:"Manufacture of a Dangerous Weapon", cat:"T6", txt:"Secara melawan hukum membuat senjata api atau perangkat berbahaya.", variants:[
+  {label:"§", desc:"Setiap orang secara melawan hukum membuat senjata api atau perangkat berbahaya.", cls:"F", jail:55, fine:2720}
+]},
+{code:"(6)05", title:"Possession of Illegal Firearm Parts", cat:"T6", txt:"Memiliki bagian dari senjata api untuk dijual atau disimpan pribadi.", variants:[
+  {label:"§", desc:"Setiap orang yang memiliki bagian dari senjata api yang akan digunakan untuk dijual dan/atau disimpan untuk pribadi.", cls:"M", jail:40, fine:1925}
+]},
+{code:"(6)06", title:"Brandishing of a Firearm", cat:"T6", txt:"Menunjuk, memegang, atau mengacungkan senjata api untuk menimbulkan ketakutan.", variants:[
+  {label:"§", desc:"Seseorang yang menunjuk, memegang, atau mengacungkan senjata api, memegang benda dengan cara yang mirip dengan senjata api, atau benda yang tampak seperti senjata api tanpa identifikasi mainan dan penyangga yang tepat dalam upaya untuk menimbulkan ketakutan atau histeria.", cls:"M", jail:40, fine:1380}
+]},
+
+/* ---------- TITLE 7. OFFENSES INVOLVING OPERATION OF A VEHICLE ---------- */
+{code:"(7)01", title:"Hit and Run", cat:"T7", txt:"Meninggalkan tempat kejadian kecelakaan tanpa mengidentifikasi diri.", variants:[
+  {label:"§", desc:"Meninggalkan tempat kejadian kecelakaan yang mengakibatkan cedera atau kematian yang melibatkan kerusakan harta benda, tanpa mengidentifikasi diri kepada pihak-pihak yang terlibat.", cls:"F", jail:35, fine:870}
+]},
+{code:"(7)02", title:"Evading a Peace Officer", cat:"T7", txt:"Melarikan diri atau berusaha menghindari petugas perdamaian yang mengejar.", variants:[
+  {label:"§", desc:"Setiap orang yang melarikan diri atau berusaha menghindari petugas perdamaian yang mengejar.", cls:"M", jail:30, fine:420}
+]},
+{code:"(7)03", title:"Driving on a Suspended License", cat:"T7", txt:"Mengoperasikan kendaraan dengan SIM yang dibekukan atau dicabut.", variants:[
+  {label:"§", desc:"Setiap orang yang mengoperasikan kendaraan bermotor dengan mengetahui bahwa Surat Izin Mengemudi telah dibekukan atau dicabut.", cls:"M", jail:30, fine:725}
+]},
+{code:"(7)04", title:"Flying Without License", cat:"T7", txt:"Mengoperasikan pesawat tanpa izin terbang yang sah.", variants:[
+  {label:"§", desc:"Setiap orang yang mengoperasikan pesawat tanpa izin terbang yang sah.", cls:"M", jail:25, fine:980}
+]},
+{code:"(7)05", title:"Negligent Operation of an Aircraft", cat:"T7", txt:"Gagal menyediakan keselamatan atau menerbangkan pesawat secara berbahaya.", variants:[
+  {label:"§", desc:"Setiap orang yang gagal menyediakan peralatan keselamatan yang layak, menyiarkan pengumuman yang sesuai di saluran ATC, melakukan pendaratan berbahaya, mendarat di lokasi yang menghalangi, terbang terlalu rendah ke tanah, terbang berbahaya, atau terbang ke zona terlarang.", cls:"F", jail:30, fine:1155}
+]},
+{code:"(7)06", title:"Illegal Modification Vehicle", cat:"T7", txt:"Memodifikasi kendaraan yang dapat mengganggu pengguna jalan atau pengemudi lain.", variants:[
+  {label:"§", desc:"Setiap orang yang memodifikasi kendaraan yang dapat mengganggu pengguna jalan lainnya maupun pengemudi kendaraan tersebut. Termasuk NOS di luar arena, part penyembunyi plat nomor, kaca film >70%, sirine tanpa izin, dan spoiler tinggi yang menutupi pandangan.", cls:"I", jail:0, fine:250}
+]},
+
+/* ---------- TITLE 8. ROAD LAW ---------- */
+{code:"(8)01", title:"Speeding Violation", cat:"T8", txt:"Mengemudi melebihi batas kecepatan yang ditetapkan.", variants:[
+  {label:"§", desc:"Melebihi kecepatan 94 MPH (65 KMH) di jalan raya umum di dalam kota Los Santos; 94 MPH (85 KMH) di luar kota; atau 94 MPH (100 KMH) di jalan raya empat lajur atau lebih.", cls:"I", jail:0, fine:210}
+]},
+{code:"(8)02", title:"Failure to Stop", cat:"T8", txt:"Gagal berhenti di daerah di mana berhenti diperlukan.", variants:[
+  {label:"§", desc:"Setiap orang yang gagal berhenti di daerah di mana berhenti diperlukan.", cls:"I", jail:0, fine:175}
+]},
+{code:"(8)03", title:"Yield Violation", cat:"T8", txt:"Gagal memberikan hak jalan kepada pejalan kaki atau kendaraan.", variants:[
+  {label:"§", desc:"Setiap orang yang gagal memberikan hak jalan kepada pejalan kaki atau untuk kendaraan.", cls:"I", jail:0, fine:90}
+]},
+{code:"(8)04", title:"Failure to Yield to Emergency Vehicle", cat:"T8", txt:"Menolak menepi dan tidak memberi ruang pada kendaraan darurat bersirene.", variants:[
+  {label:"§", desc:"Setiap orang yang menolak untuk menepi dan tidak memberi ruang pada kendaraan darurat dengan sirene aktif di sekitarnya.", cls:"I", jail:0, fine:100}
+]},
+{code:"(8)05", title:"Unauthorized Parking", cat:"T8", txt:"Parkir di lokasi terlarang sesuai ketentuan.", variants:[
+  {label:"§", desc:"Kendaraan yang diparkir menghalangi jalur lalu lintas, gang, pintu masuk parkir, penyeberangan, trotoar, menghadap lalu lintas berlawanan, di jembatan/terowongan, jalan bebas hambatan, rel kereta, area rumah sakit, pintu masuk Bank, jalan masuk pribadi, depan hidran kebakaran, atau depan properti orang lain tanpa izin.", cls:"I", jail:0, fine:115}
+]},
+{code:"(8)06", title:"Reckless Driving", cat:"T8", txt:"Mengemudi dengan sengaja atau ceroboh mengabaikan keselamatan orang atau properti.", variants:[
+  {label:"§", desc:"Setiap orang yang mengemudi kendaraan apapun di jalan raya dengan sengaja atau ceroboh mengabaikan keselamatan orang atau properti.", cls:"I", jail:0, fine:155}
+]},
+{code:"(8)07", title:"Vehicular Endangerment", cat:"T8", txt:"Mengemudi dengan sengaja atau ceroboh mengabaikan keselamatan orang atau properti.", variants:[
+  {label:"§", desc:"Setiap orang yang mengemudi kendaraan apapun di jalan raya dengan sengaja atau ceroboh mengabaikan keselamatan orang atau properti.", cls:"F", jail:45, fine:675}
+]},
+{code:"(8)08", title:"Driving Under the Influence (DUI)", cat:"T8", txt:"Mengoperasikan kendaraan saat terganggu oleh alkohol atau narkotika.", variants:[
+  {label:"§", desc:"Setiap orang yang mengoperasikan kendaraan bermotor ketika secara fisik dan mental terganggu oleh alkohol atau narkotika sedemikian rupa sehingga mereka tidak lagi memiliki kemampuan untuk mengemudi dengan karakteristik hati-hati dari orang yang sadar dengan kehati-hatian biasa dalam keadaan yang sama atau serupa.", cls:"F", jail:45, fine:725}
+]},
+{code:"(8)09", title:"Driving an Unregistered Vehicle", cat:"T8", txt:"Mengoperasikan kendaraan tanpa tanda plat nomor yang terlihat atau sah.", variants:[
+  {label:"§", desc:"Setiap orang yang mengoperasikan kendaraan bermotor tanpa tanda plat nomor yang terlihat atau sah.", cls:"I", jail:0, fine:390}
+]},
+{code:"(8)10", title:"Street Racing", cat:"T8", txt:"Melakukan balap motor tanpa izin dan ilegal di jalan raya umum.", variants:[
+  {label:"§", desc:"Setiap orang yang melakukan balap motor tanpa izin dan ilegal di jalan raya umum.", cls:"I", jail:0, fine:385}
+]},
+{code:"(8)11", title:"Driving Without a License", cat:"T8", txt:"Mengoperasikan kendaraan tanpa SIM yang masih berlaku.", variants:[
+  {label:"§", desc:"Setiap orang yang mengoperasikan kendaraan bermotor tanpa Surat Izin Mengemudi (SIM) yang masih berlaku.", cls:"M", jail:25, fine:425}
+]},
+{code:"(8)12", title:"Jaywalking", cat:"T8", txt:"Sembrono atau tidak tepat melintasi jalan raya.", variants:[
+  {label:"§", desc:"Setiap orang yang sembrono atau tidak tepat melintasi jalan raya.", cls:"I", jail:0, fine:85}
+]},
+{code:"(8)13", title:"Driving on the Wrong Side of the Road", cat:"T8", txt:"Mengemudi di sisi kiri jalan, melawan lalu lintas yang berlawanan.", variants:[
+  {label:"§", desc:"Mengemudi di sisi kiri jalan, melawan lalu lintas yang berlawanan.", cls:"I", jail:0, fine:185}
+]},
+{code:"(8)14", title:"Illegal Turn", cat:"T8", txt:"Membuat putar balik atau belokan secara ilegal.", variants:[
+  {label:"§", desc:"Membuat putar balik secara illegal, berbelok ke kanan atau ke kiri saat dilarang, atau membuat belokan yang melewati dari trotoar.", cls:"I", jail:0, fine:165}
+]},
+{code:"(8)15", title:"Driving Heavy Truck without License", cat:"T8", txt:"Mengoperasikan truk semi-trailer tanpa lisensi yang sah.", variants:[
+  {label:"§", desc:"Setiap orang yang mengoperasikan kendaraan truk semi-trailer tanpa memiliki Lisensi yang sah dan berlaku.", cls:"I", jail:0, fine:2500}
+]},
+{code:"(8)16", title:"Driving on Unauthorized Routes", cat:"T8", txt:"Mengoperasikan kendaraan berat di jalur yang tidak ditetapkan sebagai jalur truk.", variants:[
+  {label:"§", desc:"Setiap orang yang mengoperasikan kendaraan berat di jalur atau rute yang tidak ditetapkan sebagai jalur truk yang sah.", cls:"I", jail:0, fine:2250}
+]},
+];
+
+/* ===================== CATATAN KAKI (FOOTNOTES) =====================
+   Penjelasan tambahan / catatan praktik penegakan untuk pasal tertentu. */
+const FOOTNOTES = {
+  "(2)03": {ref:"(2)03", note:"Grand Theft Auto does stack with Tampering with a Vehicle, but not burglary or trespassing."},
+  "(1)04": {ref:"(1)04", note:"Perhatikan: teks asli pasal (1)04 pada file menyebut kode (1)03 pada baris hukumannya (kemungkinan salah ketik sumber)."},
+  "(5)03": {ref:"(5)03", note:"5,0–25,0 gram dikenakan (5)01 Possession of a controlled substance; melebihi 25,0 gram dikenakan (5)02 Intent to Sell."},
+  "(7)06": {ref:"(7)06", note:"Modifikasi ilegal termasuk NOS di luar arena, part penyembunyi plat nomor, kaca film >70%, sirine tanpa izin, dan spoiler tinggi."},
+  "(8)05": {ref:"(8)05", note:"Illegal Parking disertai peringatan pengemudi dan penyitaan kendaraan."},
+  "(8)01": {ref:"(8)01", note:"Batas kecepatan: 65 KMH dalam kota Los Santos, 85 KMH di luar kota, 100 KMH di jalan empat lajur atau lebih."}
+};
+
+/* ===================== TERJEMAHAN ENGLISH =====================
+   Peta code -> { title, var: { labelIndex: descEN } }  (opsional).
+   Bila tersedia, tombol ID/EN mengubah judul & deskripsi. */
+const EN = {
+  "(1)01":{title:"Intimidation", var:{0:"Threatens to physically injure or kill the person, directly, in writing, or via media."}},
+  "(1)02":{title:"Assault", var:{0:"Threatens or attempts offensive or injurious physical contact upon another."}},
+  "(1)03":{title:"Assault with a Deadly Weapon on Government Employee", var:{0:"Attempts violent injury upon a government employee with a deadly weapon (firearm, any close-range object, or a motor vehicle)."}},
+  "(1)04":{title:"Assault with a Deadly Weapon", var:{0:"Attempts violent injury upon another with a deadly weapon (firearm, any close-range object, or a motor vehicle)."}},
+  "(1)05":{title:"Battery", var:{0:"Willfully and unlawfully uses force or violence causing physical harm to another."}},
+  "(1)06":{title:"Battery on Government Employee", var:{0:"Willfully and unlawfully uses force or violence causing physical harm to a government employee."}},
+  "(1)07":{title:"Kidnapping", var:{0:"Detains or captures another without consent, with a planned purpose, and moves them a substantial distance."}},
+  "(1)08":{title:"Kidnapping a Government Employee", var:{0:"Kidnaps a government employee and holds them against their will."}},
+  "(1)09":{title:"Unlawful Imprisonment", var:{0:"Unlawfully detains or confines another without consent for one hour without planned intent or ransom."}},
+  "(1)10":{title:"Manslaughter", var:{0:"Unlawfully kills another as a result of negligence, without prior malice aforethought."}},
+  "(1)11":{title:"First Degree Murder", var:{0:"Kills another human being through a premeditated malicious act."}},
+  "(1)12":{title:"Second Degree Murder", var:{0:"Kills another human being through an act without premeditation but with malice aforethought."}},
+  "(1)13":{title:"Attempted Murder", var:{0:"Takes at least one direct step to kill another with intent to kill."}},
+  "(1)14":{title:"Rape", var:{0:"Engages in non-consensual intercourse by force, threat, or deceit, including touching intimate parts for sexual gratification."}},
+  "(2)01":{title:"Petty Theft", var:{0:"Steals property valued at less than $200 from another."}},
+  "(2)02":{title:"Grand Theft", var:{0:"Steals property valued at more than $200 from another."}},
+  "(2)03":{title:"Grand Theft Auto", var:{0:"Unlawfully enters a locked vehicle or its trunk with intent to steal the vehicle, its contents, or commit another crime inside."}},
+  "(2)04":{title:"Tampering with a Vehicle", var:{0:"Willfully damages a vehicle or its contents, or damages/moves any part without the owner's consent."}},
+  "(2)05":{title:"Robbery", var:{0:"Takes property from another's possession against their will by force, intimidation, and violence, facilitated by a weapon or object used as a weapon."}},
+  "(2)06":{title:"Receiving Stolen Property", var:{0:"Knowingly buys, sells, receives, conceals, or withholds stolen property."}},
+  "(2)07":{title:"Extortion", var:{0:"Uses violence or threats to force another to give money/property, to force an authority figure into official action, or as a public official to force payment."}},
+  "(2)08":{title:"Forgery", var:{0:"Commits forgery with intent to defraud or deceive another."}},
+  "(3)01":{title:"Burglary", var:{0:"Forcibly enters a building with intent to commit a crime."}},
+  "(3)02":{title:"Trespassing", var:{0:"Enters another's property without permission or right to do so."}},
+  "(3)03":{title:"Arson", var:{0:"Willfully, maliciously, or recklessly burns property without the owner's or an authorized person's consent."}},
+  "(3)04":{title:"Vandalism", var:{0:"Defaces, damages, or destroys public or private property."}},
+  "(4)01":{title:"Bribery", var:{0:"Offers something of value or makes a corrupt promise/attempt to unlawfully influence an official in their action, vote, or opinion."}},
+  "(4)02":{title:"Resisting Arrest", var:{0:"Willfully resists, delays, or obstructs a peace officer while making an arrest."}},
+  "(4)03":{title:"Contempt of Court", var:{0:"Fails to obey a direct order of a court official or a lawful warrant."}},
+  "(4)04":{title:"Misuse of a 911 System", var:{0:"Makes an emergency or non-emergency call for a purpose irrelevant to the relevant office, department, or agency."}},
+  "(4)05":{title:"Failure to Pay a Fine", var:{0:"Refuses to satisfy payment of a sum demanded by a ticket."}},
+  "(4)06":{title:"Failure to Identify to a Peace Officer", var:{0:"Refuses to provide or withholds identification information after all law enforcement attempts have been exhausted."}},
+  "(4)07":{title:"Obstruction of a Government Employee", var:{0:"Obstructs a prosecutor, investigator, or other government official in the performance of their duties."}},
+  "(4)08":{title:"Harboring a Criminal", var:{0:"Helps a suspect hide, flee, or delay detention by law enforcement."}},
+  "(5)01":{title:"Possession of a Controlled Substance", var:{0:"Possesses any form of narcotics without a valid prescription. Marijuana possession is excluded."}},
+  "(5)02":{title:"Possession of a Controlled Substance with Intent to Sell", var:{0:"Possesses any form of narcotics with intent to sell, and/or possesses 25.0 grams or more."}},
+  "(5)03":{title:"Possession of Marijuana", var:{0:"Possesses marijuana without a valid prescription in an amount under 5.0 grams. 5.0–25.0 g falls under (5)01; over 25.0 g falls under (5)02."}},
+  "(5)04":{title:"Maintaining a Place for the Purpose of Distribution", var:{0:"Owns, operates, or is involved in storing controlled substances or firearms for illegal sale or trade."}},
+  "(5)05":{title:"Sale of a Controlled Substance", var:{0:"Unlawfully solicits or engages in transporting, importing, selling, facilitating, financing, or supplying narcotics in any form."}},
+  "(5)06":{title:"Manufacture of a Controlled Substance", var:{0:"Creates, compounds, converts, produces, or prepares any illegal substance, directly or indirectly by chemical or natural extraction."}},
+  "(5)07":{title:"Possession of an Open Container", var:{0:"Possesses a visible, open alcohol container in a public place or motor vehicle."}},
+  "(5)08":{title:"Public Intoxication", var:{0:"Is found in a public place under the influence of intoxicating liquor."}},
+  "(5)09":{title:"Under the Influence of a Controlled Substance", var:{0:"Is found in a public place willfully using or under the influence of any narcotic."}},
+  "(5)10":{title:"Facial Obstruction", var:{0:"Wears a mask, false mustache, or any personal disguise, wholly or partly, to avoid recognition during a crime and/or refuses to remove it on an officer's order."}},
+  "(5)11":{title:"Public Indecency", var:{0:"In public exposes a naked body or genitals with lewd intent."}},
+  "(5)12":{title:"Inciting a Riot", var:{0:"Urges others to engage in turmoil and violent conduct likely to cause public alarm."}},
+  "(5)13":{title:"Riotous Activities", var:{0:"Engages in turmoil and violent conduct likely to cause public alarm."}},
+  "(5)14":{title:"Desecration of a Human Corpse", var:{0:"Commits acts upon a corpse such as dismemberment, destruction, or burning, except by authorized state procedures. Includes removing a body from the morgue."}},
+  "(5)15":{title:"Illegal Logging", var:{0:"An individual, group, or party logs trees without a valid and lawful license."}},
+  "(6)01":{title:"Possession of a Firearm Without a Permit", var:{0:"Possesses a firearm without a valid permit."}},
+  "(6)02":{title:"Possession of an Illegal Firearm", var:{0:"Possesses a firearm with no serial number/registered ID and/or any illegally altered or modified firearm and/or an automatic or semi-automatic firearm."}},
+  "(6)03":{title:"Discharging a Firearm from a Motor Vehicle", var:{0:"Being the driver/owner, knowingly allows another to carry a firearm into the vehicle and discharge it, or willfully and maliciously fires a firearm from within the vehicle."}},
+  "(6)04":{title:"Manufacture of a Dangerous Weapon", var:{0:"Unlawfully makes a firearm or dangerous device."}},
+  "(6)05":{title:"Possession of Illegal Firearm Parts", var:{0:"Possesses firearm parts to be sold and/or kept for personal use."}},
+  "(6)06":{title:"Brandishing of a Firearm", var:{0:"Points, holds, or brandishes a firearm, or an object resembling one, without proper toy identification, to cause fear or hysteria."}},
+  "(7)01":{title:"Hit and Run", var:{0:"Leaves the scene of an accident causing injury or death, involving property damage, without identifying to the parties involved."}},
+  "(7)02":{title:"Evading a Peace Officer", var:{0:"Flees or attempts to evade a pursuing peace officer."}},
+  "(7)03":{title:"Driving on a Suspended License", var:{0:"Operates a motor vehicle knowing the driver's license is suspended or revoked."}},
+  "(7)04":{title:"Flying Without License", var:{0:"Operates an aircraft without a valid flight license."}},
+  "(7)05":{title:"Negligent Operation of an Aircraft", var:{0:"Fails to provide adequate safety equipment, proper ATC announcements, hazardous landings, obstructing landings, flying too low, reckless flying, or flying into restricted zones."}},
+  "(7)06":{title:"Illegal Modification Vehicle", var:{0:"Modifies a vehicle in a way that endangers other road users or the driver; includes off-arena NOS, plate-hiding modifications, tint over 70%, unauthorized sirens, and high spoilers."}},
+  "(8)01":{title:"Speeding Violation", var:{0:"Exceeds 94 MPH (65 KMH) in-city Los Santos roads; 94 MPH (85 KMH) outside the city; or 94 MPH (100 KMH) on roads with four or more lanes."}},
+  "(8)02":{title:"Failure to Stop", var:{0:"Fails to stop in an area where stopping is required."}},
+  "(8)03":{title:"Yield Violation", var:{0:"Fails to yield the right of way to a pedestrian or a vehicle."}},
+  "(8)04":{title:"Failure to Yield to Emergency Vehicle", var:{0:"Refuses to pull over and does not give space to an emergency vehicle with active sirens nearby."}},
+  "(8)05":{title:"Unauthorized Parking", var:{0:"Parks in prohibited locations such as blocking traffic lanes, alleys, driveways, crosswalks, or fire hydrants, etc."}},
+  "(8)06":{title:"Reckless Driving", var:{0:"Drives any vehicle on a public road willfully or recklessly disregarding the safety of persons or property."}},
+  "(8)07":{title:"Vehicular Endangerment", var:{0:"Drives any vehicle on a public road willfully or recklessly disregarding the safety of persons or property."}},
+  "(8)08":{title:"Driving Under the Influence (DUI)", var:{0:"Operates a motor vehicle while physically and mentally impaired by alcohol or narcotics to the point of losing the ability to drive with ordinary care."}},
+  "(8)09":{title:"Driving an Unregistered Vehicle", var:{0:"Operates a motor vehicle without a visible or valid license plate."}},
+  "(8)10":{title:"Street Racing", var:{0:"Conducts an unauthorized and illegal street race on a public road."}},
+  "(8)11":{title:"Driving Without a License", var:{0:"Operates a motor vehicle without a valid driver's license."}},
+  "(8)12":{title:"Jaywalking", var:{0:"Recklessly or improperly crosses a roadway."}},
+  "(8)13":{title:"Driving on the Wrong Side of the Road", var:{0:"Drives on the left side of the road, against oncoming traffic."}},
+  "(8)14":{title:"Illegal Turn", var:{0:"Makes an illegal U-turn, turns right/left where prohibited, or turns across a sidewalk."}},
+  "(8)15":{title:"Driving Heavy Truck without License", var:{0:"Operates a semi-trailer truck without a valid license."}},
+  "(8)16":{title:"Driving on Unauthorized Routes", var:{0:"Operates a heavy vehicle on a route not designated as a lawful truck route."}}
+};
+
+/* ===================== STATE ===================== */
+let filterCat = "all";
+let query = "";
+let sortBy = "code";
+let expanded = {};      // code -> bool (sub-ayat terbuka)
+let selected = [];      // item = {code, vi}  (vi = index varian)
+let lang = "id";        // "id" | "en"
+const byCode = {};
+LAWS.forEach(l=>byCode[l.code]=l);
+
+/* helper bahasa: ambil judul & deskripsi varian sesuai bahasa aktif */
+function locTitle(l){ return (lang==="en" && EN[l.code] && EN[l.code].title) ? EN[l.code].title : l.title; }
+function locDesc(l, vi, v){
+  if(lang==="en" && EN[l.code] && EN[l.code].var && EN[l.code].var[vi]) return EN[l.code].var[vi];
+  return v.desc;
+}
+
+/* helper: kunci unik varian */
+const key = (code,vi) => code + "#" + vi;
+const isSel = (code,vi) => selected.some(s=>s.code===code && s.vi===vi);
+/* statistik pasal: hukuman tertinggi antar varian (untuk sort) */
+function stat(l){
+  let jail=0, fine=0, cls=l.variants[0]?l.variants[0].cls:"M";
+  l.variants.forEach(v=>{ jail=Math.max(jail,v.jail||0); fine=Math.max(fine,v.fine||0); });
+  return {jail, fine, cls};
+}
+
+/* ===================== HELPERS ===================== */
+const $ = id => document.getElementById(id);
+const clsName = c => c==="F"?"Felony":c==="M"?"Misdemeanor":"Infraction";
+const fmtJail = m => (m>=999? "LIFE" : (m? m+" bln" : "0 bln"));
+const fmtFine = n => (n? "$"+n.toLocaleString("en-US") : "—");
+const fmtMoney = n => "$"+n.toLocaleString("en-US");
+/* label kategori TITLE */
+const TITLE_LABEL = {
+  T1:"TITLE 1 · OFFENSES AGAINST PERSONS",
+  T2:"TITLE 2 · OFFENSES INVOLVING THEFT",
+  T3:"TITLE 3 · OFFENSES INVOLVING DAMAGE TO PROPERTY",
+  T4:"TITLE 4 · OFFENSES AGAINST PUBLIC ADMINISTRATION",
+  T5:"TITLE 5 · OFFENSES AGAINST THE PUBLIC HEALTH AND SAFETY",
+  T6:"TITLE 6 · CONTROL OF DEADLY WEAPONS AND EQUIPMENT",
+  T7:"TITLE 7 · OFFENSES INVOLVING OPERATION OF A VEHICLE",
+  T8:"TITLE 8 · ROAD LAW"
+};
+const catLabel = c => TITLE_LABEL[c] || "PENAL CODE";
+
+/* ===================== FILTER ===================== */
+function filtered(){
+  let arr = LAWS.slice();
+  if(["T1","T2","T3","T4","T5","T6","T7","T8"].includes(filterCat)) arr = arr.filter(l=>l.cat===filterCat);
+  else if(["F","M","I"].includes(filterCat)) arr = arr.filter(l=> l.variants.some(v=>v.cls===filterCat));
+
+  if(query){
+    const q = query.toLowerCase();
+    arr = arr.filter(l => {
+      const en = EN[l.code] || {};
+      const enDescs = en.var ? Object.values(en.var).join(" ") : "";
+      return l.code.toLowerCase().includes(q) ||
+        l.title.toLowerCase().includes(q) ||
+        (en.title||"").toLowerCase().includes(q) ||
+        l.txt.toLowerCase().includes(q) ||
+        enDescs.toLowerCase().includes(q) ||
+        l.variants.some(v => (v.desc||"").toLowerCase().includes(q));
+    });
+  }
+  if(sortBy==="jailDesc") arr.sort((a,b)=>stat(b).jail-stat(a).jail);
+  else if(sortBy==="fineDesc") arr.sort((a,b)=>stat(b).fine-stat(a).fine);
+  else if(sortBy==="name") arr.sort((a,b)=>a.title.localeCompare(b.title));
+  else arr.sort((a,b)=>a.code.localeCompare(b.code,undefined,{numeric:true}));
+  return arr;
+}
+
+/* ===================== RENDER LIST ===================== */
+function renderList(){
+  const arr = filtered();
+  $("countLbl").textContent = arr.length + " / " + LAWS.length + " pasal";
+  const list = $("list");
+  if(!arr.length){ list.innerHTML = '<div class="empty">// TIDAK ADA DATA YANG COCOK //</div>'; return; }
+
+  list.innerHTML = arr.map(l=>{
+    const st = stat(l);
+    const open = expanded[l.code] ? " open" : "";
+    // tanda pada pasal yang punya varian terpilih
+    const hasSel = selected.some(s=>s.code===l.code) ? " sel" : "";
+    let variantsHtml = "";
+    if(expanded[l.code]){
+      variantsHtml = '<div class="variants">' + l.variants.map((v,vi)=>{
+        const sel = isSel(l.code,vi) ? " sel" : "";
+        return `<div class="vrow${sel}" data-code="${l.code}" data-vi="${vi}">
+          <span class="vlabel">${v.label}</span>
+          <span class="vdesc">${locDesc(l,vi,v)}</span>
+          <span class="vtags">
+            <span class="tag t-${v.cls}">${v.cls}</span>
+            <span class="vjail">${v.jail?fmtJail(v.jail):"—"}</span>
+            <span class="vfine">${fmtFine(v.fine)}</span>
+          </span>
+          <button class="info" data-code="${l.code}" title="Lihat deskripsi pasal">?</button>
+          <button class="add vadd" title="Tambah varian ini">+</button>
+        </div>`;
+      }).join("") + '</div>';
+    }
+    return `<div class="pgroup${open}${hasSel}">
+      <div class="row" data-code="${l.code}">
+        <div class="code">${l.code}</div>
+        <div class="name">${locTitle(l)}<span class="tag t-${st.cls}">${st.cls}</span></div>
+        <div class="fine">${fmtFine(st.fine)}</div>
+        <div class="jail">${st.jail?fmtJail(st.jail):"—"}</div>
+        <button class="info" data-code="${l.code}" title="Lihat deskripsi pasal">?</button>
+        <button class="add quick" title="Tambah varian utama">${selected.some(s=>s.code===l.code)?"✓":"+"}</button>
+      </div>
+      ${variantsHtml}
+    </div>`;
+  }).join("");
+}
+
+/* event delegation di daftar */
+$("list").addEventListener("click", e=>{
+  // tombol ? -> tampilkan Deskripsi Pasal
+  const info = e.target.closest(".info");
+  if(info){
+    renderDetail(info.dataset.code);
+    return;
+  }
+  const vrow = e.target.closest(".vrow");
+  if(vrow){
+    const code = vrow.dataset.code, vi = +vrow.dataset.vi;
+    toggleSelect(code, vi);
+    return;
+  }
+  const row = e.target.closest(".row");
+  if(!row) return;
+  const code = row.dataset.code;
+  const l = byCode[code];
+  // tombol + cepat -> tambahkan varian utama (pertama) & buka varian
+  if(e.target.classList.contains("quick")){
+    if(l.variants.length===1){ toggleSelect(code,0); }
+    else { expanded[code]=true; renderList(); }
+    return;
+  }
+  // klik body baris -> expand/collapse varian (tanpa memunculkan deskripsi)
+  expanded[code] = !expanded[code];
+  renderList();
+});
+
+/* ===================== CARD DESKRIPSI PASAL ===================== */
+let detailCode = null;
+const DETAIL_ICON = {T1:"⚖",T2:"⚖",T3:"⚖",T4:"⚖",T5:"⚖",T6:"🔫",T7:"🚔",T8:"🚔"};
+function hideDetail(){
+  detailCode = null;
+  $("detailCard").classList.add("hidden");
+}
+function renderDetail(code){
+  detailCode = code;
+  const card = $("detailCard");
+  const box = $("detailBody");
+  const l = byCode[code];
+  if(!l){ hideDetail(); return; }
+  card.classList.remove("hidden");
+
+  const st = stat(l);
+  const fn = FOOTNOTES[code];
+  const enActive = (lang==="en" && EN[code]);
+  const catLabel = TITLE_LABEL[l.cat] || "PENAL CODE";
+
+  // ringkasan hukuman dari varian terpilih (atau tertinggi)
+  const selVars = l.variants.map((v,vi)=>({v,vi})).filter(x=>isSel(code,x.vi));
+  const useJail = selVars.length ? selVars.reduce((a,x)=>a+(x.v.jail||0),0) : st.jail;
+  const useFine = selVars.length ? selVars.reduce((a,x)=>a+(x.v.fine||0),0) : st.fine;
+
+  const varsHtml = `
+    <div class="d-vars">
+      <div class="vt">Varian Ayat (${l.variants.length}) — klik untuk tambah/hapus</div>
+      ${l.variants.map((v,vi)=>{
+        const sel = isSel(code,vi) ? " sel" : "";
+        return `<div class="d-vrow${sel}" data-code="${code}" data-vi="${vi}">
+          <span class="vl">${v.label}</span>
+          <span class="vd">${locDesc(l,vi,v)}</span>
+          <span class="vp">${v.jail?fmtJail(v.jail):"—"}<br>${fmtFine(v.fine)}</span>
+        </div>`;
+      }).join("")}
+    </div>`;
+
+  box.innerHTML = `
+    <div class="d-code">${DETAIL_ICON[l.cat]||""} ${l.code}</div>
+    <div class="d-title">${locTitle(l)}</div>
+    <div class="d-meta">
+      <span class="tag t-${st.cls}">${clsName(st.cls)} (${st.cls})</span>
+      <span class="tag t-I">${catLabel}</span>
+      ${enActive?'<span class="tag t-M">EN</span>':''}
+    </div>
+    <div class="d-stats">
+      <div class="d-stat"><span>PENJARA</span><b class="g">${useJail?fmtJail(useJail):"0 bln"}</b></div>
+      <div class="d-stat"><span>DENDA</span><b class="a">${useFine?fmtMoney(useFine):"—"}</b></div>
+      <div class="d-stat"><span>AYAT</span><b>${l.variants.length}</b></div>
+    </div>
+    <div class="d-desc">${l.txt}</div>
+    ${fn ? `<div class="d-note"><b>CATATAN — ${fn.ref}</b>${fn.note}</div>` : ""}
+    ${varsHtml}
+  `;
+}
+$("detailBody").addEventListener("click", e=>{
+  const v = e.target.closest(".d-vrow");
+  if(!v) return;
+  toggleSelect(v.dataset.code, +v.dataset.vi);
+  renderDetail(v.dataset.code);
+});
+$("detailClose").addEventListener("click", hideDetail);
+
+/* ===================== SELECTION / CALC ===================== */
+function toggleSelect(code, vi){
+  const i = selected.findIndex(s=>s.code===code && s.vi===vi);
+  if(i>=0) selected.splice(i,1); else selected.push({code, vi});
+  renderList(); renderCalc();
+}
+
+function renderCalc(){
+  const items = selected.map(s=>{
+    const l = byCode[s.code]; if(!l) return null;
+    const v = l.variants[s.vi]; if(!v) return null;
+    return {code:l.code, title:locTitle(l), label:v.label, desc:locDesc(l,s.vi,v), cls:v.cls, jail:v.jail||0, fine:v.fine||0};
+  }).filter(Boolean);
+
+  const jail = items.reduce((a,b)=>a+b.jail,0);
+  const fine = items.reduce((a,b)=>a+b.fine,0);
+  const life = items.some(i=>i.jail>=999);
+
+  $("totFine").textContent = fmtMoney(fine);
+  $("totJail").textContent = life? "LIFE" : jail+" bln";
+  $("totCount").textContent = items.length;
+  const yr = Math.floor(jail/12), mo = (jail%12);
+  $("totTime").textContent = life? "LIFE" : (yr+"th "+mo+"bln");
+
+  // basket
+  const bk = $("basket");
+  if(!items.length){
+    bk.innerHTML = '<div class="empty">Belum ada pasal dipilih.<br>Klik pasal untuk membuka sub-ayat,<br>lalu tekan + pada variannya.</div>';
+  } else {
+    bk.innerHTML = items.map((it,i)=>`<div class="bitem">
+      <span class="c">${it.code}${it.label!=="§"?"<b>"+it.label+"</b>":""}</span>
+      <span class="n">${it.title}</span>
+      <span class="tag t-${it.cls}">${it.cls}</span>
+      <span class="x" data-i="${i}" title="Hapus">✕</span>
+    </div>`).join("");
+  }
+
+  // chart: distribusi jumlah charge per kelas (Infraction tetap terhitung walau tanpa penjara)
+  const chart = $("chart");
+  const groups = {F:{n:0,fine:0,jail:0}, M:{n:0,fine:0,jail:0}, I:{n:0,fine:0,jail:0}};
+  items.forEach(l=>{
+    if(!groups[l.cls]) return;
+    groups[l.cls].n += 1;
+    groups[l.cls].fine += l.fine;
+    groups[l.cls].jail += l.jail;
+  });
+  const max = Math.max(groups.F.n, groups.M.n, groups.I.n, 1);
+  const rows = [
+    ["F", groups.F, "Felony"],
+    ["M", groups.M, "Misdemeanor"],
+    ["I", groups.I, "Infraction"]
+  ];
+  chart.innerHTML = rows.map(([k,g,label])=>{
+    const pct = Math.round(g.n/max*100);
+    return `<div class="cbar">
+      <div class="cl"><span>${label} (${k})</span><b>${g.n} charge</b></div>
+      <div class="track"><div class="fill f-${k}" style="width:${pct}%"></div></div>
+      <div class="csub">${g.jail?fmtJail(g.jail):"0 bln"} &nbsp;•&nbsp; ${fmtMoney(g.fine)}</div>
+    </div>`;
+  }).join("") + `<div style="font-size:10.5px;color:var(--muted);margin-top:8px;letter-spacing:1px">
+      Total denda: <span style="color:var(--amber)">${fmtMoney(fine)}</span> &nbsp;•&nbsp; Total penjara: <span style="color:var(--green)">${life?"LIFE":jail+" bulan"}</span>
+    </div>`;
+}
+
+$("basket").addEventListener("click", e=>{
+  const x = e.target.closest(".x");
+  if(!x) return;
+  selected.splice(+x.dataset.i,1);
+  renderList(); renderCalc();
+});
+
+$("clearBtn").addEventListener("click", ()=>{ selected=[]; renderList(); renderCalc(); });
+
+$("copyBtn").addEventListener("click", ()=>{
+  const items = selected.map(s=>{
+    const l=byCode[s.code], v=l&&l.variants[s.vi];
+    return v?{code:l.code,title:locTitle(l),label:v.label,cls:v.cls,jail:v.jail||0,fine:v.fine||0,note:(FOOTNOTES[l.code]||{}).note}:null;
+  }).filter(Boolean);
+  if(!items.length){ alert("Belum ada pasal yang dipilih."); return; }
+  const jail = items.reduce((a,b)=>a+b.jail,0);
+  const fine = items.reduce((a,b)=>a+b.fine,0);
+  const life = items.some(i=>i.jail>=999);
+  let t = "=== SENTENCE REPORT — SAN ANDREAS LAW INFORMATION ===\n";
+  items.forEach(l=>{
+    t += `${l.code}${l.label!=="§"?" "+l.label:""} (${l.cls}) ${l.title} — ${l.jail?fmtJail(l.jail):"-"} / ${l.fine?fmtMoney(l.fine):"-"}\n`;
+    if(l.note) t += `    † ${l.note}\n`;
+  });
+  t += "--------------------------------\n";
+  t += `TOTAL: ${life?"LIFE":jail+" bulan"} | ${fmtMoney(fine)}\n`;
+  navigator.clipboard.writeText(t).then(()=>{
+    const b=$("copyBtn"); const o=b.textContent; b.textContent="TERSALIN ✓";
+    setTimeout(()=>b.textContent=o,1400);
+  }).catch(()=>alert(t));
+});
+
+/* ===================== DETAIL MODAL ===================== */
+function openDetail(code){
+  const l = byCode[code]; if(!l) return;
+  $("mTitle").textContent = `${l.code} — ${locTitle(l)}`;
+  let extra = "";
+  // catatan tidak lagi ditampilkan di modal (dipindah ke card kanan)
+  let enHtml = "";
+  if(EN[l.code] && lang==="en"){
+    enHtml = `<div class="en-note">English translation active for this article.</div>`;
+  }
+  const vRows = l.variants.map((v,vi)=>{
+    const sel = isSel(code,vi);
+    return `<div class="vrow modal-vrow${sel?' sel':''}" data-code="${code}" data-vi="${vi}" style="cursor:pointer">
+      <span class="vlabel">${v.label}</span>
+      <span class="vdesc">${locDesc(l,vi,v)}</span>
+      <span class="vtags">
+        <span class="tag t-${v.cls}">${v.cls}</span>
+        <span class="vjail">${v.jail?fmtJail(v.jail):"—"}</span>
+        <span class="vfine">${fmtFine(v.fine)}</span>
+      </span>
+      <button class="add vadd">${sel?"✓":"+"}</button>
+    </div>`;
+  }).join("");
+
+  $("mBody").innerHTML = `
+    <div class="kv">
+      <div><span>KODE PASAL</span><br><b class="g">${l.code}</b></div>
+      <div><span>KODE KATEGORI</span><br><b class="a">${TITLE_LABEL[l.cat]||"PENAL CODE"}</b></div>
+      <div><span>JUMLAH AYAT</span><br><b>${l.variants.length}</b></div>
+    </div>
+    <div style="border-top:1px solid var(--line);padding-top:12px">${l.txt}</div>
+    ${enHtml}
+    <div style="margin-top:14px;font-size:11px;letter-spacing:1.5px;color:var(--green);text-transform:uppercase">Pilih Ayat / Varian Hukuman</div>
+    <div class="variants modal-variants">${vRows}</div>
+    ${extra}
+  `;
+  $("modal").classList.add("on");
+}
+$("mBody").addEventListener("click", e=>{
+  const vrow = e.target.closest(".modal-vrow");
+  if(!vrow) return;
+  toggleSelect(vrow.dataset.code, +vrow.dataset.vi);
+  openDetail(vrow.dataset.code); // re-render badge
+});
+$("mClose").onclick = ()=> $("modal").classList.remove("on");
+$("modal").onclick = e=>{ if(e.target.id==="modal") $("modal").classList.remove("on"); };
+
+/* ===================== INCIDENT REPORT ===================== */
+const DEPTS = {
+  LSSD:{county:"COUNTY OF LOS SANTOS", dept:"SHERIFF'S DEPARTMENT", state:"State of San Andreas", note:"LSSD SH-R-49 (Rev 2026)"},
+  LSPD:{county:"CITY OF LOS SANTOS",   dept:"POLICE DEPARTMENT",    state:"State of San Andreas", note:"LSPD IR FORM (Rev 2026)"},
+  SAHP:{county:"STATE OF SAN ANDREAS", dept:"HIGHWAY PATROL",       state:"State of San Andreas", note:"SAHP IR FORM (Rev 2026)"}
+};
+function applyDept(){
+  const d = DEPTS[$("rptDept").value] || DEPTS.LSSD;
+  $("rhCounty").textContent = d.county;
+  $("rhDept").textContent   = d.dept;
+  $("rhState").textContent  = d.state;
+  $("rfNote").textContent   = d.note + " — FOR OFFICIAL USE ONLY";
+}
+$("rptDept").addEventListener("change", applyDept);
+
+/* tarik charge dari kalkulator */
+function buildCharges(){
+  const items = selected.map(s=>{
+    const l = byCode[s.code], v = l && l.variants[s.vi];
+    return v ? {code:l.code, label:v.label, title:locTitle(l), cls:v.cls, jail:v.jail||0, fine:v.fine||0} : null;
+  }).filter(Boolean);
+
+  const box = $("rCharges");
+  if(!items.length){
+    box.innerHTML = '<span class="empty-ch">Belum ada pasal dipilih di kalkulator. Criminal charge akan muncul otomatis di sini.</span>';
+    $("rChargeTotal").textContent = "";
+    return;
+  }
+  let jail = 0, fine = 0, life = false;
+  box.innerHTML = items.map(it=>{
+    jail += it.jail; fine += it.fine; if(it.jail>=999) life = true;
+    const code = it.code + (it.label!=="§" ? " " + it.label : "");
+    return `<div class="ch-line">${code} — ${it.title}
+      <span class="ch-tag">${it.cls}</span>
+      <span style="float:right">${it.jail?fmtJail(it.jail):"-"} / ${it.fine?fmtMoney(it.fine):"-"}</span></div>`;
+  }).join("");
+  $("rChargeTotal").textContent = `TOTAL: ${life?"LIFE":jail+" bulan"}  |  Denda: $${fine.toLocaleString("en-US")}  |  Jumlah charge: ${items.length}`;
+}
+
+function openReport(){
+  applyDept();
+  buildCharges();
+  // auto-isi tanggal & officer bila kosong
+  const now = new Date(), p = n=>String(n).padStart(2,"0");
+  if(!$("rDate").value) $("rDate").value = `${now.getFullYear()}-${p(now.getMonth()+1)}-${p(now.getDate())}`;
+  if(!$("rTime").value) $("rTime").value = `${p(now.getHours())}:${p(now.getMinutes())}`;
+  if(!$("roBadge").value) $("roBadge").value = "";
+  $("rptModal").classList.add("on");
+}
+$("reportBtn").addEventListener("click", openReport);
+$("rptClose").onclick = ()=> $("rptModal").classList.remove("on");
+$("rptModal").onclick = e=>{ if(e.target.id==="rptModal") $("rptModal").classList.remove("on"); };
+
+/* sinkron nama -> tanda tangan */
+$("roName").addEventListener("input", e=> $("roSig").value = e.target.value);
+$("roSup").addEventListener("input", e=> $("supSig").value = e.target.value);
+
+/* export JPG */
+$("rptExport").addEventListener("click", function(){
+  if(typeof html2canvas === "undefined"){ alert("Library export belum termuat. Periksa koneksi internet."); return; }
+  const report = $("report-content");
+  const btn = this; btn.textContent = "MEMPROSES...";
+  const inputs = report.querySelectorAll("input, textarea, select");
+  const temp = [];
+  inputs.forEach(el=>{
+    const rep = document.createElement("div");
+    let val = "";
+    if(el.tagName==="SELECT"){ val = el.options[el.selectedIndex] ? el.options[el.selectedIndex].text : ""; if(val==="-") val=""; }
+    else if(el.type==="checkbox"){ val = el.checked ? "☑" : "☐"; }
+    else val = el.value;
+    rep.innerText = val || " ";
+    const cs = window.getComputedStyle(el);
+    rep.style.fontSize = cs.fontSize;
+    rep.style.color = "#111";
+    rep.style.whiteSpace = "pre-wrap";
+    rep.style.wordWrap = "break-word";
+    rep.style.display = "inline-block";
+    if(el.type==="checkbox"){ rep.style.fontFamily="Arial,sans-serif"; rep.style.marginRight="5px"; }
+    else rep.style.fontFamily = cs.fontFamily;
+    if(el.tagName==="INPUT" && el.type!=="checkbox"){ rep.style.borderBottom="1px solid #ddd"; rep.style.minWidth=el.offsetWidth+"px"; }
+    if(el.tagName==="TEXTAREA"){ rep.style.width="100%"; rep.style.minHeight=el.offsetHeight+"px"; rep.style.display="block"; }
+    if(el.type==="checkbox"){ el.style.opacity="0"; el.style.pointerEvents="none"; el.parentNode.insertBefore(rep, el); }
+    else { el.style.display="none"; el.parentNode.insertBefore(rep, el); }
+    temp.push({el, rep});
+  });
+  html2canvas(report, {scale:3, useCORS:true, backgroundColor:"#ffffff", logging:false, windowWidth:850, windowHeight:report.scrollHeight})
+    .then(canvas=>{
+      const link = document.createElement("a");
+      link.download = `${$("rptDept").value}-IncidentReport-${Date.now()}.jpg`;
+      link.href = canvas.toDataURL("image/jpeg",1.0);
+      link.click();
+      temp.forEach(t=>{ if(t.el.type==="checkbox"){ t.el.style.opacity=""; t.el.style.pointerEvents=""; } else t.el.style.display=""; t.rep.remove(); });
+      btn.textContent = "💾 EXPORT JPG";
+    }).catch(err=>{
+      alert("Gagal export: " + err.message);
+      temp.forEach(t=>{ if(t.el.type==="checkbox"){ t.el.style.opacity=""; t.el.style.pointerEvents=""; } else t.el.style.display=""; t.rep.remove(); });
+      btn.textContent = "💾 EXPORT JPG";
+    });
+});
+
+/* print */
+$("rptPrint").addEventListener("click", ()=> window.print());
+
+/* ===================== CONTROLS ===================== */
+$("search").addEventListener("input", e=>{ query=e.target.value.trim(); renderList(); });
+$("sortSel").addEventListener("change", e=>{ sortBy=e.target.value; renderList(); });
+$("chips").addEventListener("click", e=>{
+  const c = e.target.closest(".chip"); if(!c) return;
+  document.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));
+  c.classList.add("on");
+  filterCat = c.dataset.cat;
+  renderList();
+});
+
+/* toggle bahasa ID/EN */
+function setLang(l){
+  lang = l;
+  const b = $("langBtn");
+  b.textContent = lang==="en" ? "🌐 EN" : "🌐 ID";
+  renderList(); renderCalc();
+  if(typeof renderDetail==="function") renderDetail(detailCode);
+  if($("modal").classList.contains("on") && currentDetail) openDetail(currentDetail);
+}
+$("langBtn").addEventListener("click", ()=> setLang(lang==="id" ? "en" : "id"));
+
+/* ===================== KEYBOARD SHORTCUTS ===================== */
+let currentDetail = null;
+const _origOpenDetail = openDetail;
+openDetail = function(code){ currentDetail = code; return _origOpenDetail(code); };
+
+function anyModalOpen(){ return $("modal").classList.contains("on") || $("rptModal").classList.contains("on"); }
+function closeModals(){ $("modal").classList.remove("on"); $("rptModal").classList.remove("on"); }
+
+document.addEventListener("keydown", e=>{
+  const tag = (e.target.tagName||"").toLowerCase();
+  const typing = tag==="input" || tag==="textarea" || tag==="select" || e.target.isContentEditable;
+
+  // ESC — tutup modal / keluar dari search
+  if(e.key==="Escape"){
+    if(anyModalOpen()){ closeModals(); }
+    else if(document.activeElement === $("search")){ $("search").blur(); }
+    return;
+  }
+
+  // "/" — fokus ke search (kecuali sedang mengetik)
+  if(e.key==="/" && !typing){
+    e.preventDefault();
+    $("search").focus(); $("search").select();
+    return;
+  }
+
+  // "L" — toggle bahasa (kecuali sedang mengetik)
+  if((e.key==="l"||e.key==="L") && !typing){
+    setLang(lang==="id" ? "en" : "id");
+    return;
+  }
+
+  // "C" — clear pilihan (kecuali sedang mengetik)
+  if((e.key==="c"||e.key==="C") && !typing && !e.ctrlKey && !e.metaKey){
+    $("clearBtn").click();
+    return;
+  }
+
+  // "R" — buka Incident Report (kecuali sedang mengetik)
+  if((e.key==="r"||e.key==="R") && !typing && !e.ctrlKey && !e.metaKey){
+    $("reportBtn").click();
+    return;
+  }
+}, true);
+
+/* clock */
+function tick(){
+  const d = new Date();
+  const p = n => String(n).padStart(2,"0");
+  $("clock").textContent = `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+}
+setInterval(tick,1000); tick();
+
+/* ===================== INIT ===================== */
+renderList();
+renderCalc();
+</script>
+</body>
+</html>

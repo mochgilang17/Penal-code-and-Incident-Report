@@ -374,7 +374,7 @@
     <div class="badge"><img src="SA_Seal.webp" alt="Seal of the State of San Andreas"></div>
     <div class="titles">
       <h1>SAN ANDREAS LAW INFORMATION INSTITUTE</h1>
-      <p>Mobile Data Computer &mdash; Penal &amp; Vehicle Code Terminal</p>
+      <p>Mobile Data Computer &mdash; Penal Code Terminal</p>
     </div>
     <div class="status">
       <span><span class="dot"></span> SYSTEM ONLINE</span>
@@ -403,8 +403,14 @@
 
     <div class="chips" id="chips">
       <span class="chip on" data-cat="all">SEMUA</span>
-      <span class="chip" data-cat="PEN">PENAL CODE</span>
-      <span class="chip" data-cat="VEH">VEHICLE CODE</span>
+      <span class="chip" data-cat="T1">T1 · PERSONS</span>
+      <span class="chip" data-cat="T2">T2 · THEFT</span>
+      <span class="chip" data-cat="T3">T3 · PROPERTY</span>
+      <span class="chip" data-cat="T4">T4 · PUBLIC ADMIN</span>
+      <span class="chip" data-cat="T5">T5 · HEALTH &amp; SAFETY</span>
+      <span class="chip" data-cat="T6">T6 · WEAPONS</span>
+      <span class="chip" data-cat="T7">T7 · VEHICLE OPS</span>
+      <span class="chip" data-cat="T8">T8 · ROAD LAW</span>
       <span class="chip" data-cat="F">FELONY (F)</span>
       <span class="chip" data-cat="M">MISDEMEANOR (M)</span>
       <span class="chip" data-cat="I">INFRACTION (I)</span>
@@ -427,7 +433,7 @@
       <div class="panel-hd"><span class="bar"></span> Sentence Calculator</div>
       <div class="stat-grid">
         <div class="stat"><div class="lbl">Total Denda</div><div class="val amber" id="totFine">$0</div></div>
-        <div class="stat"><div class="lbl">Total Penjara</div><div class="val" id="totJail">0 min</div></div>
+        <div class="stat"><div class="lbl">Total Penjara</div><div class="val" id="totJail">0 bln</div></div>
         <div class="stat"><div class="lbl">Pasal Terpilih</div><div class="val" id="totCount">0</div></div>
         <div class="stat"><div class="lbl">Estimasi Waktu</div><div class="val" id="totTime">0m 0s</div></div>
       </div>
@@ -613,694 +619,356 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 /* =========================================================
-   DATA — diambil dari "San Andreas Law Information Institute"
+   DATA — Penal Code (GTAC)
    Klasifikasi: I = Infraction, M = Misdemeanor, F = Felony
-   ========================================================= */
-/* =========================================================
-   DATA — diambil dari "San Andreas Law Information Institute"
    Struktur tiap pasal:
      variants: [ {label, desc, cls, jail, fine}, ... ]
      - label : "(a)", "(b)", atau "§" bila hanya satu ketentuan
      - cls   : I = Infraction, M = Misdemeanor, F = Felony
-   jail = menit ; 999 = hukuman seumur hidup (LIFE)
+   jail = hukuman maksimum dalam BULAN ; 999 = hukuman seumur hidup (LIFE)
+   cat  : T1..T8 = TITLE 1..8
    ========================================================= */
 const LAWS = [
-/* ---------- PENAL CODE ---------- */
-{code:"101", title:"Criminal Threats", cat:"PEN", txt:"Mengancam melukai/membunuh orang lain sehingga menimbulkan rasa takut yang wajar.", variants:[
-  {label:"(a)", desc:"Mengancam melukai atau membunuh orang tersebut secara langsung, tertulis, atau melalui media.", cls:"M", jail:30, fine:500},
-  {label:"(b)", desc:"Mengancam melukai atau membunuh teman dekat/kerabat orang lain.", cls:"M", jail:30, fine:500}
+/* ---------- TITLE 1. OFFENSES AGAINST PERSONS ---------- */
+{code:"(1)01", title:"Intimidation", cat:"T1", txt:"Menyampaikan ancaman akan menyakiti secara fisik atau membunuh orang lain, baik secara langsung, tertulis, atau melalui media.", variants:[
+  {label:"§", desc:"Setiap orang yang menyampaikan kepada orang lain bahwa mereka akan menyakiti secara fisik atau membunuh orang itu, baik secara langsung, tertulis, atau melalui media.", cls:"M", jail:15, fine:275}
 ]},
-{code:"102", title:"Assault", cat:"PEN", txt:"Secara ilegal mencoba dan mampu melakukan cedera kekerasan pada orang lain.", variants:[
-  {label:"§", desc:"Upaya melakukan cedera kekerasan pada orang lain.", cls:"M", jail:25, fine:600}
+{code:"(1)02", title:"Assault", cat:"T1", txt:"Mengancam atau mencoba melakukan kontak fisik yang menyinggung atau melukai orang lain.", variants:[
+  {label:"§", desc:"Setiap orang yang mengancam atau mencoba melakukan kontak fisik yang menyinggung atau melukai orang lain.", cls:"M", jail:25, fine:470}
 ]},
-{code:"103", title:"Assault on a Peace Officer", cat:"PEN", txt:"Assault terhadap petugas keamanan yang menjalankan tugas.", variants:[
-  {label:"§", desc:"Upaya melakukan cedera kekerasan pada petugas keamanan yang bertugas.", cls:"M", jail:30, fine:650}
+{code:"(1)03", title:"Assault with a Deadly Weapon on Government Employee", cat:"T1", txt:"Upaya melakukan cedera kekerasan pada pegawai pemerintah dengan senjata mematikan.", variants:[
+  {label:"§", desc:"Upaya untuk melakukan cedera kekerasan pada pegawai pemerintah dengan senjata mematikan. Senjata digambarkan sebagai senjata api atau segala jenis barang jarak dekat, juga termasuk kendaraan bermotor.", cls:"F", jail:45, fine:850}
 ]},
-{code:"104", title:"Assault on a State Employee", cat:"PEN", txt:"Assault terhadap pegawai negeri yang menjalankan tugas.", variants:[
-  {label:"§", desc:"Upaya melakukan cedera kekerasan pada pegawai negeri yang bertugas.", cls:"M", jail:40, fine:700}
+{code:"(1)04", title:"Assault with a Deadly Weapon", cat:"T1", txt:"Upaya melakukan cedera kekerasan pada orang lain dengan senjata mematikan.", variants:[
+  {label:"§", desc:"Upaya untuk melakukan cedera kekerasan pada orang lain dengan senjata mematikan. Senjata digambarkan sebagai senjata api atau segala jenis barang jarak dekat, juga termasuk kendaraan bermotor.", cls:"F", jail:40, fine:650}
 ]},
-{code:"105", title:"Assault with a Deadly Weapon", cat:"PEN", txt:"Mengancam bahaya segera dengan senjata / alat / barang berbahaya.", variants:[
-  {label:"§", desc:"Mengancam bahaya segera menggunakan senjata atau barang berbahaya.", cls:"F", jail:40, fine:1150}
+{code:"(1)05", title:"Battery", cat:"T1", txt:"Menggunakan kekuatan atau kekerasan yang disengaja dan melanggar hukum untuk menyebabkan kerugian fisik pada orang lain.", variants:[
+  {label:"§", desc:"Setiap orang yang menggunakan kekuatan atau kekerasan yang disengaja dan melanggar hukum untuk menyebabkan kerugian fisik pada orang lain.", cls:"M", jail:27, fine:480}
 ]},
-{code:"106", title:"Assault with a Deadly Weapon on a Peace Officer", cat:"PEN", txt:"Assault dengan senjata terhadap petugas keamanan yang bertugas.", variants:[
-  {label:"§", desc:"Mengancam bahaya segera dengan senjata kepada petugas keamanan.", cls:"F", jail:50, fine:1200}
+{code:"(1)06", title:"Battery on Government Employee", cat:"T1", txt:"Menggunakan kekuatan atau kekerasan yang disengaja untuk menyebabkan kerugian fisik pada pegawai pemerintah.", variants:[
+  {label:"§", desc:"Setiap orang yang menggunakan kekuatan atau kekerasan yang disengaja dan melanggar hukum untuk menyebabkan kerugian fisik pada pegawai pemerintah.", cls:"F", jail:38, fine:680}
 ]},
-{code:"107", title:"Battery", cat:"PEN", txt:"Menggunakan kekuatan/kekerasan sengaja untuk melukai orang lain.", variants:[
-  {label:"§", desc:"Kekerasan sengaja dan tidak sah yang menyebabkan kerugian fisik.", cls:"M", jail:24, fine:450}
+{code:"(1)07", title:"Kidnapping", cat:"T1", txt:"Menahan atau menangkap orang lain tanpa persetujuan mereka dengan maksud yang direncanakan.", variants:[
+  {label:"§", desc:"Setiap orang yang menahan atau menangkap orang lain tanpa persetujuan mereka dengan maksud yang direncanakan, dan memindahkan dengan jarak yang cukup jauh.", cls:"F", jail:30, fine:620}
 ]},
-{code:"108", title:"Battery on a Peace Officer", cat:"PEN", txt:"Battery terhadap petugas keamanan yang bertugas.", variants:[
-  {label:"§", desc:"Kekerasan terhadap petugas keamanan yang bertugas.", cls:"M", jail:30, fine:500}
+{code:"(1)08", title:"Kidnapping a Government Employee", cat:"T1", txt:"Menculik pegawai pemerintah dan menahan mereka di luar kehendak mereka.", variants:[
+  {label:"§", desc:"Setiap orang yang menculik pegawai pemerintah dan menahan mereka di luar kehendak mereka.", cls:"F", jail:35, fine:670}
 ]},
-{code:"109", title:"Battery on a State Employee", cat:"PEN", txt:"Battery terhadap pegawai negeri yang bertugas.", variants:[
-  {label:"§", desc:"Kekerasan terhadap pegawai negeri yang bertugas.", cls:"M", jail:30, fine:500}
+{code:"(1)09", title:"Unlawful Imprisonment", cat:"T1", txt:"Secara tidak sah menahan atau mengurung orang lain tanpa persetujuan mereka.", variants:[
+  {label:"§", desc:"Setiap orang yang secara tidak sah menahan atau mengurung orang lain tanpa ada persetujuan mereka selama satu jam tanpa maksud atau tebusan yang direncanakan.", cls:"M", jail:25, fine:580}
 ]},
-{code:"110", title:"Aggravated Battery", cat:"PEN", txt:"Kekerasan besar/berkelanjutan yang menyebabkan kerugian berat.", variants:[
-  {label:"(a)", desc:"Kekerasan besar/berkelanjutan yang menyebabkan kerugian berat.", cls:"F", jail:36, fine:850},
-  {label:"(b)", desc:"Menggunakan senjata/alat/barang berbahaya untuk menyebabkan kerugian berat.", cls:"F", jail:48, fine:900}
+{code:"(1)10", title:"Manslaughter", cat:"T1", txt:"Melawan hukum membunuh orang lain sebagai akibat dari kelalaian tanpa niat jahat sebelumnya.", variants:[
+  {label:"§", desc:"Setiap orang yang melawan hukum membunuh orang lain sebagai akibat dari kelalaian atau membahayakan tanpa ada niat jahat sebelumnya.", cls:"F", jail:50, fine:1450}
 ]},
-{code:"111", title:"Manslaughter", cat:"PEN", txt:"Membunuh manusia lain tanpa niat jahat.", variants:[
-  {label:"§", desc:"Membunuh tanpa niat jahat.", cls:"F", jail:72, fine:1000},
-  {label:"(a)", desc:"Manslaughter sukarela: akibat pertengkaran mendadak/emosi memuncak.", cls:"F", jail:72, fine:1000},
-  {label:"(b)", desc:"Manslaughter tidak sukarela: dalam tindakan tidak sah atau tanpa perhatian yang cukup.", cls:"F", jail:72, fine:1000},
-  {label:"(c)", desc:"Manslaughter kendaraan: mengemudi berbahaya dan ceroboh yang menyebabkan kematian.", cls:"F", jail:72, fine:1000},
-  {label:"(d)", desc:"Menghindari petugas dengan kendaraan dan menyebabkan kematian.", cls:"F", jail:72, fine:1000}
+{code:"(1)11", title:"First Degree Murder", cat:"T1", txt:"Membunuh manusia lain melalui tindakan niat jahat yang telah direncanakan sebelumnya.", variants:[
+  {label:"§", desc:"Setiap orang yang membunuh manusia lain melalui tindakan niat jahat yang telah direncanakan sebelumnya.", cls:"F", jail:60, fine:5850}
 ]},
-{code:"112", title:"False Imprisonment", cat:"PEN", txt:"Menahan/menangkap orang tanpa persetujuan.", variants:[
-  {label:"(a)", desc:"Menahan/menangkap orang tanpa persetujuan, tanpa niat direncanakan atau tebusan.", cls:"F", jail:36, fine:650},
-  {label:"(b)", desc:"Melakukan penangkapan warga yang tidak sah.", cls:"M", jail:12, fine:250}
+{code:"(1)12", title:"Second Degree Murder", cat:"T1", txt:"Membunuh manusia lain tanpa perencanaan namun dengan niat jahat sebelumnya.", variants:[
+  {label:"§", desc:"Setiap orang yang membunuh manusia lain melalui tindakan yang tidak direncanakan dengan niat jahat sebelumnya.", cls:"F", jail:50, fine:5550}
 ]},
-{code:"113", title:"Kidnapping", cat:"PEN", txt:"Menculik/menahan orang dengan kekuatan atau ketakutan.", variants:[
-  {label:"(a)", desc:"Mengambil/menahan orang dengan kekuatan atau ketakutan, dengan niat direncanakan.", cls:"F", jail:48, fine:650},
-  {label:"(b)", desc:"Merebut/mengurung/menculik untuk tebusan, imbalan, atau pemerasan.", cls:"F", jail:56, fine:660}
+{code:"(1)13", title:"Attempted Murder", cat:"T1", txt:"Mengambil langkah langsung untuk membunuh orang lain dengan maksud membunuh mereka.", variants:[
+  {label:"§", desc:"Setiap orang yang mengambil setidaknya satu langkah langsung untuk membunuh orang lain dengan maksud untuk membunuh mereka.", cls:"F", jail:50, fine:2850}
 ]},
-{code:"114", title:"Mayhem", cat:"PEN", txt:"Melukai/melumpuhkan bagian tubuh dengan tujuan sadis/pemerasan.", variants:[
-  {label:"§", desc:"Merusak/melumpuhkan bagian tubuh dengan tujuan balas dendam, pemerasan, atau sadis.", cls:"F", jail:82, fine:1000}
-]},
-{code:"115", title:"Stalking", cat:"PEN", txt:"Mengikuti/mengganggu orang secara sengaja dan berniat jahat.", variants:[
-  {label:"(a)", desc:"Sengaja mengikuti/mengganggu orang yang telah menyatakan tidak setuju.", cls:"M", jail:12, fine:350},
-  {label:"(b)", desc:"Melanggar perintah penahanan resmi dari pengadilan.", cls:"M", jail:16, fine:400}
-]},
-{code:"116", title:"Human Trafficking", cat:"PEN", txt:"Membatasi kebebasan orang untuk kerja paksa atau perdagangan seks.", variants:[
-  {label:"(a)", desc:"Membatasi kebebasan orang untuk memaksa kerja atau perdagangan seks.", cls:"F", jail:36, fine:750},
-  {label:"(b)", desc:"Menyelinap orang asing ke negara bagian tanpa visa/otorisasi.", cls:"F", jail:24, fine:660}
-]},
-{code:"185", title:"Wearing a Mask or Disguise to Evade Police", cat:"PEN", txt:"Mengenakan topeng/penyamaran untuk menghindari identifikasi.", variants:[
-  {label:"§", desc:"Mengenakan topeng/penyamaran untuk menghindari identifikasi saat pelanggaran.", cls:"M", jail:4, fine:150}
-]},
-{code:"187", title:"Murder", cat:"PEN", txt:"Pembunuhan dengan tingkat kesengajaan berbeda.", variants:[
-  {label:"(a)", desc:"First Degree: alat penghancur, racun, penyiksaan, atau dengan perencanaan/deliberate/premeditated. Terhadap petugas keamanan dianggap first degree.", cls:"F", jail:132, fine:1500},
-  {label:"(b)", desc:"Second Degree: membunuh tanpa perencanaan, tetapi dengan niat jahat sebelumnya.", cls:"F", jail:120, fine:1250},
-  {label:"(c)", desc:"Felony Murder: pembunuhan saat terlibat tindakan felony premeditated.", cls:"F", jail:120, fine:1300}
-]},
-{code:"188", title:"Attempted Murder", cat:"PEN", txt:"Percobaan membunuh atau menyebabkan bahaya mengancam jiwa.", variants:[
-  {label:"(a)", desc:"Sengaja dan tegas mencoba membunuh melalui tindakan premeditasi.", cls:"F", jail:56, fine:950},
-  {label:"(b)", desc:"Akibat kecelakaan kriminal/kelalaian/emosi tinggi menyebabkan kerusakan parah.", cls:"F", jail:48, fine:870}
-]},
-{code:"211", title:"Robbery", cat:"PEN", txt:"Mengambil harta orang lain tanpa izin dengan kekuatan/rasa takut.", variants:[
-  {label:"§", desc:"Mengambil harta dari kepemilikan orang lain dengan kekuatan atau rasa takut.", cls:"F", jail:30, fine:650}
-]},
-{code:"215", title:"Carjacking", cat:"PEN", txt:"Mengambil kendaraan milik orang lain dengan kekuatan/rasa takut.", variants:[
-  {label:"§", desc:"Mengambil kendaraan dari tangan/kehadiran orang dengan kekuatan atau rasa takut.", cls:"F", jail:30, fine:450}
-]},
-{code:"216", title:"Rape", cat:"PEN", txt:"Hubungan seksual dengan paksaan / tanpa persetujuan.", variants:[
-  {label:"§", desc:"Memaksa orang untuk hubungan seksual, tanpa persetujuan, atau pada orang yang tidak mampu memberi persetujuan.", cls:"F", jail:56, fine:540}
-]},
-{code:"217", title:"Lewd Or Dissolute Conduct In Public", cat:"PEN", txt:"Perilaku seksual tidak pantas di tempat umum.", variants:[
-  {label:"§", desc:"Meminta atau terlibat perilaku seksual tidak pantas di tempat umum.", cls:"M", jail:12, fine:250}
-]},
-{code:"218", title:"Indecent Exposure", cat:"PEN", txt:"Memperlihatkan tubuh telanjang/genitalia.", variants:[
-  {label:"(a)", desc:"Memperlihatkan tubuh telanjang/genitalia di tanah publik atau area bisnis.", cls:"M", jail:14, fine:300},
-  {label:"(b)", desc:"Memperlihatkan tubuh telanjang/genitalia di tanah pribadi tanpa izin.", cls:"M", jail:12, fine:250},
-  {label:"(c)", desc:"Terlibat seks/aktivitas seksual di depan anak di bawah umur.", cls:"F", jail:18, fine:350}
-]},
-{code:"219", title:"Sexual Assault", cat:"PEN", txt:"Penghinaan verbal seksual atau ancaman kontak seksual tidak disetujui.", variants:[
-  {label:"§", desc:"Penghinaan verbal untuk penggairahan seksual atau ancaman kontak seksual tidak disetujui.", cls:"M", jail:24, fine:450}
-]},
-{code:"220", title:"Sexual Battery", cat:"PEN", txt:"Sentuhan tidak diinginkan atau kontak seksual.", variants:[
-  {label:"(a)", desc:"Sentuhan tidak diinginkan atau kontak seksual.", cls:"M", jail:30, fine:350},
-  {label:"(b)", desc:"Serangan/kontak fisik agresif untuk penggairahan seksual, gratifikasi, atau penyalahgunaan.", cls:"F", jail:36, fine:550}
-]},
-{code:"221", title:"Prostitution", cat:"PEN", txt:"Terlibat tindakan seksual sebagai imbalan pembayaran.", variants:[
-  {label:"§", desc:"Sadar terlibat tindakan seksual sebagai imbalan pembayaran/barang/layanan.", cls:"M", jail:8, fine:150}
-]},
-{code:"222", title:"Solicitation of a Prostitute", cat:"PEN", txt:"Menawarkan imbalan untuk tindakan seksual.", variants:[
-  {label:"§", desc:"Menawarkan pembayaran/barang/layanan untuk tindakan seksual.", cls:"M", jail:8, fine:150}
-]},
-{code:"223", title:"Pandering / Pimping", cat:"PEN", txt:"Mengajak/mengawasi orang dalam prostitusi dan mengambil hasilnya.", variants:[
-  {label:"§", desc:"Mengajak/mengiklankan/membantu/mengawasi orang dalam prostitusi dan mengambil hasilnya.", cls:"F", jail:20, fine:350}
-]},
-{code:"224", title:"Statutory Rape", cat:"PEN", txt:"Hubungan seksual dengan orang di bawah 18 tahun.", variants:[
-  {label:"§", desc:"Hubungan seksual dengan orang di bawah 18 tahun yang tidak dapat memberi persetujuan hukum.", cls:"F", jail:18, fine:250}
-]},
-{code:"225", title:"Child Abuse", cat:"PEN", txt:"Siksaan/cedera pada anak di bawah 18 tahun.", variants:[
-  {label:"§", desc:"Sengaja menyebabkan siksaan kejam atau cedera traumatis pada anak di bawah 18 tahun.", cls:"F", jail:35, fine:550}
-]},
-{code:"226", title:"Possession of Child Pornography", cat:"PEN", txt:"Memiliki konten seksual anak di bawah 18 tahun.", variants:[
-  {label:"§", desc:"Sengaja memiliki gambar/film/video konten anak di bawah 18 tahun dalam perilaku seksual.", cls:"F", jail:65, fine:1000}
-]},
-{code:"227", title:"Solicitation of a Minor", cat:"PEN", txt:"Berkomunikasi dengan anak di bawah umur untuk tujuan seksual.", variants:[
-  {label:"§", desc:"Berkomunikasi dengan anak di bawah umur untuk bertemu dengan tujuan tindakan seksual.", cls:"F", jail:24, fine:450}
-]},
-{code:"228", title:"Minor Alcohol Violation", cat:"PEN", txt:"Anak di bawah 21 tahun memiliki/mengonsumsi alkohol.", variants:[
-  {label:"§", desc:"Anak di bawah 21 tahun memiliki alkohol atau berada di bawah pengaruhnya.", cls:"I", jail:0, fine:2500}
-]},
-{code:"229", title:"Sale of Alcohol to a Minor", cat:"PEN", txt:"Menjual alkohol kepada anak di bawah 21 tahun.", variants:[
-  {label:"§", desc:"Sengaja menjual alkohol kepada anak di bawah 21 tahun.", cls:"M", jail:4, fine:50}
-]},
-{code:"230", title:"Animal Abuse / Cruelty", cat:"PEN", txt:"Melukai/membunuh hewan.", variants:[
-  {label:"(a)", desc:"Dengan sengaja melukai, menyiksa, atau membunuh hewan hidup.", cls:"F", jail:16, fine:200},
-  {label:"(b)", desc:"Karena kelalaian melukai, menyiksa, atau membunuh hewan hidup.", cls:"F", jail:12, fine:150}
-]},
-{code:"232", title:"Sale of Tobacco to a Minor", cat:"PEN", txt:"Menjual produk tembakau kepada minor di bawah 21 tahun.", variants:[
-  {label:"§", desc:"Sengaja menjual produk tembakau kepada minor di bawah 21 tahun.", cls:"M", jail:4, fine:50}
-]},
-{code:"301", title:"Littering", cat:"PEN", txt:"Membuang sampah/limbah yang menciptakan bahaya.", variants:[
-  {label:"§", desc:"Sengaja atau karena kelalaian membuang sampah/limbah yang dapat melukai atau membahayakan lalu lintas.", cls:"I", jail:0, fine:300}
-]},
-{code:"302", title:"Illegally Discharging a Firearm", cat:"PEN", txt:"Melepaskan tembakan secara sangat ceroboh.", variants:[
-  {label:"§", desc:"Sengaja melepaskan tembakan secara sangat ceroboh yang dapat menyebabkan cedera/kematian.", cls:"M", jail:4, fine:100}
-]},
-{code:"303", title:"Shooting At An Inhabited Dwelling Or Occupied Car", cat:"PEN", txt:"Menembak ke arah rumah/kendaraan yang dihuni.", variants:[
-  {label:"§", desc:"Sengaja melepaskan tembakan ke arah rumah/gedung/kendaraan/pesawat/trailer yang dihuni.", cls:"F", jail:36, fine:550}
-]},
-{code:"304", title:"Possession of a Controlled Substance Other than Marijuana", cat:"PEN", txt:"Memiliki zat terkontrol selain ganja.", variants:[
-  {label:"§", desc:"Memiliki zat terkontrol selain ganja tanpa dasar legal (medis/resep).", cls:"M", jail:4, fine:100}
-]},
-{code:"305", title:"Possession of Controlled Substance with Intent To Sell", cat:"PEN", txt:"Memiliki zat terkontrol >10 gram dengan niat menjual.", variants:[
-  {label:"§", desc:"Memiliki zat terkontrol selain ganja lebih dari 10 gram dengan niat menjual.", cls:"F", jail:24, fine:350}
-]},
-{code:"306", title:"Possession of Drug Paraphernalia", cat:"PEN", txt:"Memiliki alat untuk mengonsumsi zat terkontrol ilegal.", variants:[
-  {label:"§", desc:"Sengaja memiliki alat khusus untuk memproses/mengonsumsi zat terkontrol ilegal.", cls:"M", jail:4, fine:50}
-]},
-{code:"307", title:"Maintaining A Place For Distribution", cat:"PEN", txt:"Memelihara properti untuk distribusi ilegal.", variants:[
-  {label:"§", desc:"Membuka/memelihara properti untuk menjual/menyimpan zat terkontrol/senjata ilegal.", cls:"F", jail:28, fine:450}
-]},
-{code:"308", title:"Manufacture of a Controlled Substance", cat:"PEN", txt:"Memproduksi zat ilegal.", variants:[
-  {label:"§", desc:"Memproduksi/menyiapkan zat ilegal secara langsung maupun tidak langsung.", cls:"F", jail:48, fine:550}
-]},
-{code:"309", title:"Sale of a Controlled Substance Other than Marijuana", cat:"PEN", txt:"Menjual zat terkontrol selain ganja.", variants:[
-  {label:"§", desc:"Menjual atau berniat menjual zat terkontrol selain ganja.", cls:"F", jail:36, fine:350}
-]},
-{code:"310", title:"Sale of a Controlled Substance", cat:"PEN", txt:"Menjual ganja atau obat resep.", variants:[
-  {label:"§", desc:"Menjual atau berniat menjual ganja atau obat resep.", cls:"M", jail:14, fine:150}
-]},
-{code:"311", title:"Possession of an Open Container", cat:"PEN", txt:"Wadah alkohol terbuka di tempat umum.", variants:[
-  {label:"§", desc:"Memiliki wadah alkohol terbuka di tempat umum atau kendaraan.", cls:"I", jail:0, fine:500}
-]},
-{code:"312", title:"Public Intoxication", cat:"PEN", txt:"Di bawah pengaruh alkohol di tempat umum.", variants:[
-  {label:"§", desc:"Ditemukan di tempat umum di bawah pengaruh alkohol.", cls:"M", jail:4, fine:40}
-]},
-{code:"313", title:"Under The Influence of a Controlled Substance", cat:"PEN", txt:"Berada di bawah pengaruh zat terlarang.", variants:[
-  {label:"(a)", desc:"Menggunakan atau berada di bawah pengaruh zat terlarang tanpa izin/resep.", cls:"M", jail:5, fine:50},
-  {label:"(b)", desc:"Menggunakan atau berada di bawah pengaruh ganja di tempat umum atau saat kejahatan lain.", cls:"M", jail:4, fine:30}
-]},
-{code:"314", title:"Possession of Marijuana", cat:"PEN", txt:"Kepemilikan ganja (legal kecuali kondisi tertentu).", variants:[
-  {label:"(a)", desc:"Memiliki lebih dari 5 gram marijuana.", cls:"M", jail:6, fine:50},
-  {label:"(b)", desc:"Berusia di bawah 21 tahun dan memiliki hingga 5 gram.", cls:"M", jail:4, fine:40},
-  {label:"(c)", desc:"Berusia di bawah 18 tahun dan memiliki hingga 5 gram.", cls:"I", jail:0, fine:200}
-]},
-{code:"315", title:"Possession of an Unlicensed Firearm", cat:"PEN", txt:"Membawa senjata legal tanpa lisensi.", variants:[
-  {label:"§", desc:"Membawa senjata legal tanpa lisensi di tubuh/kendaraan/tempat usaha.", cls:"M", jail:40, fine:450}
-]},
-{code:"316", title:"Possession of a Destructive Device", cat:"PEN", txt:"Memiliki alat peledak/bahan mudah terbakar.", variants:[
-  {label:"§", desc:"Memiliki alat/perangkat dari bahan peledak atau cairan mudah terbakar.", cls:"F", jail:30, fine:450}
-]},
-{code:"317", title:"Manufacture of a Destructive Device or Prohibited Weapon", cat:"PEN", txt:"Memproduksi senjata berbahaya/peledak.", variants:[
-  {label:"§", desc:"Memproduksi/merakit/membongkar senjata berbahaya, peledak, perangkap, atau pisau.", cls:"F", jail:32, fine:500}
-]},
-{code:"318", title:"Illegal Sale, Lease, or Transfer of a Firearm", cat:"PEN", txt:"Memindahtangankan senjata tanpa FFL.", variants:[
-  {label:"§", desc:"Menjual/menyewa/mentransfer senjata api tanpa Federal Firearms License.", cls:"F", jail:60, fine:800}
-]},
-{code:"319", title:"Drive-By Shooting", cat:"PEN", txt:"Menembak dari kendaraan.", variants:[
-  {label:"(a)", desc:"Pengemudi/pemilik yang sengaja mengizinkan orang menembak dari kendaraan.", cls:"M", jail:16, fine:350},
-  {label:"(b)", desc:"Menembakkan senjata api dari kendaraan ke arah orang lain.", cls:"F", jail:30, fine:400}
-]},
-{code:"320", title:"Weapons License Violation", cat:"PEN", txt:"Pelanggaran lisensi CCW.", variants:[
-  {label:"§", desc:"Pelanggaran CCW: masuk area terlarang, menolak tunjukkan lisensi, alkohol saat membawa senjata, dll.", cls:"M", jail:50, fine:500}
-]},
-{code:"321", title:"Failure to Report a Stolen Firearm", cat:"PEN", txt:"Gagal melaporkan senjata hilang dalam 48 jam.", variants:[
-  {label:"§", desc:"Gagal melaporkan senjata api hilang dalam 48 jam setelah mengetahui.", cls:"M", jail:40, fine:500}
-]},
-{code:"322", title:"Illegal Distribution of Ammunition", cat:"PEN", txt:"Menjual/mendistribusikan amunisi ilegal.", variants:[
-  {label:"§", desc:"Menjual atau mendistribusikan amunisi secara ilegal.", cls:"F", jail:30, fine:550}
-]},
-{code:"323", title:"Terrorism", cat:"PEN", txt:"Ancaman/tindakan sistematis menimbulkan ketakutan skala besar.", variants:[
-  {label:"(a)", desc:"Ancaman/tindakan sistematis terhadap kepentingan umum untuk menimbulkan ketakutan skala besar.", cls:"F", jail:999, fine:0},
-  {label:"(b)", desc:"Serangan/ancaman terhadap fasilitas publik atau pribadi besar.", cls:"F", jail:999, fine:0}
-]},
-{code:"324", title:"Treason", cat:"PEN", txt:"Melakukan perang terhadap San Andreas / membantu musuh.", variants:[
-  {label:"§", desc:"Melakukan perang terhadap negara bagian atau memberi bantuan kepada musuh. Hukuman seumur hidup.", cls:"F", jail:999, fine:0}
-]},
-{code:"401", title:"Unlawful Assembly", cat:"PEN", txt:"Berkumpul untuk melakukan tindak pidana.", variants:[
-  {label:"(a)", desc:"Dua orang atau lebih berkumpul untuk tindak pidana atau tindak hukum kekerasan/anarkis.", cls:"M", jail:4, fine:50},
-  {label:"(b)", desc:"Kelompok gagal berunjuk rasa damai tanpa izin resmi (dikenakan ke pemimpin/pengorganisir).", cls:"I", jail:0, fine:900}
-]},
-{code:"402", title:"Incitement to Riot", cat:"PEN", txt:"Sengaja menggugah kerumunan untuk kekerasan.", variants:[
-  {label:"§", desc:"Sengaja menggugah kerumunan untuk mendorong kekerasan atau kerusuhan sipil.", cls:"F", jail:20, fine:450}
-]},
-{code:"403", title:"Riot", cat:"PEN", txt:"Kerusuhan / membebaskan tahanan saat kerusuhan.", variants:[
-  {label:"(a)", desc:"Tetap hadir di kerusuhan setelah peringatan hukum untuk beranjak.", cls:"M", jail:8, fine:50},
-  {label:"(b)", desc:"Berpartisipasi mengambil orang dari penahanan sah dengan kerusuhan.", cls:"F", jail:24, fine:500}
-]},
-{code:"404", title:"Brandishing a Firearm", cat:"PEN", txt:"Menunjukkan senjata api dengan cara mengancam.", variants:[
-  {label:"§", desc:"Mengeluarkan/memperlihatkan senjata api dengan cara marah atau mengancam, kecuali bela diri.", cls:"F", jail:120, fine:1500}
-]},
-{code:"405", title:"Brandishing a Deadly Weapon", cat:"PEN", txt:"Menunjukkan senjata mematikan non-api.", variants:[
-  {label:"§", desc:"Mengeluarkan/memperlihatkan senjata mematikan selain senjata api dengan cara mengancam.", cls:"M", jail:20, fine:250}
-]},
-{code:"406", title:"Unauthorized Entry on an Emergency Site", cat:"PEN", txt:"Memasuki/menolak meninggalkan area darurat.", variants:[
-  {label:"(a)", desc:"Memasuki area darurat/zona berbahaya yang telah ditutup.", cls:"M", jail:10, fine:250},
-  {label:"(b)", desc:"Menolak meninggalkan atau masuk kembali ke area darurat setelah dikeluarkan.", cls:"M", jail:15, fine:200},
-  {label:"(c)", desc:"Melakukan tindak pidana lain (pencurian/perampokan) saat berada di area darurat.", cls:"F", jail:20, fine:300}
-]},
-{code:"415", title:"Disturbing the Peace", cat:"PEN", txt:"Mengganggu ketertiban umum.", variants:[
-  {label:"(a)", desc:"Bertarung ilegal di tempat publik atau menantang orang untuk bertarung.", cls:"M", jail:3, fine:20},
-  {label:"(b)", desc:"Mengganggu orang lain dengan suara keras dan tidak wajar.", cls:"I", jail:0, fine:200},
-  {label:"(c)", desc:"Menggunakan kata-kata menyinggung di tempat publik yang memprovokasi kekerasan.", cls:"I", jail:0, fine:500}
-]},
-{code:"459", title:"Burglary", cat:"PEN", txt:"Memasuki bangunan/kendaraan dengan niat mencuri.", variants:[
-  {label:"§", desc:"Memasuki bangunan atau kendaraan dengan niat pencurian atau felony lain.", cls:"F", jail:20, fine:250}
-]},
-{code:"501", title:"Embezzlement", cat:"PEN", txt:"Mengambil barang yang dipercayakan.", variants:[
-  {label:"(a)", desc:"Secara curang mengambil barang yang dipercayakan oleh orang lain.", cls:"M", jail:8, fine:50},
-  {label:"(b)", desc:"Pegawai negara yang curang memperoleh/menggunakan barang dalam pengendaliannya.", cls:"F", jail:20, fine:250}
-]},
-{code:"502", title:"Arson", cat:"PEN", txt:"Membakar struktur/tanah/barang.", variants:[
-  {label:"(a)", desc:"Sengaja dan jahat membakar struktur, tanah hutan, atau barang tanpa izin.", cls:"F", jail:32, fine:550},
-  {label:"(b)", desc:"Karena kecelakaan kriminal/kelalaian menyebabkan kebakaran.", cls:"M", jail:4, fine:50}
-]},
-{code:"503", title:"Possession of Burglary Tools", cat:"PEN", txt:"Memiliki alat dan niat mencuri.", variants:[
-  {label:"§", desc:"Memiliki kombinasi alat dan niat melakukan pencurian.", cls:"M", jail:8, fine:20}
-]},
-{code:"504", title:"Forgery", cat:"PEN", txt:"Menandatangani nama lain dengan niat menipu.", variants:[
-  {label:"§", desc:"Menandatangani nama orang lain atau nama fiktif dengan niat menipu.", cls:"M", jail:6, fine:50}
-]},
-{code:"505", title:"Forgery of a State Document", cat:"PEN", txt:"Memalsukan dokumen negara.", variants:[
-  {label:"§", desc:"Memalsukan SIM, izin pilot, kartu identitas, atau izin senjata.", cls:"F", jail:15, fine:250}
-]},
-{code:"506", title:"Counterfeiting", cat:"PEN", txt:"Membuat/memiliki uang palsu.", variants:[
-  {label:"§", desc:"Membuat atau memiliki alat/uang palsu, tagihan, atau koin.", cls:"F", jail:12, fine:124}
-]},
-{code:"507", title:"Petty Theft", cat:"PEN", txt:"Mencuri barang ≤ $950.", variants:[
-  {label:"§", desc:"Mencuri barang pribadi/perusahaan bernilai tidak melebihi $950.", cls:"M", jail:8, fine:50}
-]},
-{code:"508", title:"Grand Theft", cat:"PEN", txt:"Pencurian dengan nilai besar / kendaraan / senjata.", variants:[
-  {label:"(a)", desc:"Mencuri barang pribadi/perusahaan bernilai melebihi $950.", cls:"F", jail:15, fine:250},
-  {label:"(b)", desc:"Mencuri mobil yang tidak dihuni.", cls:"F", jail:12, fine:187},
-  {label:"(c)", desc:"Mencuri senjata api.", cls:"F", jail:30, fine:550}
-]},
-{code:"509", title:"Extortion", cat:"PEN", txt:"Intimidasi untuk mendapatkan barang/layanan.", variants:[
-  {label:"(a)", desc:"Menggunakan intimidasi atau kekerasan untuk mendapatkan barang/layanan.", cls:"F", jail:22, fine:356},
-  {label:"(b)", desc:"Menggunakan/mengancam kekuasaan dengan niat jahat untuk memaksa tindakan.", cls:"F", jail:32, fine:432}
-]},
-{code:"510", title:"Receiving Stolen Property", cat:"PEN", txt:"Menerima barang hasil curian.", variants:[
-  {label:"§", desc:"Membeli/menerima barang yang telah dicuri atau diperoleh melalui pemerasan.", cls:"M", jail:6, fine:70}
-]},
-{code:"511", title:"Insurance Fraud", cat:"PEN", txt:"Penipuan asuransi.", variants:[
-  {label:"(a)", desc:"Menghancurkan/membuang barang diasuransikan dengan niat menipu perusahaan asuransi.", cls:"F", jail:14, fine:434},
-  {label:"(b)", desc:"Sengaja menyebabkan tabrakan untuk klaim palsu.", cls:"M", jail:8, fine:87}
-]},
-{code:"512", title:"Trespass", cat:"PEN", txt:"Memasuki properti tanpa izin.", variants:[
-  {label:"(a)", desc:"Memasuki properti orang lain saat ditutup tanpa izin.", cls:"M", jail:8, fine:80},
-  {label:"(b)", desc:"Memasuki fasilitas pemerintah atau bagian terlarang tanpa otorisasi.", cls:"F", jail:30, fine:140},
-  {label:"(c)", desc:"Memasuki tanah dengan tanda masuk dilarang.", cls:"M", jail:6, fine:50},
-  {label:"(d)", desc:"Menolak meninggalkan tempat usaha saat diminta pemilik.", cls:"M", jail:8, fine:70},
-  {label:"(e)", desc:"Melanggar peringatan larangan masuk yang telah diterima.", cls:"M", jail:8, fine:90}
-]},
-{code:"513", title:"Fraud", cat:"PEN", txt:"Menipu orang atas uang/barang/layanan.", variants:[
-  {label:"§", desc:"Menipu orang atas uang, tenaga, barang, atau layanan melalui pernyataan palsu.", cls:"F", jail:18, fine:560}
-]},
-{code:"514", title:"Vandalism", cat:"PEN", txt:"Merusak properti orang lain.", variants:[
-  {label:"§", desc:"Merusak atau menghancurkan properti milik orang lain.", cls:"M", jail:8, fine:80}
-]},
-{code:"601", title:"Bribery", cat:"PEN", txt:"Menyuap pejabat publik.", variants:[
-  {label:"§", desc:"Memberi hadiah/imbalan kepada pejabat publik untuk mempengaruhi tugas.", cls:"F", jail:25, fine:240}
-]},
-{code:"602", title:"Jury Tampering", cat:"PEN", txt:"Mempengaruhi/mengancam juri.", variants:[
-  {label:"(a)", desc:"Mempengaruhi juri melalui komunikasi, ancaman, atau bujukan di luar proses hukum.", cls:"F", jail:8, fine:80},
-  {label:"(b)", desc:"Mengancam juri terkait proses pidana di mana putusan telah dijatuhkan.", cls:"F", jail:18, fine:280}
-]},
-{code:"603", title:"Intimidating a Witness or Victim", cat:"PEN", txt:"Mencegah saksi/korban bersaksi.", variants:[
-  {label:"(a)", desc:"Mencegah/mendorong saksi atau korban untuk tidak hadir atau bersaksi.", cls:"F", jail:20, fine:250},
-  {label:"(b)", desc:"Mencegah distribusi/penyelesaian surat pernyataan hukum.", cls:"F", jail:16, fine:167}
-]},
-{code:"604", title:"Escape", cat:"PEN", txt:"Melarikan diri dari penahanan.", variants:[
-  {label:"§", desc:"Melarikan diri dari penjara, layanan masyarakat, rumah sakit, atau penahanan petugas.", cls:"F", jail:40, fine:650}
-]},
-{code:"605", title:"Aiding in the Escape from State Custody", cat:"PEN", txt:"Membantu tahanan melarikan diri.", variants:[
-  {label:"(a)", desc:"Membantu/menolong orang yang ditahan untuk melarikan diri dari hukum.", cls:"F", jail:30, fine:550},
-  {label:"(b)", desc:"Memberikan informasi yang membantu tahanan melarikan diri.", cls:"M", jail:8, fine:40}
-]},
-{code:"606", title:"Perjury", cat:"PEN", txt:"Kesaksian/laporan palsu di bawah sumpah.", variants:[
-  {label:"(a)", desc:"Sengaja memberi informasi palsu dalam surat pernyataan/kesaksian resmi.", cls:"F", jail:16, fine:168},
-  {label:"(b)", desc:"Petugas perdamaian sengaja membuat pernyataan palsu dalam laporan resmi.", cls:"F", jail:28, fine:272}
-]},
-{code:"607", title:"Filing a False Report", cat:"PEN", txt:"Melaporkan kejahatan/senjata hilang palsu.", variants:[
-  {label:"(a)", desc:"Melaporkan bahwa felony/misdemeanor terjadi, mengetahui laporan palsu.", cls:"M", jail:8, fine:80},
-  {label:"(b)", desc:"Melaporkan senjata api hilang/dicuri, mengetahui laporan palsu.", cls:"F", jail:24, fine:298}
-]},
-{code:"608", title:"Filing a False Complaint", cat:"PEN", txt:"Pengaduan palsu terhadap pejabat.", variants:[
-  {label:"§", desc:"Mengajukan keluhan palsu terhadap pejabat publik/pegawai untuk memulai tindakan administratif palsu.", cls:"M", jail:8, fine:50}
-]},
-{code:"609", title:"Corruption of Public Duty", cat:"PEN", txt:"Korupsi dalam tugas publik.", variants:[
-  {label:"(a)", desc:"Petugas/pegawai membocorkan informasi investigasi untuk keuntungan finansial.", cls:"F", jail:30, fine:560},
-  {label:"(b)", desc:"Petugas dengan wewenang menolak menangkap orang yang didakwa.", cls:"F", jail:24, fine:450},
-  {label:"(c)", desc:"Pegawai negara menunjukkan kelalaian kriminal dalam tugas.", cls:"F", jail:24, fine:460}
-]},
-{code:"610", title:"Obstruction of Justice", cat:"PEN", txt:"Menghalangi/menunda pegawai negara.", variants:[
-  {label:"(a)", desc:"Menunjukkan usaha jelas dan termotivasi untuk mencegah/menunda pegawai negara.", cls:"M", jail:6, fine:60},
-  {label:"(b)", desc:"Gagal mematuhi perintah sah dari petugas keamanan.", cls:"M", jail:4, fine:40}
-]},
-{code:"611", title:"Resisting a Peace Officer", cat:"PEN", txt:"Melawan/menghindari penangkapan.", variants:[
-  {label:"(a)", desc:"Menghindari penangkapan non-kendaraan atau melawan penangkapan secara fisik.", cls:"M", jail:8, fine:80},
-  {label:"(b)", desc:"Kabur dari penjagaan setelah ditahan dengan alat pembatas/kekuatan fisik.", cls:"F", jail:10, fine:100}
-]},
-{code:"612", title:"Failure To Pay A Fine", cat:"PEN", txt:"Gagal membayar denda pengadilan.", variants:[
-  {label:"§", desc:"Gagal membayar denda/biaya yang diperintahkan pengadilan dalam periode waktu yang ditentukan.", cls:"M", jail:8, fine:80}
-]},
-{code:"613", title:"Failure to Identify to a Peace Officer", cat:"PEN", txt:"Tidak memberikan identitas saat ditahan.", variants:[
-  {label:"§", desc:"Tidak memberikan nama/identitas saat ditahan atau ditangkap untuk tujuan MDC.", cls:"M", jail:4, fine:40}
-]},
-{code:"614", title:"Impersonation of a State Employee", cat:"PEN", txt:"Berpura-pura pegawai negara/federal.", variants:[
-  {label:"(a)", desc:"Berpura-pura sebagai pekerja pemerintah negara/daerah.", cls:"M", jail:8, fine:80},
-  {label:"(b)", desc:"Mengenakan seragam pegawai negara resmi/realistis dengan lencana.", cls:"M", jail:8, fine:80},
-  {label:"(c)", desc:"Berpura-pura sebagai pegawai federal.", cls:"F", jail:20, fine:520}
-]},
-{code:"615", title:"Making a False Report of an Emergency", cat:"PEN", txt:"Laporan darurat palsu.", variants:[
-  {label:"§", desc:"Melaporkan keadaan darurat palsu ke departemen negara/nomor darurat.", cls:"M", jail:8, fine:80}
-]},
-{code:"616", title:"Evidence Tampering", cat:"PEN", txt:"Menghancurkan/mengubah bukti.", variants:[
-  {label:"§", desc:"Menghancurkan, menyembunyikan, atau mengubah bukti investigasi/pengadilan.", cls:"F", jail:35, fine:535}
-]},
-{code:"617", title:"Introduction of Contraband", cat:"PEN", txt:"Memasukkan barang terlarang ke fasilitas.", variants:[
-  {label:"§", desc:"Memberikan barang terlarang kepada narapidana atau menyelundupkannya ke fasilitas.", cls:"F", jail:36, fine:850}
-]},
-{code:"618", title:"Violation of Parole", cat:"PEN", txt:"Melanggar ketentuan parol.", variants:[
-  {label:"§", desc:"Sengaja melanggar ketentuan perjanjian parol.", cls:"F", jail:48, fine:480}
-]},
-{code:"619", title:"Voter Fraud / Voter Pandering", cat:"PEN", txt:"Kecurangan pemilu.", variants:[
-  {label:"(a)", desc:"Menghalangi/memengaruhi hasil pemungutan suara secara ilegal/tidak etis.", cls:"F", jail:52, fine:524},
-  {label:"(b)", desc:"Membeli suara dengan menjanjikan/memberikan manfaat tidak semestinya.", cls:"F", jail:60, fine:650}
-]},
-{code:"620", title:"Corruption of Public Office", cat:"PEN", txt:"Bertindak di luar kepentingan publik.", variants:[
-  {label:"§", desc:"Bertindak di luar kepentingan kebaikan publik, keadilan publik, atau tugas kantor publik.", cls:"F", jail:64, fine:645}
-]},
-{code:"621", title:"Contempt of Senate", cat:"PEN", txt:"Melanggar proses Senat.", variants:[
-  {label:"§", desc:"Tidak mematuhi perintah Senat, tidak menghormati tata krama, atau melanggar proses Senat.", cls:"M", jail:8, fine:80}
-]},
-{code:"622", title:"Contempt of Court", cat:"PEN", txt:"Melanggar proses pengadilan.", variants:[
-  {label:"§", desc:"Tidak mematuhi perintah pengadilan, tidak menghormati tata krama, atau melanggar proses hukum.", cls:"M", jail:8, fine:80}
-]},
-{code:"623", title:"Subpoena Violation", cat:"PEN", txt:"Melanggar perintah subpoena.", variants:[
-  {label:"§", desc:"Mengabaikan atau melanggar perintah subpoena yang dikeluarkan pengadilan.", cls:"M", jail:8, fine:80}
-]},
-{code:"701", title:"Reckless Driving", cat:"PEN", txt:"Mengemudi mengabaikan keamanan.", variants:[
-  {label:"§", desc:"Mengemudikan kendaraan dengan sengaja atau sembarangan mengabaikan keamanan orang/harta.", cls:"M", jail:20, fine:350}
-]},
-{code:"702", title:"Felony Reckless Driving", cat:"PEN", txt:"Mengemudi berbahaya hingga menyebabkan cedera.", variants:[
-  {label:"§", desc:"Mengemudi berbahaya hingga menyebabkan cedera fisik. Penyitaan lisensi 24 jam.", cls:"F", jail:28, fine:540}
-]},
-{code:"703", title:"Driving Under the Influence", cat:"PEN", txt:"Mengemudi di bawah pengaruh alkohol/narkoba.", variants:[
-  {label:"(a)", desc:"Mengemudi dengan kadar alkohol 0,08% atau lebih.", cls:"F", jail:24, fine:246},
-  {label:"(b)", desc:"Pegawai negara mengemudi di bawah pengaruh narkoba/alkohol saat bertugas.", cls:"F", jail:30, fine:350},
-  {label:"(c)", desc:"Mengemudi kendaraan komersial dengan kadar alkohol 0,04% atau lebih.", cls:"F", jail:24, fine:542},
-  {label:"(d)", desc:"Mengemudi saat terganggu oleh alkohol, narkoba, atau kombinasinya.", cls:"M", jail:16, fine:165}
-]},
-{code:"704", title:"Evading a Peace Officer", cat:"PEN", txt:"Melarikan diri dari kendaraan petugas.", variants:[
-  {label:"§", desc:"Melarikan diri atau berusaha menghindar dari kendaraan petugas. Penyitaan lisensi 48 jam.", cls:"M", jail:16, fine:156}
-]},
-{code:"705", title:"Reckless Evading of a Peace Officer", cat:"PEN", txt:"Melarikan diri sambil mengemudi berbahaya.", variants:[
-  {label:"§", desc:"Melarikan diri dari petugas sambil mengemudi ceroboh/berbahaya. Penyitaan lisensi 60 jam.", cls:"F", jail:36, fine:365}
-]},
-{code:"706", title:"Hit and Run", cat:"PEN", txt:"Kabur setelah kecelakaan.", variants:[
-  {label:"(a)", desc:"Terlibat kecelakaan dengan cedera/kematian dan tidak berhenti di lokasi.", cls:"F", jail:35, fine:464},
-  {label:"(b)", desc:"Terlibat kecelakaan dengan kerusakan harta saja dan tidak berhenti di lokasi.", cls:"M", jail:10, fine:154}
-]},
-{code:"801", title:"Brandishing a Firearm", cat:"PEN", txt:"Menunjukkan senjata api untuk mengancam nyawa.", variants:[
-  {label:"§", desc:"Mengeluarkan/menunjukkan senjata api atau mematikan untuk mengancam nyawa orang.", cls:"M", jail:20, fine:1000}
-]},
-{code:"802", title:"Discharging a Firearm in Public", cat:"PEN", txt:"Menembak di tempat umum.", variants:[
-  {label:"§", desc:"Sengaja menembakkan senjata api di tempat umum tanpa alasan jelas.", cls:"M", jail:20, fine:500},
-  {label:"(ex)", desc:"Pengecualian: bila tembakan menyebabkan cedera, naik menjadi felony.", cls:"F", jail:40, fine:1500}
-]},
-{code:"803", title:"Unlicensed Possession of a Deadly Weapon", cat:"PEN", txt:"Membawa senjata mematikan tanpa lisensi.", variants:[
-  {label:"§", desc:"Membawa senjata mematikan di tempat umum/pribadi tanpa persetujuan atau lisensi valid.", cls:"M", jail:20, fine:760}
-]},
-{code:"804", title:"Possession of an Unlicensed Firearm", cat:"PEN", txt:"Kepemilikan senjata tanpa lisensi/curian.", variants:[
-  {label:"(a)", desc:"Memiliki senjata api yang tidak terdaftar di San Andreas.", cls:"M", jail:25, fine:850},
-  {label:"(b)", desc:"Memiliki senjata api hasil curian.", cls:"F", jail:30, fine:900},
-  {label:"(c)", desc:"Memiliki senjata replika dengan niat mengancam nyawa orang.", cls:"M", jail:20, fine:500}
-]},
-{code:"805", title:"Possession of an Illegal Firearm", cat:"PEN", txt:"Senjata api diproduksi/dibeli ilegal.", variants:[
-  {label:"§", desc:"Memiliki senjata api yang dihasilkan atau dibeli secara ilegal.", cls:"F", jail:40, fine:600}
-]},
-{code:"806", title:"Firearm Theft", cat:"PEN", txt:"Mencuri senjata api orang lain.", variants:[
-  {label:"§", desc:"Mencuri/mengambil senjata api orang lain dengan atau tanpa ancaman.", cls:"F", jail:50, fine:930}
-]},
-{code:"807", title:"Illegal Firearm Distribution", cat:"PEN", txt:"Senjata api ilegal untuk dijual.", variants:[
-  {label:"§", desc:"Memiliki senjata api ilegal dengan niat untuk diperjualbelikan.", cls:"F", jail:30, fine:910}
-]},
-{code:"808", title:"Illegal Modification of a Firearm", cat:"PEN", txt:"Modifikasi senjata api ilegal.", variants:[
-  {label:"§", desc:"Modifikasi ilegal: suppressor, full-auto conversion, extended magazine tanpa izin.", cls:"F", jail:90, fine:2500}
-]},
-{code:"809", title:"Negligent Storage of a Firearm", cat:"PEN", txt:"Penyimpanan senjata tanpa pengamanan.", variants:[
-  {label:"§", desc:"Menyimpan senjata api tanpa pengamanan memadai, dapat diakses anak di bawah umur.", cls:"M", jail:30, fine:750}
+{code:"(1)14", title:"Rape", cat:"T1", txt:"Melakukan hubungan non-konsensual dengan kekerasan, ancaman, atau penipuan.", variants:[
+  {label:"§", desc:"Setiap orang yang melakukan hubungan non-konsensual dilakukan dengan cara kekerasan, ancaman, penipuan, dan serta menyentuh bagian intim orang lain gairah sexual.", cls:"F", jail:40, fine:975}
 ]},
 
-/* ---------- VEHICLE CODE ---------- */
-{code:"V-001", title:"License Suspension and Revocation", cat:"VEH", txt:"Sistem poin lisensi pengemudi.", variants:[
-  {label:"§", desc:"3 poin = suspensi lisensi 48 jam; 5 poin = penyitaan kendaraan dan pencabutan lisensi.", cls:"I", jail:0, fine:0}
+/* ---------- TITLE 2. OFFENSES INVOLVING THEFT ---------- */
+{code:"(2)01", title:"Petty Theft", cat:"T2", txt:"Mencuri properti dengan nilai kurang dari $200 dari orang lain.", variants:[
+  {label:"§", desc:"Mencuri properti dengan nilai kurang dari $200 dari orang lain.", cls:"M", jail:30, fine:325}
 ]},
-{code:"V-002", title:"Officer Discretion", cat:"VEH", txt:"Kebijaksanaan petugas dalam pelanggaran kendaraan.", variants:[
-  {label:"§", desc:"Petugas dapat menggunakan kebijaksanaan saat mengeluarkan pelanggaran/poin, kecuali tindakan tidak aman.", cls:"I", jail:0, fine:0}
+{code:"(2)02", title:"Grand Theft", cat:"T2", txt:"Mencuri properti dengan nilai lebih dari $200 dari orang lain.", variants:[
+  {label:"§", desc:"Mencuri properti dengan nilai lebih dari $200 dari orang lain.", cls:"M", jail:35, fine:585}
 ]},
-{code:"V-101", title:"Vehicle Registration Violation", cat:"VEH", txt:"Kendaraan tidak terdaftar / tanpa plat valid.", variants:[
-  {label:"(a)", desc:"Mengemudi/meninggalkan kendaraan yang belum terdaftar. Denda bertingkat sesuai level kendaraan.", cls:"I", jail:0, fine:0},
-  {label:"(b)", desc:"Mengemudi kendaraan tanpa nomor plat valid yang dipajang.", cls:"I", jail:0, fine:0}
+{code:"(2)03", title:"Grand Theft Auto", cat:"T2", txt:"Memasuki kendaraan terkunci secara melawan hukum dengan maksud mencuri kendaraan atau harta di dalamnya.", variants:[
+  {label:"§", desc:"Setiap orang yang memasuki kendaraan yang terkunci secara melawan hukum atau bagasinya dengan maksud untuk mencuri kendaraan tersebut, mencuri harta benda yang terdapat di dalam kendaraan tersebut, atau melakukan kejahatan lain di dalam kendaraan tersebut.", cls:"F", jail:40, fine:680}
 ]},
-{code:"V-201", title:"Driving without a Valid License", cat:"VEH", txt:"Mengemudi tanpa SIM valid.", variants:[
-  {label:"(a)", desc:"Mengemudi tanpa SIM valid atau dengan SIM yang dicabut.", cls:"M", jail:4, fine:0},
-  {label:"(b)", desc:"Mengemudi tanpa membawa SIM dalam penguasaan fisik.", cls:"M", jail:5, fine:450},
-  {label:"(c)", desc:"Mengemudi dengan SIM yang kedaluwarsa.", cls:"I", jail:0, fine:500}
+{code:"(2)04", title:"Tampering with a Vehicle", cat:"T2", txt:"Dengan sengaja merusak kendaraan atau isinya tanpa persetujuan pemiliknya.", variants:[
+  {label:"§", desc:"Tidak seorang pun baik secara sendiri-sendiri atau bersama-sama, dengan sengaja merusak kendaraan atau isinya, atau merusak atau memindahkan bagian mana pun dari kendaraan tanpa persetujuan pemiliknya.", cls:"M", jail:20, fine:400}
 ]},
-{code:"V-202", title:"Driving on a Suspended License", cat:"VEH", txt:"Mengemudi dengan SIM disita.", variants:[
-  {label:"§", desc:"Mengemudi dengan SIM yang disita tetapi masih valid.", cls:"M", jail:4, fine:550}
+{code:"(2)05", title:"Robbery", cat:"T2", txt:"Mengambil properti dari kepemilikan orang lain di luar kehendak mereka dengan paksaan atau kekerasan.", variants:[
+  {label:"§", desc:"Seseorang yang mengambil properti dari kepemilikan orang lain di luar kehendak mereka, dengan cara paksaan, intimidasi, dan kekerasan yang difasilitasi dengan senjata atau dengan barang yang digunakan sebagai senjata.", cls:"F", jail:55, fine:625}
 ]},
-{code:"V-203", title:"Learner's Permit Violation", cat:"VEH", txt:"Pelanggaran izin belajar.", variants:[
-  {label:"(a)", desc:"Usia 16-18 tahun mengemudi tanpa izin belajar valid.", cls:"I", jail:0, fine:200},
-  {label:"(b)", desc:"Usia 16-18 tahun mengemudi tanpa pendamping dewasa berlisensi.", cls:"I", jail:0, fine:300}
+{code:"(2)06", title:"Receiving Stolen Property", cat:"T2", txt:"Dengan sengaja membeli, menjual, menerima, menyembunyikan, atau menahan harta curian.", variants:[
+  {label:"§", desc:"Setiap orang dengan sengaja membeli, menjual, menerima, menyembunyikan, atau menahan harta curian.", cls:"M", jail:25, fine:550}
 ]},
-{code:"V-301", title:"Driving without Insurance", cat:"VEH", txt:"Mengemudi tanpa asuransi valid.", variants:[
-  {label:"§", desc:"Mengemudi tanpa asuransi kendaraan bermotor valid. Kendaraan ditahan.", cls:"I", jail:0, fine:200}
+{code:"(2)07", title:"Extortion", cat:"T2", txt:"Menggunakan kekerasan atau ancaman untuk memaksa orang lain memberi uang atau properti.", variants:[
+  {label:"§", desc:"Setiap orang yang menggunakan kekerasan atau ancaman untuk memaksa orang lain memberi mereka uang atau properti lain, menggunakan kekuatan atau ancaman untuk memaksa figur otoritas melakukan tindakan resmi, atau menjadi pejabat publik dan memaksa orang lain untuk memberi mereka uang.", cls:"F", jail:40, fine:725}
 ]},
-{code:"V-401", title:"Speeding", cat:"VEH", txt:"Mengemudi melebihi batas kecepatan.", variants:[
-  {label:"(a)", desc:"Di daerah bisnis/pemukiman >40 MPH (1 poin).", cls:"I", jail:0, fine:200},
-  {label:"(b)", desc:"Di luar daerah bisnis/pemukiman >65 MPH (1 poin).", cls:"I", jail:0, fine:500},
-  {label:"(c)", desc:"Di jalan raya >90 MPH (2 poin).", cls:"I", jail:0, fine:750},
-  {label:"(d)", desc:"Kecepatan tidak wajar mempertimbangkan cuaca/visibilitas/lalu lintas (2 poin).", cls:"I", jail:0, fine:200}
+{code:"(2)08", title:"Forgery", cat:"T2", txt:"Melakukan pemalsuan dengan maksud melakukan penipuan atau menipu orang lain.", variants:[
+  {label:"§", desc:"Setiap orang yang melakukan pemalsuan dengan maksud untuk melakukan penipuan atau menipu orang lain.", cls:"M", jail:30, fine:500}
 ]},
-{code:"V-402", title:"Failure to Yield", cat:"VEH", txt:"Tidak memberi hak jalan.", variants:[
-  {label:"§", desc:"Tidak memberikan hak jalan kepada pengemudi lain di persimpangan.", cls:"I", jail:0, fine:350}
+
+/* ---------- TITLE 3. OFFENSES INVOLVING DAMAGE TO PROPERTY ---------- */
+{code:"(3)01", title:"Burglary", cat:"T3", txt:"Secara paksa memasuki suatu bangunan dengan maksud melakukan kejahatan.", variants:[
+  {label:"§", desc:"Setiap orang secara paksa memasuki suatu bangunan dengan maksud untuk melakukan kejahatan.", cls:"M", jail:25, fine:455}
 ]},
-{code:"V-403", title:"Failure to Yield to Emergency Vehicles", cat:"VEH", txt:"Tidak menyingkir untuk kendaraan darurat.", variants:[
-  {label:"§", desc:"Tidak memberi hak jalan dan menyingkir untuk kendaraan darurat bersirene.", cls:"I", jail:0, fine:400}
+{code:"(3)02", title:"Trespassing", cat:"T3", txt:"Memasuki properti orang lain tanpa izin atau hak untuk melakukannya.", variants:[
+  {label:"§", desc:"Setiap orang yang memasuki properti orang lain tanpa izin atau hak untuk melakukannya.", cls:"M", jail:30, fine:425}
 ]},
-{code:"V-404", title:"Failure to Abide by a Traffic Control Device", cat:"VEH", txt:"Tidak mematuhi alat pengatur lalu lintas.", variants:[
-  {label:"§", desc:"Tidak mematuhi tanda, sinyal, atau perangkat pengatur lalu lintas.", cls:"I", jail:0, fine:200}
+{code:"(3)03", title:"Arson", cat:"T3", txt:"Dengan sengaja atau ceroboh membakar properti tanpa persetujuan pemilik.", variants:[
+  {label:"§", desc:"Setiap orang dengan sengaja dan jahat, atau ceroboh, membakar properti tanpa persetujuan pemilik atau orang yang berwenang.", cls:"F", jail:45, fine:785}
 ]},
-{code:"V-405", title:"Illegal Parking", cat:"VEH", txt:"Parkir di tempat terlarang.", variants:[
-  {label:"§", desc:"Parkir di persimpangan, hydrant, rel, jalur pemadam, dll. Denda + penyitaan kendaraan.", cls:"I", jail:0, fine:950}
+{code:"(3)04", title:"Vandalism", cat:"T3", txt:"Mengotori, merusak, atau menghancurkan properti publik atau pribadi.", variants:[
+  {label:"§", desc:"Setiap orang yang mengotori, merusak, atau menghancurkan properti publik atau pribadi.", cls:"M", jail:30, fine:535}
 ]},
-{code:"V-406", title:"Vehicular Noise Violation", cat:"VEH", txt:"Suara kendaraan berlebihan.", variants:[
-  {label:"§", desc:"Kendaraan mengeluarkan suara berlebihan menciptakan gangguan publik.", cls:"I", jail:0, fine:500}
+
+/* ---------- TITLE 4. OFFENSES AGAINST PUBLIC ADMINISTRATION ---------- */
+{code:"(4)01", title:"Bribery", cat:"T4", txt:"Memberikan sesuatu yang berharga dengan niat korup untuk mempengaruhi pejabat.", variants:[
+  {label:"§", desc:"Setiap orang memberikan sesuatu yang berharga atau keuntungan, atau membuat janji atau usaha untuk memberikan, diminta, diberikan, atau diterima, dengan niat korup untuk mempengaruhi, secara melawan hukum, orang yang kepadanya diberikan, dalam nya tindakan, suara, atau opini, dalam kapasitas publik atau resmi.", cls:"F", jail:45, fine:955}
 ]},
-{code:"V-407", title:"Illegal Use of Hydraulics", cat:"VEH", txt:"Menggunakan hidrolik saat bergerak.", variants:[
-  {label:"§", desc:"Mengemudi kendaraan yang menggunakan peralatan hidrolik saat bergerak.", cls:"I", jail:0, fine:450}
+{code:"(4)02", title:"Resisting Arrest", cat:"T4", txt:"Dengan sengaja melawan, menunda, atau menghalangi petugas saat melakukan penangkapan.", variants:[
+  {label:"§", desc:"Setiap orang dengan sengaja melawan, menunda, atau menghalangi petugas perdamaian ketika petugas tersebut sedang melakukan penangkapan.", cls:"M", jail:35, fine:550}
 ]},
-{code:"V-408", title:"Unsafe Usage of a Bicycle", cat:"VEH", txt:"Menggunakan sepeda dengan tidak aman.", variants:[
-  {label:"§", desc:"Menggunakan sepeda dengan cara menghalangi lalu lintas atau menciptakan bahaya.", cls:"I", jail:0, fine:500}
+{code:"(4)03", title:"Contempt of Court", cat:"T4", txt:"Tidak mematuhi perintah langsung dari pejabat pengadilan atau surat perintah resmi.", variants:[
+  {label:"§", desc:"Setiap orang yang tidak mematuhi perintah langsung dari pejabat pengadilan atau surat perintah resmi.", cls:"M", jail:35, fine:575}
 ]},
-{code:"V-409", title:"Jaywalking", cat:"VEH", txt:"Menyeberang di luar penyeberangan.", variants:[
-  {label:"§", desc:"Berjalan di jalan raya di luar penyeberangan di antara persimpangan.", cls:"I", jail:0, fine:250}
+{code:"(4)04", title:"Misuse of a 911 System", cat:"T4", txt:"Membuat panggilan darurat untuk tujuan yang tidak relevan.", variants:[
+  {label:"§", desc:"Setiap orang yang membuat panggilan darurat maupun tidak darurat untuk tujuan yang tidak relevan dengan kantor, departemen, atau badan pemerintah tertentu.", cls:"M", jail:25, fine:435}
 ]},
-{code:"V-410", title:"Speed Contests", cat:"VEH", txt:"Perlombaan kecepatan di jalan umum.", variants:[
-  {label:"§", desc:"Terlibat perlombaan kecepatan kendaraan di jalan umum.", cls:"I", jail:0, fine:500}
+{code:"(4)05", title:"Failure to Pay a Fine", cat:"T4", txt:"Menolak untuk memenuhi pembayaran sejumlah uang yang diminta oleh tiket.", variants:[
+  {label:"§", desc:"Setiap orang yang menolak untuk memenuhi pembayaran sejumlah uang yang diminta oleh tiket.", cls:"M", jail:20, fine:515}
 ]},
-{code:"V-411", title:"Unlawful Operation of Truck on Non-Designated Routes", cat:"VEH", txt:"Truk di jalan non-rute.", variants:[
-  {label:"§", desc:"Mengemudi kendaraan komersial/truk besar di jalan non-rute truk tanpa izin. + penyitaan.", cls:"I", jail:0, fine:1500}
+{code:"(4)06", title:"Failure to Identify to a Peace Officer", cat:"T4", txt:"Menolak memberikan informasi identifikasi kepada penegak hukum.", variants:[
+  {label:"§", desc:"Setiap orang yang menolak untuk memberikan informasi atau menahan informasi mengenai identifikasi dan semua upaya oleh penegak hukum untuk mendapatkan informasi tersebut telah dibebaskan.", cls:"M", jail:35, fine:415}
 ]},
-{code:"V-412", title:"Operating Commercial Vehicle Without Proper License", cat:"VEH", txt:"Kendaraan komersial tanpa lisensi sesuai.", variants:[
-  {label:"§", desc:"Mengemudi kendaraan komersial tanpa kelas lisensi sesuai. Tambahan $500 bila menimbulkan bahaya.", cls:"M", jail:0, fine:870}
+{code:"(4)07", title:"Obstruction of a Government Employee", cat:"T4", txt:"Menghalangi pejabat pemerintah dalam melaksanakan tugasnya.", variants:[
+  {label:"§", desc:"Setiap orang yang menghalangi kejaksaan, penyidik, atau pejabat pemerintah lainnya dalam melaksanakan tugasnya untuk menjamin tertib administrasi hukum dan keadilan.", cls:"M", jail:30, fine:565}
 ]},
-{code:"V-501", title:"Tinted Windows", cat:"VEH", txt:"Kaca dengan bahan penghalang.", variants:[
-  {label:"§", desc:"Kaca depan/samping/belakang dengan bahan penghalang pandangan.", cls:"I", jail:0, fine:195}
+{code:"(4)08", title:"Harboring a Criminal", cat:"T4", txt:"Membantu tersangka menyembunyikan diri dalam proses penahanan.", variants:[
+  {label:"§", desc:"Setiap orang yang membantu tersangka untuk menyembunyikan, menjauhkan atau memperlambat dalam proses penahan oleh petugas penegak hukum.", cls:"M", jail:45, fine:485}
 ]},
-{code:"V-502", title:"Driving Without use of Headlights", cat:"VEH", txt:"Tidak menyalakan lampu depan.", variants:[
-  {label:"§", desc:"Mengemudi saat gelap atau cuaca buruk tanpa lampu depan.", cls:"I", jail:0, fine:230}
+
+/* ---------- TITLE 5. OFFENSES AGAINST THE PUBLIC HEALTH AND SAFETY ---------- */
+{code:"(5)01", title:"Possession of a Controlled Substance", cat:"T5", txt:"Memiliki segala bentuk narkotika tanpa resep yang sah. Kepemilikan ganja tidak termasuk.", variants:[
+  {label:"§", desc:"Setiap orang yang memiliki segala bentuk narkotika tanpa resep yang sah. Kepemilikan ganja tidak termasuk dalam bagian ini.", cls:"F", jail:55, fine:2155}
 ]},
-{code:"V-503", title:"Operating an Unsafe Vehicle", cat:"VEH", txt:"Kendaraan tidak aman.", variants:[
-  {label:"§", desc:"Ban kempes, lampu belakang mati, pintu/kap/bagasi hilang atau terbuka.", cls:"I", jail:0, fine:640}
+{code:"(5)02", title:"Possession of a Controlled Substance with Intent to Sell", cat:"T5", txt:"Memiliki narkotika dengan maksud menjual, atau 25 gram atau lebih.", variants:[
+  {label:"§", desc:"Setiap orang yang memiliki narkotika dalam bentuk apapun dengan maksud tertentu untuk menjual dan/atau memiliki narkotika jenis apa pun sebanyak 25,0 (dua puluh lima) gram atau lebih.", cls:"F", jail:55, fine:2175}
 ]},
-{code:"V-504", title:"Unauthorized Use of Red/Blue Lights", cat:"VEH", txt:"Lampu darurat tanpa izin.", variants:[
-  {label:"§", desc:"Kendaraan dengan lampu darurat merah/biru tanpa izin. + penyitaan hingga lampu dilepas.", cls:"M", jail:10, fine:350}
+{code:"(5)03", title:"Possession of Marijuana", cat:"T5", txt:"Memiliki ganja tanpa resep yang sah dengan jumlah di bawah 5,0 gram.", variants:[
+  {label:"§", desc:"Setiap orang yang memiliki ganja tanpa resep yang sah dengan jumlah di bawah 5,0 (lima) gram. - Jika jumlahnya antara 5,0 gram sampai dengan 25,0 gram, maka dikenakan (5)01. - Jika melebihi 25,0 gram, dikenakan (5)02.", cls:"M", jail:35, fine:60}
 ]},
-{code:"V-601", title:"Failure to Wear a Helmet", cat:"VEH", txt:"Tanpa helm keselamatan.", variants:[
-  {label:"§", desc:"Pengemudi/penumpang motor tanpa helm keselamatan.", cls:"I", jail:0, fine:500}
+{code:"(5)04", title:"Maintaining a Place for the Purpose of Distribution", cat:"T5", txt:"Memiliki, mengoperasikan, atau terlibat dalam penyimpanan zat terkontrol atau senjata untuk penjualan ilegal.", variants:[
+  {label:"§", desc:"Setiap orang yang memiliki, mengoperasikan, atau terlibat dalam aktivitas yang melibatkan penyimpanan zat yang dikendalikan atau senjata api untuk tujuan penjualan atau perdagangan ilegal.", cls:"F", jail:45, fine:950}
 ]},
-{code:"V-602", title:"Unlawful Riding and Towing", cat:"VEH", txt:"Menarik/mengangkut tidak aman.", variants:[
-  {label:"§", desc:"Menarik/mengangkut kendaraan dengan cara tidak aman.", cls:"I", jail:0, fine:400}
+{code:"(5)05", title:"Sale of a Controlled Substance", cat:"T5", txt:"Secara melawan hukum meminta atau terlibat dalam penjualan narkotika.", variants:[
+  {label:"§", desc:"Setiap orang yang secara melawan hukum meminta atau terlibat dalam pengangkutan, impor, penjualan, memfasilitasi, membiayai, atau pemberian narkotika dalam bentuk apa pun.", cls:"F", jail:45, fine:985}
 ]},
-{code:"V-603", title:"Reckless Operation of Machinery", cat:"VEH", txt:"Mesin berat di jalan umum.", variants:[
-  {label:"§", desc:"Mengoperasikan mesin berat (bulldozer, forklift, dll) di jalan umum.", cls:"I", jail:0, fine:250}
+{code:"(5)06", title:"Manufacture of a Controlled Substance", cat:"T5", txt:"Membuat, menggabungkan, mengubah, memproduksi, atau menyiapkan zat ilegal.", variants:[
+  {label:"§", desc:"Setiap orang yang, kecuali ditentukan lain oleh undang-undang, membuat, menggabungkan, mengubah, memproduksi, atau menyiapkan, baik secara langsung maupun tidak langsung dengan ekstraksi kimia atau alami, zat ilegal apa pun.", cls:"F", jail:55, fine:985}
 ]},
-{code:"V-604", title:"Reckless operation of an off-road vehicle", cat:"VEH", txt:"Kendaraan off-road di jalan umum.", variants:[
-  {label:"§", desc:"Mengoperasikan kendaraan off-road di jalan umum. + kendaraan dapat ditahan.", cls:"I", jail:0, fine:4100}
+{code:"(5)07", title:"Possession of an Open Container", cat:"T5", txt:"Memiliki wadah alkohol yang terlihat dan terbuka di tempat umum atau kendaraan.", variants:[
+  {label:"§", desc:"Setiap orang yang memiliki wadah alkohol yang terlihat dan terbuka di tempat umum atau di kendaraan bermotor.", cls:"I", jail:0, fine:125}
 ]},
-{code:"V-605", title:"Unlawful Riding in a Vehicle", cat:"VEH", txt:"Naik di bagian bukan penumpang.", variants:[
-  {label:"§", desc:"Naik/mengizinkan naik di bagian kendaraan bukan untuk penumpang atau di bagasi.", cls:"I", jail:0, fine:250}
+{code:"(5)08", title:"Public Intoxication", cat:"T5", txt:"Ditemukan di tempat umum di bawah pengaruh minuman keras yang memabukkan.", variants:[
+  {label:"§", desc:"Setiap orang yang ditemukan di tempat umum di bawah pengaruh minuman keras yang memabukkan.", cls:"M", jail:15, fine:215}
+]},
+{code:"(5)09", title:"Under the Influence of a Controlled Substance", cat:"T5", txt:"Ditemukan di tempat umum dengan sengaja menggunakan atau berada di bawah pengaruh narkotika.", variants:[
+  {label:"§", desc:"Setiap orang yang ditemukan di tempat umum dengan sengaja menggunakan atau berada di bawah pengaruh narkotika jenis apa pun.", cls:"M", jail:25, fine:285}
+]},
+{code:"(5)10", title:"Facial Obstruction", cat:"T5", txt:"Mengenakan topeng atau penyamaran untuk menghindari pengakuan.", variants:[
+  {label:"§", desc:"Setiap orang yang mengenakan topeng, kumis palsu, atau penyamaran pribadi apa pun, baik seluruhnya atau sebagian, dengan tujuan untuk menghindari pengakuan selama melakukan kejahatan dan/atau menolak untuk menghilangkan penghalang wajah atas perintah petugas perdamaian untuk tujuan menghindari pengakuan.", cls:"M", jail:20, fine:275}
+]},
+{code:"(5)11", title:"Public Indecency", cat:"T5", txt:"Memperlihatkan tubuh telanjang atau alat kelamin dengan niat cabul di depan umum.", variants:[
+  {label:"§", desc:"Setiap orang di depan umum memperlihatkan tubuh telanjang atau alat kelamin mereka dengan niat cabul.", cls:"M", jail:20, fine:235}
+]},
+{code:"(5)12", title:"Inciting a Riot", cat:"T5", txt:"Mendesak orang lain untuk terlibat dalam gejolak dan perilaku kekerasan.", variants:[
+  {label:"§", desc:"Setiap orang yang mendesak orang lain untuk terlibat dalam gejolak dan perilaku kekerasan dari jenis yang mungkin membuat alarm publik.", cls:"M", jail:25, fine:355}
+]},
+{code:"(5)13", title:"Riotous Activities", cat:"T5", txt:"Terlibat dalam gejolak dan perilaku kekerasan yang membuat alarm publik.", variants:[
+  {label:"§", desc:"Setiap orang yang terlibat dalam gejolak dan perilaku kekerasan dari jenis yang mungkin membuat alarm publik.", cls:"F", jail:30, fine:495}
+]},
+{code:"(5)14", title:"Desecration of a Human Corpse", cat:"T5", txt:"Perbuatan terhadap mayat seperti pemotongan, perusakan, atau pembakaran.", variants:[
+  {label:"§", desc:"Setiap perbuatan yang dilakukan setelah kematian seorang manusia termasuk, tetapi tidak terbatas pada, pemotongan, perusakan, pembakaran, atau setiap perbuatan yang dilakukan sehingga mayat itu dimakan, dicerai-beraikan, atau dihamburkan; kecuali, prosedur-prosedur yang dilakukan oleh lembaga negara atau otoritas berlisensi dalam tugas dan tanggung jawabnya. Ini termasuk pemindahan mayat dari tahanan kamar mayat.", cls:"F", jail:55, fine:3880}
+]},
+{code:"(5)15", title:"Illegal Logging", cat:"T5", txt:"Melakukan penebangan pohon tanpa izin dan lisensi yang sah.", variants:[
+  {label:"§", desc:"Setiap individu maupun kelompok atau sebuah pihak yang melakukan penebangan pohon tanpa izin dan memiliki lisensi yang sah dan berlaku.", cls:"M", jail:30, fine:1525}
+]},
+
+/* ---------- TITLE 6. CONTROL OF DEADLY WEAPONS AND EQUIPMENT ---------- */
+{code:"(6)01", title:"Possession of a Firearm Without a Permit", cat:"T6", txt:"Memiliki senjata api tanpa memiliki izin yang sah.", variants:[
+  {label:"§", desc:"Setiap orang yang memiliki senjata api tanpa memiliki izin yang sah.", cls:"M", jail:35, fine:1370}
+]},
+{code:"(6)02", title:"Possession of an Illegal Firearm", cat:"T6", txt:"Memiliki senjata api tanpa nomor seri atau yang dimodifikasi secara ilegal.", variants:[
+  {label:"§", desc:"Setiap orang yang memiliki senjata api tanpa nomor seri dan identifikasi terdaftar yang relevan dan/atau setiap orang yang memiliki segala jenis senjata api yang diubah atau dimodifikasi secara ilegal dan/atau setiap orang yang memiliki senjata api otomatis atau semi-otomatis.", cls:"F", jail:40, fine:1680}
+]},
+{code:"(6)03", title:"Discharging a Firearm from a Motor Vehicle", cat:"T6", txt:"Menembakkan senjata api dari dalam kendaraan bermotor.", variants:[
+  {label:"§", desc:"Setiap orang yang menjadi pengemudi atau pemilik kendaraan bermotor dan dengan sengaja mengizinkan orang lain untuk membawa senjata api ke dalam kendaraan bermotor dan melepaskan senjata api dari dalam kendaraan bermotor, atau dengan sengaja dan jahat menembakkan senjata api dari dalam kendaraan bermotor.", cls:"F", jail:45, fine:1280}
+]},
+{code:"(6)04", title:"Manufacture of a Dangerous Weapon", cat:"T6", txt:"Secara melawan hukum membuat senjata api atau perangkat berbahaya.", variants:[
+  {label:"§", desc:"Setiap orang secara melawan hukum membuat senjata api atau perangkat berbahaya.", cls:"F", jail:55, fine:2720}
+]},
+{code:"(6)05", title:"Possession of Illegal Firearm Parts", cat:"T6", txt:"Memiliki bagian dari senjata api untuk dijual atau disimpan pribadi.", variants:[
+  {label:"§", desc:"Setiap orang yang memiliki bagian dari senjata api yang akan digunakan untuk dijual dan/atau disimpan untuk pribadi.", cls:"M", jail:40, fine:1925}
+]},
+{code:"(6)06", title:"Brandishing of a Firearm", cat:"T6", txt:"Menunjuk, memegang, atau mengacungkan senjata api untuk menimbulkan ketakutan.", variants:[
+  {label:"§", desc:"Seseorang yang menunjuk, memegang, atau mengacungkan senjata api, memegang benda dengan cara yang mirip dengan senjata api, atau benda yang tampak seperti senjata api tanpa identifikasi mainan dan penyangga yang tepat dalam upaya untuk menimbulkan ketakutan atau histeria.", cls:"M", jail:40, fine:1380}
+]},
+
+/* ---------- TITLE 7. OFFENSES INVOLVING OPERATION OF A VEHICLE ---------- */
+{code:"(7)01", title:"Hit and Run", cat:"T7", txt:"Meninggalkan tempat kejadian kecelakaan tanpa mengidentifikasi diri.", variants:[
+  {label:"§", desc:"Meninggalkan tempat kejadian kecelakaan yang mengakibatkan cedera atau kematian yang melibatkan kerusakan harta benda, tanpa mengidentifikasi diri kepada pihak-pihak yang terlibat.", cls:"F", jail:35, fine:870}
+]},
+{code:"(7)02", title:"Evading a Peace Officer", cat:"T7", txt:"Melarikan diri atau berusaha menghindari petugas perdamaian yang mengejar.", variants:[
+  {label:"§", desc:"Setiap orang yang melarikan diri atau berusaha menghindari petugas perdamaian yang mengejar.", cls:"M", jail:30, fine:420}
+]},
+{code:"(7)03", title:"Driving on a Suspended License", cat:"T7", txt:"Mengoperasikan kendaraan dengan SIM yang dibekukan atau dicabut.", variants:[
+  {label:"§", desc:"Setiap orang yang mengoperasikan kendaraan bermotor dengan mengetahui bahwa Surat Izin Mengemudi telah dibekukan atau dicabut.", cls:"M", jail:30, fine:725}
+]},
+{code:"(7)04", title:"Flying Without License", cat:"T7", txt:"Mengoperasikan pesawat tanpa izin terbang yang sah.", variants:[
+  {label:"§", desc:"Setiap orang yang mengoperasikan pesawat tanpa izin terbang yang sah.", cls:"M", jail:25, fine:980}
+]},
+{code:"(7)05", title:"Negligent Operation of an Aircraft", cat:"T7", txt:"Gagal menyediakan keselamatan atau menerbangkan pesawat secara berbahaya.", variants:[
+  {label:"§", desc:"Setiap orang yang gagal menyediakan peralatan keselamatan yang layak, menyiarkan pengumuman yang sesuai di saluran ATC, melakukan pendaratan berbahaya, mendarat di lokasi yang menghalangi, terbang terlalu rendah ke tanah, terbang berbahaya, atau terbang ke zona terlarang.", cls:"F", jail:30, fine:1155}
+]},
+{code:"(7)06", title:"Illegal Modification Vehicle", cat:"T7", txt:"Memodifikasi kendaraan yang dapat mengganggu pengguna jalan atau pengemudi lain.", variants:[
+  {label:"§", desc:"Setiap orang yang memodifikasi kendaraan yang dapat mengganggu pengguna jalan lainnya maupun pengemudi kendaraan tersebut. Termasuk NOS di luar arena, part penyembunyi plat nomor, kaca film >70%, sirine tanpa izin, dan spoiler tinggi yang menutupi pandangan.", cls:"I", jail:0, fine:250}
+]},
+
+/* ---------- TITLE 8. ROAD LAW ---------- */
+{code:"(8)01", title:"Speeding Violation", cat:"T8", txt:"Mengemudi melebihi batas kecepatan yang ditetapkan.", variants:[
+  {label:"§", desc:"Melebihi kecepatan 94 MPH (65 KMH) di jalan raya umum di dalam kota Los Santos; 94 MPH (85 KMH) di luar kota; atau 94 MPH (100 KMH) di jalan raya empat lajur atau lebih.", cls:"I", jail:0, fine:210}
+]},
+{code:"(8)02", title:"Failure to Stop", cat:"T8", txt:"Gagal berhenti di daerah di mana berhenti diperlukan.", variants:[
+  {label:"§", desc:"Setiap orang yang gagal berhenti di daerah di mana berhenti diperlukan.", cls:"I", jail:0, fine:175}
+]},
+{code:"(8)03", title:"Yield Violation", cat:"T8", txt:"Gagal memberikan hak jalan kepada pejalan kaki atau kendaraan.", variants:[
+  {label:"§", desc:"Setiap orang yang gagal memberikan hak jalan kepada pejalan kaki atau untuk kendaraan.", cls:"I", jail:0, fine:90}
+]},
+{code:"(8)04", title:"Failure to Yield to Emergency Vehicle", cat:"T8", txt:"Menolak menepi dan tidak memberi ruang pada kendaraan darurat bersirene.", variants:[
+  {label:"§", desc:"Setiap orang yang menolak untuk menepi dan tidak memberi ruang pada kendaraan darurat dengan sirene aktif di sekitarnya.", cls:"I", jail:0, fine:100}
+]},
+{code:"(8)05", title:"Unauthorized Parking", cat:"T8", txt:"Parkir di lokasi terlarang sesuai ketentuan.", variants:[
+  {label:"§", desc:"Kendaraan yang diparkir menghalangi jalur lalu lintas, gang, pintu masuk parkir, penyeberangan, trotoar, menghadap lalu lintas berlawanan, di jembatan/terowongan, jalan bebas hambatan, rel kereta, area rumah sakit, pintu masuk Bank, jalan masuk pribadi, depan hidran kebakaran, atau depan properti orang lain tanpa izin.", cls:"I", jail:0, fine:115}
+]},
+{code:"(8)06", title:"Reckless Driving", cat:"T8", txt:"Mengemudi dengan sengaja atau ceroboh mengabaikan keselamatan orang atau properti.", variants:[
+  {label:"§", desc:"Setiap orang yang mengemudi kendaraan apapun di jalan raya dengan sengaja atau ceroboh mengabaikan keselamatan orang atau properti.", cls:"I", jail:0, fine:155}
+]},
+{code:"(8)07", title:"Vehicular Endangerment", cat:"T8", txt:"Mengemudi dengan sengaja atau ceroboh mengabaikan keselamatan orang atau properti.", variants:[
+  {label:"§", desc:"Setiap orang yang mengemudi kendaraan apapun di jalan raya dengan sengaja atau ceroboh mengabaikan keselamatan orang atau properti.", cls:"F", jail:45, fine:675}
+]},
+{code:"(8)08", title:"Driving Under the Influence (DUI)", cat:"T8", txt:"Mengoperasikan kendaraan saat terganggu oleh alkohol atau narkotika.", variants:[
+  {label:"§", desc:"Setiap orang yang mengoperasikan kendaraan bermotor ketika secara fisik dan mental terganggu oleh alkohol atau narkotika sedemikian rupa sehingga mereka tidak lagi memiliki kemampuan untuk mengemudi dengan karakteristik hati-hati dari orang yang sadar dengan kehati-hatian biasa dalam keadaan yang sama atau serupa.", cls:"F", jail:45, fine:725}
+]},
+{code:"(8)09", title:"Driving an Unregistered Vehicle", cat:"T8", txt:"Mengoperasikan kendaraan tanpa tanda plat nomor yang terlihat atau sah.", variants:[
+  {label:"§", desc:"Setiap orang yang mengoperasikan kendaraan bermotor tanpa tanda plat nomor yang terlihat atau sah.", cls:"I", jail:0, fine:390}
+]},
+{code:"(8)10", title:"Street Racing", cat:"T8", txt:"Melakukan balap motor tanpa izin dan ilegal di jalan raya umum.", variants:[
+  {label:"§", desc:"Setiap orang yang melakukan balap motor tanpa izin dan ilegal di jalan raya umum.", cls:"I", jail:0, fine:385}
+]},
+{code:"(8)11", title:"Driving Without a License", cat:"T8", txt:"Mengoperasikan kendaraan tanpa SIM yang masih berlaku.", variants:[
+  {label:"§", desc:"Setiap orang yang mengoperasikan kendaraan bermotor tanpa Surat Izin Mengemudi (SIM) yang masih berlaku.", cls:"M", jail:25, fine:425}
+]},
+{code:"(8)12", title:"Jaywalking", cat:"T8", txt:"Sembrono atau tidak tepat melintasi jalan raya.", variants:[
+  {label:"§", desc:"Setiap orang yang sembrono atau tidak tepat melintasi jalan raya.", cls:"I", jail:0, fine:85}
+]},
+{code:"(8)13", title:"Driving on the Wrong Side of the Road", cat:"T8", txt:"Mengemudi di sisi kiri jalan, melawan lalu lintas yang berlawanan.", variants:[
+  {label:"§", desc:"Mengemudi di sisi kiri jalan, melawan lalu lintas yang berlawanan.", cls:"I", jail:0, fine:185}
+]},
+{code:"(8)14", title:"Illegal Turn", cat:"T8", txt:"Membuat putar balik atau belokan secara ilegal.", variants:[
+  {label:"§", desc:"Membuat putar balik secara illegal, berbelok ke kanan atau ke kiri saat dilarang, atau membuat belokan yang melewati dari trotoar.", cls:"I", jail:0, fine:165}
+]},
+{code:"(8)15", title:"Driving Heavy Truck without License", cat:"T8", txt:"Mengoperasikan truk semi-trailer tanpa lisensi yang sah.", variants:[
+  {label:"§", desc:"Setiap orang yang mengoperasikan kendaraan truk semi-trailer tanpa memiliki Lisensi yang sah dan berlaku.", cls:"I", jail:0, fine:2500}
+]},
+{code:"(8)16", title:"Driving on Unauthorized Routes", cat:"T8", txt:"Mengoperasikan kendaraan berat di jalur yang tidak ditetapkan sebagai jalur truk.", variants:[
+  {label:"§", desc:"Setiap orang yang mengoperasikan kendaraan berat di jalur atau rute yang tidak ditetapkan sebagai jalur truk yang sah.", cls:"I", jail:0, fine:2250}
 ]},
 ];
-
-/* Vehicle registration fee table (untuk referensi detail) */
-const VEHICLE_FEES = {
-  MOTORCYCLES:{start:325,step:325},
-  CARS:{start:650,step:650},
-  "COMMERCIAL VEHICLES":{start:488,step:487},
-  "SPORT VEHICLES":{start:813,step:812}
-};
 
 /* ===================== CATATAN KAKI (FOOTNOTES) =====================
    Penjelasan tambahan / catatan praktik penegakan untuk pasal tertentu. */
 const FOOTNOTES = {
-  "187": {ref:"187", note:"First Degree (187a) mencakup pembunuhan terhadap petugas keamanan yang sedang bertugas. Felony Murder (187c) didakwa bersamaan dengan felony asalnya."},
-  "111": {ref:"111", note:"Manslaughter kendaraan (111d) berlaku bila pelaku menyebabkan kematian saat menghindari petugas dengan kendaraan."},
-  "114": {ref:"114", note:"Mayhem diukur dari beratnya kerusakan bagian tubuh; tujuan sadis/pemerasan menjadi pemberat."},
-  "216": {ref:"216", note:"Termasuk korban yang tidak mampu/cacat/tidak dapat memberi persetujuan secara hukum."},
-  "218": {ref:"218", note:"218(c) meningkat menjadi felony bila dilakukan di depan anak di bawah umur."},
-  "228": {ref:"228", note:"228 adalah infraction (bukan pidana penjara) dengan denda $2.500."},
-  "230": {ref:"230", note:"Pemburu dan profesi yang mengharuskan pembunuhan hewan dikecualikan dari 230(a), sepanjang menghindari penderitaan yang tidak perlu."},
-  "314": {ref:"314", note:"Kepemilikan marijuana legal kecuali >5 gram (314a) atau oleh pihak di bawah usia (314b/314c)."},
-  "318": {ref:"318", note:"Transfer senjata api antara orang tua–anak atau nenek–cucu dikecualikan dari persyaratan Federal Firearms License."},
-  "323": {ref:"323", note:"Hukuman hingga seumur hidup (LIFE). Bukan pasal yang dapat dikombinasikan dengan percobaan."},
-  "324": {ref:"324", note:"Treason dihukum seumur hidup (LIFE)."},
-  "402": {ref:"402", note:"Incitement to Riot berbeda dari Riot (403): 402 menekankan tindakan menggugah/mendorong kerumunan."},
-  "406": {ref:"406", note:"406(c) naik menjadi felony bila dilakukan tindak pidana lain (pencurian/perampokan) di area darurat."},
-  "508": {ref:"508", note:"Ambang batas Grand Theft adalah nilai > $950 (508a). Mencuri senjata api dikenakan 508(c)."},
-  "512": {ref:"512", note:"512(b) felony berlaku untuk masuk fasilitas pemerintah terlarang; varian lain misdemeanor."},
-  "703": {ref:"703", note:"Batas legal alkohol: 0,08% (reguler), 0,04% (kendaraan komersial). Disertai penyitaan lisensi 24 jam."},
-  "706": {ref:"706", note:"706(a) felony bila ada cedera/kematian; 706(b) misdemeanor bila hanya kerusakan harta."},
-  "802": {ref:"802", note:"Discharging Firearm naik ke felony (40 menit / $1.500) bila tembakan menyebabkan cedera."},
-  "808": {ref:"808", note:"Modifikasi ilegal mencakup suppressor, full-auto conversion, dan extended magazine tanpa izin."},
-  "V-001":{ref:"VEH 001", note:"Sistem poin: 3 poin = suspensi 48 jam; 5 poin = penyitaan kendaraan + pencabutan lisensi. Poin hilang tiap 2 minggu."},
-  "V-101":{ref:"VEH 101", note:"Biaya registrasi bertingkat sesuai level kendaraan (Motorcyle/Car/Commercial/Sport). Lihat tabel di detail pasal."},
-  "V-201":{ref:"VEH 201", note:"201(a) tanpa SIM valid; 201(c) SIM kedaluwarsa adalah infraction."},
-  "V-405":{ref:"VEH 405", note:"Illegal Parking disertai penyitaan kendaraan dan berlaku di banyak lokasi terlarang."},
-  "V-604":{ref:"VEH 604", note:"Kendaraan off-road di jalan umum: denda $4.100 dan kendaraan dapat ditahan."}
+  "(2)03": {ref:"(2)03", note:"Grand Theft Auto does stack with Tampering with a Vehicle, but not burglary or trespassing."},
+  "(1)04": {ref:"(1)04", note:"Perhatikan: teks asli pasal (1)04 pada file menyebut kode (1)03 pada baris hukumannya (kemungkinan salah ketik sumber)."},
+  "(5)03": {ref:"(5)03", note:"5,0–25,0 gram dikenakan (5)01 Possession of a controlled substance; melebihi 25,0 gram dikenakan (5)02 Intent to Sell."},
+  "(7)06": {ref:"(7)06", note:"Modifikasi ilegal termasuk NOS di luar arena, part penyembunyi plat nomor, kaca film >70%, sirine tanpa izin, dan spoiler tinggi."},
+  "(8)05": {ref:"(8)05", note:"Illegal Parking disertai peringatan pengemudi dan penyitaan kendaraan."},
+  "(8)01": {ref:"(8)01", note:"Batas kecepatan: 65 KMH dalam kota Los Santos, 85 KMH di luar kota, 100 KMH di jalan empat lajur atau lebih."}
 };
 
 /* ===================== TERJEMAHAN ENGLISH =====================
    Peta code -> { title, var: { labelIndex: descEN } }  (opsional).
    Bila tersedia, tombol ID/EN mengubah judul & deskripsi. */
 const EN = {
-  "101":{title:"Criminal Threats", var:{
-    0:"Threatens to physically injure or kill the person, directly, in writing, or via media.",
-    1:"Threatens to physically injure or kill a close friend or relative of another person."
-  }},
-  "102":{title:"Assault", var:{0:"Unlawfully attempts, and is able, to commit violent injury upon another."}},
-  "103":{title:"Assault on a Peace Officer", var:{0:"Attempts violent injury upon an on-duty peace officer."}},
-  "104":{title:"Assault on a State Employee", var:{0:"Attempts violent injury upon an on-duty state employee."}},
-  "105":{title:"Assault with a Deadly Weapon", var:{0:"Threatens immediate harm using a weapon, instrument, or dangerous object."}},
-  "106":{title:"Assault with a Deadly Weapon on a Peace Officer", var:{0:"Threatens immediate harm with a weapon to an on-duty peace officer."}},
-  "107":{title:"Battery", var:{0:"Willfully and unlawfully uses force or violence causing physical harm."}},
-  "108":{title:"Battery on a Peace Officer", var:{0:"Willfully and unlawfully uses force upon an on-duty peace officer."}},
-  "109":{title:"Battery on a State Employee", var:{0:"Willfully and unlawfully uses force upon an on-duty state employee."}},
-  "110":{title:"Aggravated Battery", var:{
-    0:"Great or continuous force causing serious injury.",
-    1:"Uses a weapon, instrument, or dangerous object to cause serious injury."
-  }},
-  "111":{title:"Manslaughter", var:{
-    0:"Unlawfully kills another human being without malice aforethought.",
-    1:"Voluntary manslaughter: sudden quarrel or heat of passion.",
-    2:"Involuntary manslaughter: during an unlawful act or a lawful act without due caution.",
-    3:"Vehicular manslaughter: driving dangerously and recklessly causing death.",
-    4:"Causes death while evading officers with a motor vehicle."
-  }},
-  "112":{title:"False Imprisonment", var:{
-    0:"Detains or arrests another without consent, without premeditation or ransom.",
-    1:"Unlawfully makes a citizen's arrest."
-  }},
-  "113":{title:"Kidnapping", var:{
-    0:"Steals, takes, or detains another by force or fear, with premeditation.",
-    1:"Seizes, confines, entices, or carries away another for ransom, reward, or extortion."
-  }},
-  "187":{title:"Murder", var:{
-    0:"First Degree: destructive device, poison, torture, or deliberate/premeditated killing. Killing an on-duty peace officer is first degree.",
-    1:"Second Degree: unlawful killing without premeditation but with malice aforethought.",
-    2:"Felony Murder: killing committed during a premeditated felony."
-  }},
-  "188":{title:"Attempted Murder", var:{
-    0:"Willfully attempts to kill through a premeditated act.",
-    1:"Criminal accident, negligence, or heat of passion causing severe/ life-threatening injury."
-  }},
-  "211":{title:"Robbery", var:{0:"Takes property from another's possession without consent, by force or fear."}},
-  "215":{title:"Carjacking", var:{0:"Takes a motor vehicle from another's possession by force or fear."}},
-  "216":{title:"Rape", var:{0:"Forces sexual intercourse, or has sex without consent, or with a person unable to consent."}},
-  "220":{title:"Sexual Battery", var:{
-    0:"Unwanted touching or sexual contact.",
-    1:"Aggressive contact for sexual arousal, gratification, or abuse."
-  }},
-  "225":{title:"Child Abuse", var:{0:"Willfully causes cruel torture or traumatic injury to a child under 18."}},
-  "313":{title:"Under The Influence of a Controlled Substance", var:{
-    0:"Uses or is under the influence of an illegal substance without authorization or prescription.",
-    1:"Under the influence of marijuana in public or during another crime."
-  }},
-  "314":{title:"Possession of Marijuana", var:{
-    0:"Possesses more than 5 grams of marijuana.",
-    1:"Under 21 years old and possesses up to 5 grams.",
-    2:"Under 18 years old and possesses up to 5 grams."
-  }},
-  "323":{title:"Terrorism", var:{
-    0:"Systematic threats or acts against the public interest to create fear and intimidation on a large scale. Up to life imprisonment.",
-    1:"Attack on, or threat against, major public or private facilities."
-  }},
-  "324":{title:"Treason", var:{0:"Levies war against the State, adheres to its enemies, or gives them aid. Life imprisonment."}},
-  "415":{title:"Disturbing the Peace", var:{
-    0:"Unlawfully fights in public or challenges another to fight.",
-    1:"Disturbs others with loud and unreasonable noise.",
-    2:"Uses offensive words in public likely to provoke immediate violence."
-  }},
-  "459":{title:"Burglary", var:{0:"Enters a building or vehicle with intent to commit theft or another felony."}},
-  "508":{title:"Grand Theft", var:{
-    0:"Steals property of another worth more than $950.",
-    1:"Steals an unoccupied car.",
-    2:"Steals a firearm."
-  }},
-  "512":{title:"Trespass", var:{
-    0:"Enters another's property while closed without permission.",
-    1:"Enters a government facility or restricted area without authorization.",
-    2:"Enters land posted as no-trespassing.",
-    3:"Refuses to leave a business when asked by the owner.",
-    4:"Enters or remains on property after being warned not to."
-  }},
-  "611":{title:"Resisting a Peace Officer", var:{
-    0:"Evades arrest on foot or physically resists arrest.",
-    1:"Escapes custody after being restrained while awaiting charges."
-  }},
-  "703":{title:"Driving Under the Influence", var:{
-    0:"Drives with a blood alcohol level of 0.08% or higher.",
-    1:"State employee drives under the influence while on duty.",
-    2:"Drives a commercial vehicle with a blood alcohol level of 0.04% or higher.",
-    3:"Drives while impaired by alcohol, drugs, or a combination."
-  }},
-  "704":{title:"Evading a Peace Officer", var:{0:"Willfully flees or attempts to evade an officer's vehicle. License impound 48 hours."}},
-  "705":{title:"Reckless Evading of a Peace Officer", var:{0:"Flees from officers while driving recklessly or dangerously. License impound 60 hours."}},
-  "706":{title:"Hit and Run", var:{
-    0:"Involved in a crash causing injury/death and fails to stop.",
-    1:"Involved in a crash causing only property damage and fails to stop."
-  }},
-  "805":{title:"Possession of an Illegal Firearm", var:{0:"Possesses a firearm that was illegally produced or purchased."}},
-  "806":{title:"Firearm Theft", var:{0:"Steals or takes another's firearm with or without threat."}},
-  "808":{title:"Illegal Modification of a Firearm", var:{0:"Illegal modification: suppressor, full-auto conversion, or unlicensed extended magazine."}},
-  "809":{title:"Negligent Storage of a Firearm", var:{0:"Stores a firearm without adequate safety, accessible to minors."}},
-  "V-101":{title:"Vehicle Registration Violation", var:{
-    0:"Drives/leaves an unregistered vehicle. Fee scales with vehicle level.",
-    1:"Drives a motor vehicle without a valid displayed license plate."
-  }},
-  "V-201":{title:"Driving without a Valid License", var:{
-    0:"Drives with no valid license or a revoked license.",
-    1:"Drives without a physical license in possession.",
-    2:"Drives with an expired license (infraction)."
-  }},
-  "V-301":{title:"Driving without Insurance", var:{0:"Drives without valid motor vehicle insurance. Vehicle impounded."}},
-  "V-401":{title:"Speeding", var:{
-    0:"Commercial/residential area over 40 MPH (1 point).",
-    1:"Outside commercial/residential over 65 MPH (1 point).",
-    2:"Highway over 90 MPH (2 points).",
-    3:"Unreasonable speed considering weather/visibility/traffic (2 points)."
-  }},
-  "V-405":{title:"Illegal Parking", var:{0:"Parks in prohibited areas. Fine + vehicle impound."}},
-  "V-504":{title:"Unauthorized Use of Red/Blue Lights", var:{0:"Vehicle with red/blue emergency lights without authorization. Impound until removed."}},
-  "V-604":{title:"Reckless operation of an off-road vehicle", var:{0:"Operates an off-road vehicle on a public road. + vehicle may be impounded."}}
+  "(1)01":{title:"Intimidation", var:{0:"Threatens to physically injure or kill the person, directly, in writing, or via media."}},
+  "(1)02":{title:"Assault", var:{0:"Threatens or attempts offensive or injurious physical contact upon another."}},
+  "(1)03":{title:"Assault with a Deadly Weapon on Government Employee", var:{0:"Attempts violent injury upon a government employee with a deadly weapon (firearm, any close-range object, or a motor vehicle)."}},
+  "(1)04":{title:"Assault with a Deadly Weapon", var:{0:"Attempts violent injury upon another with a deadly weapon (firearm, any close-range object, or a motor vehicle)."}},
+  "(1)05":{title:"Battery", var:{0:"Willfully and unlawfully uses force or violence causing physical harm to another."}},
+  "(1)06":{title:"Battery on Government Employee", var:{0:"Willfully and unlawfully uses force or violence causing physical harm to a government employee."}},
+  "(1)07":{title:"Kidnapping", var:{0:"Detains or captures another without consent, with a planned purpose, and moves them a substantial distance."}},
+  "(1)08":{title:"Kidnapping a Government Employee", var:{0:"Kidnaps a government employee and holds them against their will."}},
+  "(1)09":{title:"Unlawful Imprisonment", var:{0:"Unlawfully detains or confines another without consent for one hour without planned intent or ransom."}},
+  "(1)10":{title:"Manslaughter", var:{0:"Unlawfully kills another as a result of negligence, without prior malice aforethought."}},
+  "(1)11":{title:"First Degree Murder", var:{0:"Kills another human being through a premeditated malicious act."}},
+  "(1)12":{title:"Second Degree Murder", var:{0:"Kills another human being through an act without premeditation but with malice aforethought."}},
+  "(1)13":{title:"Attempted Murder", var:{0:"Takes at least one direct step to kill another with intent to kill."}},
+  "(1)14":{title:"Rape", var:{0:"Engages in non-consensual intercourse by force, threat, or deceit, including touching intimate parts for sexual gratification."}},
+  "(2)01":{title:"Petty Theft", var:{0:"Steals property valued at less than $200 from another."}},
+  "(2)02":{title:"Grand Theft", var:{0:"Steals property valued at more than $200 from another."}},
+  "(2)03":{title:"Grand Theft Auto", var:{0:"Unlawfully enters a locked vehicle or its trunk with intent to steal the vehicle, its contents, or commit another crime inside."}},
+  "(2)04":{title:"Tampering with a Vehicle", var:{0:"Willfully damages a vehicle or its contents, or damages/moves any part without the owner's consent."}},
+  "(2)05":{title:"Robbery", var:{0:"Takes property from another's possession against their will by force, intimidation, and violence, facilitated by a weapon or object used as a weapon."}},
+  "(2)06":{title:"Receiving Stolen Property", var:{0:"Knowingly buys, sells, receives, conceals, or withholds stolen property."}},
+  "(2)07":{title:"Extortion", var:{0:"Uses violence or threats to force another to give money/property, to force an authority figure into official action, or as a public official to force payment."}},
+  "(2)08":{title:"Forgery", var:{0:"Commits forgery with intent to defraud or deceive another."}},
+  "(3)01":{title:"Burglary", var:{0:"Forcibly enters a building with intent to commit a crime."}},
+  "(3)02":{title:"Trespassing", var:{0:"Enters another's property without permission or right to do so."}},
+  "(3)03":{title:"Arson", var:{0:"Willfully, maliciously, or recklessly burns property without the owner's or an authorized person's consent."}},
+  "(3)04":{title:"Vandalism", var:{0:"Defaces, damages, or destroys public or private property."}},
+  "(4)01":{title:"Bribery", var:{0:"Offers something of value or makes a corrupt promise/attempt to unlawfully influence an official in their action, vote, or opinion."}},
+  "(4)02":{title:"Resisting Arrest", var:{0:"Willfully resists, delays, or obstructs a peace officer while making an arrest."}},
+  "(4)03":{title:"Contempt of Court", var:{0:"Fails to obey a direct order of a court official or a lawful warrant."}},
+  "(4)04":{title:"Misuse of a 911 System", var:{0:"Makes an emergency or non-emergency call for a purpose irrelevant to the relevant office, department, or agency."}},
+  "(4)05":{title:"Failure to Pay a Fine", var:{0:"Refuses to satisfy payment of a sum demanded by a ticket."}},
+  "(4)06":{title:"Failure to Identify to a Peace Officer", var:{0:"Refuses to provide or withholds identification information after all law enforcement attempts have been exhausted."}},
+  "(4)07":{title:"Obstruction of a Government Employee", var:{0:"Obstructs a prosecutor, investigator, or other government official in the performance of their duties."}},
+  "(4)08":{title:"Harboring a Criminal", var:{0:"Helps a suspect hide, flee, or delay detention by law enforcement."}},
+  "(5)01":{title:"Possession of a Controlled Substance", var:{0:"Possesses any form of narcotics without a valid prescription. Marijuana possession is excluded."}},
+  "(5)02":{title:"Possession of a Controlled Substance with Intent to Sell", var:{0:"Possesses any form of narcotics with intent to sell, and/or possesses 25.0 grams or more."}},
+  "(5)03":{title:"Possession of Marijuana", var:{0:"Possesses marijuana without a valid prescription in an amount under 5.0 grams. 5.0–25.0 g falls under (5)01; over 25.0 g falls under (5)02."}},
+  "(5)04":{title:"Maintaining a Place for the Purpose of Distribution", var:{0:"Owns, operates, or is involved in storing controlled substances or firearms for illegal sale or trade."}},
+  "(5)05":{title:"Sale of a Controlled Substance", var:{0:"Unlawfully solicits or engages in transporting, importing, selling, facilitating, financing, or supplying narcotics in any form."}},
+  "(5)06":{title:"Manufacture of a Controlled Substance", var:{0:"Creates, compounds, converts, produces, or prepares any illegal substance, directly or indirectly by chemical or natural extraction."}},
+  "(5)07":{title:"Possession of an Open Container", var:{0:"Possesses a visible, open alcohol container in a public place or motor vehicle."}},
+  "(5)08":{title:"Public Intoxication", var:{0:"Is found in a public place under the influence of intoxicating liquor."}},
+  "(5)09":{title:"Under the Influence of a Controlled Substance", var:{0:"Is found in a public place willfully using or under the influence of any narcotic."}},
+  "(5)10":{title:"Facial Obstruction", var:{0:"Wears a mask, false mustache, or any personal disguise, wholly or partly, to avoid recognition during a crime and/or refuses to remove it on an officer's order."}},
+  "(5)11":{title:"Public Indecency", var:{0:"In public exposes a naked body or genitals with lewd intent."}},
+  "(5)12":{title:"Inciting a Riot", var:{0:"Urges others to engage in turmoil and violent conduct likely to cause public alarm."}},
+  "(5)13":{title:"Riotous Activities", var:{0:"Engages in turmoil and violent conduct likely to cause public alarm."}},
+  "(5)14":{title:"Desecration of a Human Corpse", var:{0:"Commits acts upon a corpse such as dismemberment, destruction, or burning, except by authorized state procedures. Includes removing a body from the morgue."}},
+  "(5)15":{title:"Illegal Logging", var:{0:"An individual, group, or party logs trees without a valid and lawful license."}},
+  "(6)01":{title:"Possession of a Firearm Without a Permit", var:{0:"Possesses a firearm without a valid permit."}},
+  "(6)02":{title:"Possession of an Illegal Firearm", var:{0:"Possesses a firearm with no serial number/registered ID and/or any illegally altered or modified firearm and/or an automatic or semi-automatic firearm."}},
+  "(6)03":{title:"Discharging a Firearm from a Motor Vehicle", var:{0:"Being the driver/owner, knowingly allows another to carry a firearm into the vehicle and discharge it, or willfully and maliciously fires a firearm from within the vehicle."}},
+  "(6)04":{title:"Manufacture of a Dangerous Weapon", var:{0:"Unlawfully makes a firearm or dangerous device."}},
+  "(6)05":{title:"Possession of Illegal Firearm Parts", var:{0:"Possesses firearm parts to be sold and/or kept for personal use."}},
+  "(6)06":{title:"Brandishing of a Firearm", var:{0:"Points, holds, or brandishes a firearm, or an object resembling one, without proper toy identification, to cause fear or hysteria."}},
+  "(7)01":{title:"Hit and Run", var:{0:"Leaves the scene of an accident causing injury or death, involving property damage, without identifying to the parties involved."}},
+  "(7)02":{title:"Evading a Peace Officer", var:{0:"Flees or attempts to evade a pursuing peace officer."}},
+  "(7)03":{title:"Driving on a Suspended License", var:{0:"Operates a motor vehicle knowing the driver's license is suspended or revoked."}},
+  "(7)04":{title:"Flying Without License", var:{0:"Operates an aircraft without a valid flight license."}},
+  "(7)05":{title:"Negligent Operation of an Aircraft", var:{0:"Fails to provide adequate safety equipment, proper ATC announcements, hazardous landings, obstructing landings, flying too low, reckless flying, or flying into restricted zones."}},
+  "(7)06":{title:"Illegal Modification Vehicle", var:{0:"Modifies a vehicle in a way that endangers other road users or the driver; includes off-arena NOS, plate-hiding modifications, tint over 70%, unauthorized sirens, and high spoilers."}},
+  "(8)01":{title:"Speeding Violation", var:{0:"Exceeds 94 MPH (65 KMH) in-city Los Santos roads; 94 MPH (85 KMH) outside the city; or 94 MPH (100 KMH) on roads with four or more lanes."}},
+  "(8)02":{title:"Failure to Stop", var:{0:"Fails to stop in an area where stopping is required."}},
+  "(8)03":{title:"Yield Violation", var:{0:"Fails to yield the right of way to a pedestrian or a vehicle."}},
+  "(8)04":{title:"Failure to Yield to Emergency Vehicle", var:{0:"Refuses to pull over and does not give space to an emergency vehicle with active sirens nearby."}},
+  "(8)05":{title:"Unauthorized Parking", var:{0:"Parks in prohibited locations such as blocking traffic lanes, alleys, driveways, crosswalks, or fire hydrants, etc."}},
+  "(8)06":{title:"Reckless Driving", var:{0:"Drives any vehicle on a public road willfully or recklessly disregarding the safety of persons or property."}},
+  "(8)07":{title:"Vehicular Endangerment", var:{0:"Drives any vehicle on a public road willfully or recklessly disregarding the safety of persons or property."}},
+  "(8)08":{title:"Driving Under the Influence (DUI)", var:{0:"Operates a motor vehicle while physically and mentally impaired by alcohol or narcotics to the point of losing the ability to drive with ordinary care."}},
+  "(8)09":{title:"Driving an Unregistered Vehicle", var:{0:"Operates a motor vehicle without a visible or valid license plate."}},
+  "(8)10":{title:"Street Racing", var:{0:"Conducts an unauthorized and illegal street race on a public road."}},
+  "(8)11":{title:"Driving Without a License", var:{0:"Operates a motor vehicle without a valid driver's license."}},
+  "(8)12":{title:"Jaywalking", var:{0:"Recklessly or improperly crosses a roadway."}},
+  "(8)13":{title:"Driving on the Wrong Side of the Road", var:{0:"Drives on the left side of the road, against oncoming traffic."}},
+  "(8)14":{title:"Illegal Turn", var:{0:"Makes an illegal U-turn, turns right/left where prohibited, or turns across a sidewalk."}},
+  "(8)15":{title:"Driving Heavy Truck without License", var:{0:"Operates a semi-trailer truck without a valid license."}},
+  "(8)16":{title:"Driving on Unauthorized Routes", var:{0:"Operates a heavy vehicle on a route not designated as a lawful truck route."}}
 };
 
 /* ===================== STATE ===================== */
@@ -1333,14 +1001,26 @@ function stat(l){
 /* ===================== HELPERS ===================== */
 const $ = id => document.getElementById(id);
 const clsName = c => c==="F"?"Felony":c==="M"?"Misdemeanor":"Infraction";
-const fmtJail = m => (m>=999? "LIFE" : (m? m+" min" : "0 min"));
+const fmtJail = m => (m>=999? "LIFE" : (m? m+" bln" : "0 bln"));
 const fmtFine = n => (n? "$"+n.toLocaleString("en-US") : "—");
 const fmtMoney = n => "$"+n.toLocaleString("en-US");
+/* label kategori TITLE */
+const TITLE_LABEL = {
+  T1:"TITLE 1 · OFFENSES AGAINST PERSONS",
+  T2:"TITLE 2 · OFFENSES INVOLVING THEFT",
+  T3:"TITLE 3 · OFFENSES INVOLVING DAMAGE TO PROPERTY",
+  T4:"TITLE 4 · OFFENSES AGAINST PUBLIC ADMINISTRATION",
+  T5:"TITLE 5 · OFFENSES AGAINST THE PUBLIC HEALTH AND SAFETY",
+  T6:"TITLE 6 · CONTROL OF DEADLY WEAPONS AND EQUIPMENT",
+  T7:"TITLE 7 · OFFENSES INVOLVING OPERATION OF A VEHICLE",
+  T8:"TITLE 8 · ROAD LAW"
+};
+const catLabel = c => TITLE_LABEL[c] || "PENAL CODE";
 
 /* ===================== FILTER ===================== */
 function filtered(){
   let arr = LAWS.slice();
-  if(filterCat==="PEN"||filterCat==="VEH") arr = arr.filter(l=>l.cat===filterCat);
+  if(["T1","T2","T3","T4","T5","T6","T7","T8"].includes(filterCat)) arr = arr.filter(l=>l.cat===filterCat);
   else if(["F","M","I"].includes(filterCat)) arr = arr.filter(l=> l.variants.some(v=>v.cls===filterCat));
 
   if(query){
@@ -1437,7 +1117,7 @@ $("list").addEventListener("click", e=>{
 
 /* ===================== CARD DESKRIPSI PASAL ===================== */
 let detailCode = null;
-const DETAIL_ICON = {PEN:"⚖", VEH:"🚔"};
+const DETAIL_ICON = {T1:"⚖",T2:"⚖",T3:"⚖",T4:"⚖",T5:"⚖",T6:"🔫",T7:"🚔",T8:"🚔"};
 function hideDetail(){
   detailCode = null;
   $("detailCard").classList.add("hidden");
@@ -1453,7 +1133,7 @@ function renderDetail(code){
   const st = stat(l);
   const fn = FOOTNOTES[code];
   const enActive = (lang==="en" && EN[code]);
-  const catLabel = l.cat==="PEN" ? "PENAL CODE" : "VEHICLE CODE";
+  const catLabel = TITLE_LABEL[l.cat] || "PENAL CODE";
 
   // ringkasan hukuman dari varian terpilih (atau tertinggi)
   const selVars = l.variants.map((v,vi)=>({v,vi})).filter(x=>isSel(code,x.vi));
@@ -1482,7 +1162,7 @@ function renderDetail(code){
       ${enActive?'<span class="tag t-M">EN</span>':''}
     </div>
     <div class="d-stats">
-      <div class="d-stat"><span>PENJARA</span><b class="g">${useJail?fmtJail(useJail):"0 min"}</b></div>
+      <div class="d-stat"><span>PENJARA</span><b class="g">${useJail?fmtJail(useJail):"0 bln"}</b></div>
       <div class="d-stat"><span>DENDA</span><b class="a">${useFine?fmtMoney(useFine):"—"}</b></div>
       <div class="d-stat"><span>AYAT</span><b>${l.variants.length}</b></div>
     </div>
@@ -1518,10 +1198,10 @@ function renderCalc(){
   const life = items.some(i=>i.jail>=999);
 
   $("totFine").textContent = fmtMoney(fine);
-  $("totJail").textContent = life? "LIFE" : jail+" min";
+  $("totJail").textContent = life? "LIFE" : jail+" bln";
   $("totCount").textContent = items.length;
-  const h = Math.floor((jail%9999)/60), m = (jail%60);
-  $("totTime").textContent = life? "LIFE" : (h+"j "+m+"m");
+  const yr = Math.floor(jail/12), mo = (jail%12);
+  $("totTime").textContent = life? "LIFE" : (yr+"th "+mo+"bln");
 
   // basket
   const bk = $("basket");
@@ -1556,10 +1236,10 @@ function renderCalc(){
     return `<div class="cbar">
       <div class="cl"><span>${label} (${k})</span><b>${g.n} charge</b></div>
       <div class="track"><div class="fill f-${k}" style="width:${pct}%"></div></div>
-      <div class="csub">${g.jail?fmtJail(g.jail):"0 min"} &nbsp;•&nbsp; ${fmtMoney(g.fine)}</div>
+      <div class="csub">${g.jail?fmtJail(g.jail):"0 bln"} &nbsp;•&nbsp; ${fmtMoney(g.fine)}</div>
     </div>`;
   }).join("") + `<div style="font-size:10.5px;color:var(--muted);margin-top:8px;letter-spacing:1px">
-      Total denda: <span style="color:var(--amber)">${fmtMoney(fine)}</span> &nbsp;•&nbsp; Total penjara: <span style="color:var(--green)">${life?"LIFE":jail+" menit"}</span>
+      Total denda: <span style="color:var(--amber)">${fmtMoney(fine)}</span> &nbsp;•&nbsp; Total penjara: <span style="color:var(--green)">${life?"LIFE":jail+" bulan"}</span>
     </div>`;
 }
 
@@ -1587,7 +1267,7 @@ $("copyBtn").addEventListener("click", ()=>{
     if(l.note) t += `    † ${l.note}\n`;
   });
   t += "--------------------------------\n";
-  t += `TOTAL: ${life?"LIFE":jail+" menit"} | ${fmtMoney(fine)}\n`;
+  t += `TOTAL: ${life?"LIFE":jail+" bulan"} | ${fmtMoney(fine)}\n`;
   navigator.clipboard.writeText(t).then(()=>{
     const b=$("copyBtn"); const o=b.textContent; b.textContent="TERSALIN ✓";
     setTimeout(()=>b.textContent=o,1400);
@@ -1599,16 +1279,6 @@ function openDetail(code){
   const l = byCode[code]; if(!l) return;
   $("mTitle").textContent = `${l.code} — ${locTitle(l)}`;
   let extra = "";
-  if(code==="V-101"){
-    extra = '<div style="margin-top:14px"><div class="panel-hd" style="padding:6px 0;border:0;background:none"><span class="bar"></span> Tabel Biaya Registrasi Kendaraan</div>';
-    extra += '<table style="width:100%;border-collapse:collapse;font-size:11.5px;margin-top:6px">';
-    extra += '<tr style="color:var(--muted);text-align:left"><th style="padding:4px">Kategori</th><th>Level 1-5</th><th>Level 96-100</th></tr>';
-    for(const k in VEHICLE_FEES){
-      const f = VEHICLE_FEES[k];
-      extra += `<tr><td style="padding:4px;color:var(--text)">${k}</td><td style="padding:4px;color:var(--amber)">$${f.start.toLocaleString()}</td><td style="padding:4px;color:var(--amber)">$${(f.start+f.step*19).toLocaleString()}</td></tr>`;
-    }
-    extra += '</table><div style="font-size:10.5px;color:var(--muted);margin-top:6px">Biaya naik bertingkat tiap 5 level.</div></div>';
-  }
   // catatan tidak lagi ditampilkan di modal (dipindah ke card kanan)
   let enHtml = "";
   if(EN[l.code] && lang==="en"){
@@ -1631,7 +1301,7 @@ function openDetail(code){
   $("mBody").innerHTML = `
     <div class="kv">
       <div><span>KODE PASAL</span><br><b class="g">${l.code}</b></div>
-      <div><span>KODE KATEGORI</span><br><b class="a">${l.cat==="PEN"?"PENAL CODE":"VEHICLE CODE"}</b></div>
+      <div><span>KODE KATEGORI</span><br><b class="a">${TITLE_LABEL[l.cat]||"PENAL CODE"}</b></div>
       <div><span>JUMLAH AYAT</span><br><b>${l.variants.length}</b></div>
     </div>
     <div style="border-top:1px solid var(--line);padding-top:12px">${l.txt}</div>
@@ -1687,7 +1357,7 @@ function buildCharges(){
       <span class="ch-tag">${it.cls}</span>
       <span style="float:right">${it.jail?fmtJail(it.jail):"-"} / ${it.fine?fmtMoney(it.fine):"-"}</span></div>`;
   }).join("");
-  $("rChargeTotal").textContent = `TOTAL: ${life?"LIFE":jail+" menit"}  |  Denda: $${fine.toLocaleString("en-US")}  |  Jumlah charge: ${items.length}`;
+  $("rChargeTotal").textContent = `TOTAL: ${life?"LIFE":jail+" bulan"}  |  Denda: $${fine.toLocaleString("en-US")}  |  Jumlah charge: ${items.length}`;
 }
 
 function openReport(){
