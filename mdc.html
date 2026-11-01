@@ -446,6 +446,9 @@
         <button class="btn primary" id="copyBtn">Salin Laporan</button>
       </div>
       <div class="btns" style="border-top:0;padding-top:2px">
+        <button class="btn" id="copyChargeBtn" title="Salin daftar charge: (kode). Judul">📋 Salin Charge</button>
+      </div>
+      <div class="btns" style="border-top:0;padding-top:2px">
         <button class="btn primary" id="reportBtn" style="font-weight:bold">📄 Buat Incident Report</button>
       </div>
     </div>
@@ -1268,6 +1271,20 @@ $("copyBtn").addEventListener("click", ()=>{
   t += `TOTAL: ${life?"LIFE":jail+" bulan"} | ${fmtMoney(fine)}\n`;
   navigator.clipboard.writeText(t).then(()=>{
     const b=$("copyBtn"); const o=b.textContent; b.textContent="TERSALIN ✓";
+    setTimeout(()=>b.textContent=o,1400);
+  }).catch(()=>alert(t));
+});
+
+/* salin daftar charge saja: (kode). Judul */
+$("copyChargeBtn").addEventListener("click", ()=>{
+  const items = selected.map(s=>{
+    const l=byCode[s.code], v=l&&l.variants[s.vi];
+    return v?{code:l.code,title:locTitle(l),label:v.label}:null;
+  }).filter(Boolean);
+  if(!items.length){ alert("Belum ada pasal yang dipilih."); return; }
+  const t = items.map(l=>`${l.code}${l.label!=="§"?" "+l.label:""}. ${l.title}`).join("\n");
+  navigator.clipboard.writeText(t).then(()=>{
+    const b=$("copyChargeBtn"); const o=b.textContent; b.textContent="TERSALIN ✓";
     setTimeout(()=>b.textContent=o,1400);
   }).catch(()=>alert(t));
 });
