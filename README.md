@@ -28,7 +28,7 @@ Buka langsung: **[https://mochgilang17.github.io/Penal-code-and-Incident-Report/
 - Tambahkan pasal/ayat mana pun lewat tombol `+`.
 - **Total denda**, **total penjara**, **jumlah charge**, dan **estimasi waktu** otomatis.
 - **Grafik distribusi** hukuman per kelas (Felony / Misdemeanor / Infraction).
-- **Salin Laporan** ke clipboard dengan satu klik (termasuk catatan kaki).
+- **Salin Charge** ke clipboard dengan satu klik (format `(kode). Judul`).
 
 ### ⌨️ Keyboard Shortcuts
 | Tombol | Fungsi |

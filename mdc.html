@@ -443,10 +443,7 @@
       <div class="basket" id="basket"><div class="empty">Belum ada pasal dipilih.<br>Klik tombol + pada daftar.</div></div>
       <div class="btns">
         <button class="btn danger" id="clearBtn">Kosongkan</button>
-        <button class="btn primary" id="copyBtn">Salin Laporan</button>
-      </div>
-      <div class="btns" style="border-top:0;padding-top:2px">
-        <button class="btn" id="copyChargeBtn" title="Salin daftar charge: (kode). Judul">📋 Salin Charge</button>
+        <button class="btn primary" id="copyChargeBtn" title="Salin daftar charge: (kode). Judul">📋 Salin Charge</button>
       </div>
       <div class="btns" style="border-top:0;padding-top:2px">
         <button class="btn primary" id="reportBtn" style="font-weight:bold">📄 Buat Incident Report</button>
@@ -1252,28 +1249,6 @@ $("basket").addEventListener("click", e=>{
 });
 
 $("clearBtn").addEventListener("click", ()=>{ selected=[]; renderList(); renderCalc(); });
-
-$("copyBtn").addEventListener("click", ()=>{
-  const items = selected.map(s=>{
-    const l=byCode[s.code], v=l&&l.variants[s.vi];
-    return v?{code:l.code,title:locTitle(l),label:v.label,cls:v.cls,jail:v.jail||0,fine:v.fine||0,note:(FOOTNOTES[l.code]||{}).note}:null;
-  }).filter(Boolean);
-  if(!items.length){ alert("Belum ada pasal yang dipilih."); return; }
-  const jail = items.reduce((a,b)=>a+b.jail,0);
-  const fine = items.reduce((a,b)=>a+b.fine,0);
-  const life = items.some(i=>i.jail>=999);
-  let t = "=== SENTENCE REPORT — SAN ANDREAS LAW INFORMATION ===\n";
-  items.forEach(l=>{
-    t += `${l.code}${l.label!=="§"?" "+l.label:""} (${l.cls}) ${l.title} — ${l.jail?fmtJail(l.jail):"-"} / ${l.fine?fmtMoney(l.fine):"-"}\n`;
-    if(l.note) t += `    † ${l.note}\n`;
-  });
-  t += "--------------------------------\n";
-  t += `TOTAL: ${life?"LIFE":jail+" bulan"} | ${fmtMoney(fine)}\n`;
-  navigator.clipboard.writeText(t).then(()=>{
-    const b=$("copyBtn"); const o=b.textContent; b.textContent="TERSALIN ✓";
-    setTimeout(()=>b.textContent=o,1400);
-  }).catch(()=>alert(t));
-});
 
 /* salin daftar charge saja: (kode). Judul */
 $("copyChargeBtn").addEventListener("click", ()=>{
